@@ -1,23 +1,18 @@
-import type { Metadata } from "next";
-import "./globals.css";
+import type { Metadata } from 'next';
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: "TrustChain — Decentralized Social Credit on Stellar",
-  description:
-    "TrustChain converts social trust into verifiable credit using Stellar blockchain, unlocking financial access for the next billion users.",
-  keywords: ["stellar", "blockchain", "microcredit", "DeFi", "financial inclusion", "trust", "web3"],
+  title: 'TrustChain — Decentralized Social Credit on Stellar',
+  description: 'TrustChain converts social trust into verifiable credit scores on the Stellar blockchain, enabling fair micro-loans for the unbanked.',
+  keywords: ['Stellar', 'blockchain', 'DeFi', 'micro-credit', 'TrustChain', 'social credit'],
   openGraph: {
-    title: "TrustChain",
-    description: "Decentralized Social Credit Network on Stellar",
-    type: "website",
+    title: 'TrustChain — Decentralized Social Credit on Stellar',
+    description: 'Social trust → verifiable credit. Micro-loans for the next billion.',
+    type: 'website',
   },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
