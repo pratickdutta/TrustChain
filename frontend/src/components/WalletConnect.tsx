@@ -1,0 +1,143 @@
+'use client';
+import { useState, useCallback } from 'react';
+import useWalletStore from '@/store/walletStore';
+import { authAPI, scoreAPI } from '@/lib/api';
+
+export default function WalletConnect({ compact = false }: { compact?: boolean }) {
+  const { setWallet, setScore, setConnecting, isConnecting } = useWalletStore();
+  const [pubKeyInput, setPubKeyInput] = useState('');
+  const [mode, setMode] = useState<'freighter' | 'manual'>('freighter');
+  const [error, setError] = useState('');
+
+  const connectFreighter = async () => {
+    setConnecting(true);
+    setError('');
+    try {
+      const freighter = (window as any).freighter;
+      if (!freighter) throw new Error('Freighter not installed');
+      await freighter.requestAccess();
+      const { address } = await freighter.getAddress();
+      const { nonce } = await authAPI.challenge(address);
+      const { token, user } = await authAPI.verify(address, nonce);
+      setWallet(address, token, user);
+      const userScore = await scoreAPI.me();
+      setScore(userScore);
+    } catch (err: any) {
+      setError(err.message);
+      if (err.message.includes('not installed')) setMode('manual');
+    } finally {
+      setConnecting(false);
+    }
+  };
+
+  const connectManual = async () => {
+    if (!pubKeyInput.trim()) return;
+    setConnecting(true);
+    setError('');
+    try {
+      const { nonce } = await authAPI.challenge(pubKeyInput.trim());
+      const { token, user } = await authAPI.verify(pubKeyInput.trim(), nonce);
+      setWallet(pubKeyInput.trim(), token, user);
+      const userScore = await scoreAPI.me();
+      setScore(userScore);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setConnecting(false);
+    }
+  };
+
+  if (compact) {
+    return (
+      <button onClick={connectFreighter} disabled={isConnecting} className="btn btn-primary">
+        {isConnecting ? 'Connecting...' : '🔐 Connect Wallet'}
+      </button>
+    );
+  }
+
+  return (
+    <div style={{ maxWidth: 420, margin: '0 auto' }}>
+      <div className="glass-card" style={{ padding: 32 }}>
+        <h2 style={{ textAlign: 'center', marginBottom: 8, fontSize: '1.4rem' }}>Connect Your Wallet</h2>
+        <p style={{ textAlign: 'center', color: 'var(--color-text-secondary)', fontSize: '0.875rem', marginBottom: 28 }}>
+          Authenticate with your Stellar keypair to access TrustChain
+        </p>
+
+        <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
+          {(['freighter', 'manual'] as const).map(m => (
+            <button
+              key={m}
+              onClick={() => setMode(m)}
+              style={{
+                flex: 1, padding: '10px', borderRadius: 'var(--radius-md)',
+                background: mode === m ? 'rgba(108,99,255,0.15)' : 'transparent',
+                border: `1px solid ${mode === m ? 'rgba(108,99,255,0.5)' : 'var(--color-border)'}`,
+                color: mode === m ? 'var(--color-primary-light)' : 'var(--color-text-secondary)',
+                cursor: 'pointer', fontSize: '0.85rem', fontWeight: 500,
+                transition: 'all 0.2s',
+              }}
+            >
+              {m === 'freighter' ? '🌟 Freighter' : '🔑 Public Key'}
+            </button>
+          ))}
+        </div>
+
+        {mode === 'freighter' ? (
+          <div>
+            <div style={{
+              padding: 16, borderRadius: 'var(--radius-md)',
+              background: 'rgba(108,99,255,0.06)', border: '1px solid rgba(108,99,255,0.2)',
+              marginBottom: 20, fontSize: '0.8rem', color: 'var(--color-text-secondary)', lineHeight: 1.6,
+            }}>
+              <strong style={{ color: 'var(--color-primary-light)' }}>Freighter Wallet</strong> is the official Stellar browser extension. 
+              It securely signs transactions without exposing your private key.
+            </div>
+            <button onClick={connectFreighter} disabled={isConnecting} className="btn btn-primary" style={{ width: '100%' }}>
+              {isConnecting ? (
+                <><span className="animate-spin" style={{ display: 'inline-block', width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%' }} /> Connecting...</>
+              ) : '🌟 Connect Freighter'}
+            </button>
+            <p style={{ textAlign: 'center', marginTop: 12, fontSize: '0.78rem', color: 'var(--color-muted)' }}>
+              Don't have Freighter?{' '}
+              <a href="https://freighter.app" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary-light)' }}>
+                Install it here →
+              </a>
+            </p>
+          </div>
+        ) : (
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginBottom: 8 }}>
+              Your Stellar Public Key (starts with G...)
+            </label>
+            <input
+              className="input"
+              value={pubKeyInput}
+              onChange={e => setPubKeyInput(e.target.value)}
+              placeholder="GABC...XYZ"
+              style={{ marginBottom: 16, fontFamily: 'monospace', fontSize: '0.8rem' }}
+            />
+            <button onClick={connectManual} disabled={isConnecting || !pubKeyInput} className="btn btn-primary" style={{ width: '100%' }}>
+              {isConnecting ? 'Authenticating...' : 'Continue →'}
+            </button>
+            <p style={{ marginTop: 12, fontSize: '0.78rem', color: 'var(--color-muted)', lineHeight: 1.5 }}>
+              💡 You can get a testnet public key from{' '}
+              <a href="https://laboratory.stellar.org/#account-creator" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary-light)' }}>
+                Stellar Laboratory
+              </a>
+            </p>
+          </div>
+        )}
+
+        {error && (
+          <div style={{
+            marginTop: 16, padding: 12, borderRadius: 'var(--radius-md)',
+            background: 'rgba(255,71,87,0.1)', border: '1px solid rgba(255,71,87,0.3)',
+            color: '#FF4757', fontSize: '0.8rem',
+          }}>
+            ⚠️ {error}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
