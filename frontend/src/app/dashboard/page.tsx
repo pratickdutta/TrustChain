@@ -68,9 +68,37 @@ export default function DashboardPage() {
     return (
       <div style={{ minHeight: '100vh' }}>
         <Navbar />
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', flexDirection: 'column', gap: 20 }}>
-          <div style={{ width: 48, height: 48, border: '3px solid var(--c-surface-2)', borderTopColor: 'var(--c-primary)', borderRadius: '50%', animation: 'spin 0.9s linear infinite' }} />
-          <p style={{ color: 'var(--c-text-2)', fontSize: '0.9rem' }}>Synchronizing on-chain data...</p>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '80vh', flexDirection: 'column', gap: 32 }}>
+          <div style={{ position: 'relative', width: 64, height: 64, display: 'flex', justifyContent: 'center' }}>
+            {/* Bouncing Coin */}
+            <div style={{ animation: 'coinBounce 1.5s cubic-bezier(0.28, 0.84, 0.42, 1) infinite' }}>
+              <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* Coin Base */}
+                <circle cx="30" cy="30" r="28" fill="var(--c-bg-alt)" stroke="var(--c-secondary)" strokeWidth="3" />
+                {/* Inner Ring */}
+                <circle cx="30" cy="30" r="22" stroke="var(--c-secondary)" strokeWidth="1" strokeDasharray="4 4" opacity="0.5" />
+                {/* Stellar-inspired / Crypto Icon */}
+                <path d="M22 24L38 36M22 36L38 24M30 16V44" stroke="var(--c-secondary)" strokeWidth="4" strokeLinecap="round" />
+              </svg>
+            </div>
+            {/* Shadow Floor */}
+            <div style={{
+              position: 'absolute', bottom: -12, width: 48, height: 8,
+              background: 'var(--c-secondary)', borderRadius: '50%',
+              animation: 'pulseGlow 1.5s cubic-bezier(0.28, 0.84, 0.42, 1) infinite',
+              filter: 'blur(4px)', opacity: 0.6
+            }} />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+            <p style={{ color: 'var(--c-secondary)', fontSize: '0.9rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+              Synchronizing Chain Data
+            </p>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--c-secondary)', animation: 'pulseGlow 1.5s infinite 0s' }} />
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--c-secondary)', animation: 'pulseGlow 1.5s infinite 0.2s' }} />
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--c-secondary)', animation: 'pulseGlow 1.5s infinite 0.4s' }} />
+            </div>
+          </div>
         </div>
       </div>
     );
