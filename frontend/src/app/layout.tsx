@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 };
 
 import Footer from '@/components/Footer';
+import FloatingLogos from '@/components/FloatingLogos';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body>
+        <FloatingLogos />
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
           <main style={{ flex: 1 }}>{children}</main>
           <Footer />

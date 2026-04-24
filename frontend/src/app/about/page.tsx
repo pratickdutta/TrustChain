@@ -1,12 +1,12 @@
 'use client';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { Network, ShieldCheck, Target, Rocket, Users, Milestone, ArrowRight, Code2, Mail } from 'lucide-react';
+import { Network, ShieldCheck, Target, Rocket, Users, Milestone, ArrowRight, Code2, Mail, KeySquare } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AboutPage() {
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--c-bg)' }}>
+    <div style={{ minHeight: '100vh' }}>
       <Navbar />
       
       {/* ── HERO SECTION ── */}
@@ -44,7 +44,7 @@ export default function AboutPage() {
             </div>
             <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: 16 }}>How We Work</h3>
             <p style={{ color: 'var(--c-text-2)', lineHeight: 1.7 }}>
-              We leverage an on-chain Social Graph. Users form "Trust Circles" and vouch for one another to generate a Trust Score. By analyzing network topology, repayment behavior, and community attestations, our Soroban smart contracts automatically assign users a TrustChain Rating, allowing them to draw unsecured micro-loans.
+              We leverage an on-chain Social Circle. Users form "Trust Circles" and vouch for one another to generate a Trust Score. By analyzing network topology, repayment behavior, and community attestations, our Soroban smart contracts automatically assign users a TrustChain Rating, allowing them to draw unsecured micro-loans.
             </p>
           </div>
         </div>
@@ -87,6 +87,47 @@ export default function AboutPage() {
               <div key={item.title} style={{ padding: '18px 20px', borderRadius: 'var(--radius-md)', background: `color-mix(in srgb, ${item.color} 6%, transparent)`, border: `1px solid color-mix(in srgb, ${item.color} 25%, transparent)` }}>
                 <div style={{ fontSize: '1.4rem', marginBottom: 10 }}>{item.emoji}</div>
                 <div style={{ fontWeight: 700, color: item.color, marginBottom: 8, fontSize: '0.9rem' }}>{item.title}</div>
+                <p style={{ fontSize: '0.82rem', color: 'var(--c-text-2)', lineHeight: 1.6 }}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── CORE MECHANISMS: CIRCLES, UCI, & INVITE SIGNATURES ── */}
+        <div className="glass-card animate-fade-in-up" style={{ padding: 40, marginBottom: 80, border: '1px solid rgba(0, 217, 166, 0.25)', background: 'linear-gradient(135deg, var(--c-surface) 0%, rgba(0, 217, 166, 0.04) 100%)', animationDelay: '480ms' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28 }}>
+            <div style={{ width: 48, height: 48, borderRadius: 12, background: 'rgba(0, 217, 166, 0.1)', color: 'var(--c-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Network size={24} />
+            </div>
+            <div>
+              <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--c-secondary)', marginBottom: 4 }}>DECENTRALIZED ORGANIZATION</div>
+              <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--c-text)' }}>Circle Architecture & Privacy</h3>
+            </div>
+          </div>
+          <p style={{ color: 'var(--c-text-2)', lineHeight: 1.7, marginBottom: 28 }}>
+            Trust Circles are the core structural units of TrustChain. They act as self-regulating micro-communities with built-in privacy and security layers to protect the integrity of the credit network.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+            {[
+              {
+                icon: <Target size={20} color="var(--c-primary)" />,
+                title: 'UCI (Unique Circle Identification)',
+                desc: "Every Trust Circle is permanently assigned a unique UCI upon creation. This cryptographic identifier ensures exact routing and allows circles to remain entirely hidden from global searches while still being accessible to those who know the exact UCI.",
+              },
+              {
+                icon: <ShieldCheck size={20} color="var(--c-secondary)" />,
+                title: 'Public vs. Private Visiblity',
+                desc: 'Owners can toggle their Circle’s visibility dynamically. Public circles appear in the global directory for anyone to join. Private circles are completely stealth; they can only be discovered if the owner shares the specific UCI or a direct Join Link.',
+              },
+              {
+                icon: <KeySquare size={20} color="var(--c-accent)" />,
+                title: 'Invite Signatures (Bypass keys)',
+                desc: "When a user attempts to join a private circle, the request usually goes into a pending state for manual owner approval. However, owners can distribute an 'Invite Signature'—a cryptographic passkey that grants instant, automated access to the circle without review.",
+              },
+            ].map(item => (
+              <div key={item.title} style={{ padding: '18px 20px', borderRadius: 'var(--radius-md)', background: 'var(--c-surface-2)', border: '1px solid var(--c-border)' }}>
+                <div style={{ marginBottom: 12 }}>{item.icon}</div>
+                <div style={{ fontWeight: 700, color: 'var(--c-text)', marginBottom: 8, fontSize: '0.9rem' }}>{item.title}</div>
                 <p style={{ fontSize: '0.82rem', color: 'var(--c-text-2)', lineHeight: 1.6 }}>{item.desc}</p>
               </div>
             ))}

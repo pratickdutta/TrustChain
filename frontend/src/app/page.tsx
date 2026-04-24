@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import useWalletStore from '@/store/walletStore';
 import { useRouter } from 'next/navigation';
-import FloatingLogos from '@/components/FloatingLogos';
 import { Users, BarChart3, Coins, ShieldCheck, Link2, TrendingUp, Zap, Globe, KeyRound } from 'lucide-react';
 
 const STATS = [
@@ -122,8 +121,7 @@ export default function LandingPage() {
 
       {/* ── HERO ── */}
       <section ref={heroRef} style={{ position: 'relative', overflow: 'hidden', paddingTop: 120, paddingBottom: 80 }}>
-        {/* Floating background logos */}
-        <FloatingLogos />
+        {/* Floating background logos moved to global layout */}
 
         <div className="container" style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
 

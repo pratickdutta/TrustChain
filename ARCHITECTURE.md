@@ -42,9 +42,9 @@ TrustChain follows a **layered, service-oriented architecture** separating conce
                                ║  HTTPS REST (Bearer JWT)
 ╔══════════════════════════════╩═══════════════════════════════════════════╗
 ║                             API LAYER                                    ║
-║  Node.js / Express · Helmet · CORS · Rate Limiting · Zod Validation    ║
+║  Next.js 16 API Routes (Serverless) · Mongoose ORM · Zod Validation      ║
 ║                                                                          ║
-║  /auth    /users    /circles    /loans    /score    /stellar             ║
+║  /api/auth   /api/users   /api/circles   /api/loans   /api/score         ║
 ╚════╦══════════════╦═══════════════╦══════════════╦════════════════════════╝
      ║              ║               ║              ║
 ╔════╩═════╗ ╔══════╩═══════╗ ╔════╩════╗ ╔═══════╩══════════════╗
@@ -54,8 +54,8 @@ TrustChain follows a **layered, service-oriented architecture** separating conce
      ║              ║               ║              ║
 ╔════╩══════════════╩═══════════════╩══════════════╩════════════════════════╗
 ║                           DATA LAYER                                     ║
-║  Phase 1 (MVP): In-Memory Maps — instant, zero-config, zero-dependency  ║
-║  Phase 2 (Prod): PostgreSQL + MongoDB Atlas + Upstash Redis             ║
+║  Phase 1 (MVP): MongoDB Database via Mongoose ORM                        ║
+║  Phase 2 (Prod): PostgreSQL + Upstash Redis                              ║
 ╚══════════════════════════════╦════════════════════════════════════════════╝
                                ║
 ╔══════════════════════════════╩════════════════════════════════════════════╗
@@ -97,8 +97,8 @@ TrustChain follows a **layered, service-oriented architecture** separating conce
     └───────────────────────────────┬─────────────────────────────┘
                                     │ fetch() with Bearer JWT
                     ┌───────────────▼───────────────┐
-                    │      Express Backend           │
-                    │      localhost:4000            │
+                    │      Next.js API Routes       │
+                    │      localhost:3000/api       │
                     └───────────────────────────────┘
 ```
 
@@ -186,25 +186,18 @@ Source: Google Fonts
 
 ## 4. Backend Architecture
 
-### Express Middleware Stack
+### Next.js API Middleware Stack
 
-```
+```text
 Request
   │
-  ├── helmet()              # Security headers (CSP, HSTS, X-Frame-Options)
-  ├── cors({ origin })      # Allow only FRONTEND_URL
-  ├── rateLimit(100/min)    # DDoS protection
-  ├── express.json()        # Body parsing
-  │
-  ├── /health              # No auth — quick health check
+  ├── Next.js Middleware    # Edge execution, headers, redirects
+  ├── requireAuth()         # JWT verification for protected routes
+  │     └── verifies Bearer token → extracts pubKey
   │
   ├── /api/auth/*          # No auth — challenge/verify
   ├── /api/users           # No auth — public leaderboard
   ├── /api/circles/public  # No auth — browse circles
-  ├── /api/stellar/account # No auth — public Stellar data
-  │
-  ├── authMiddleware()     # JWT verification for all below
-  │     └── verifies Bearer token → attaches req.user, req.pubKey
   │
   ├── /api/users/me        # Auth required
   ├── /api/circles/*       # Auth required (except /public)
@@ -236,25 +229,24 @@ services/
 
 ## 5. Database Design
 
-### Phase 1: In-Memory (MVP)
+### Phase 1: MongoDB Database (Current)
 
-```javascript
-// db.js — Map-based in-memory store
-const db = {
-  users:        new Map(),   // pubKey → User object
-  circles:      new Map(),   // circleId → TrustCircle object
-  loans:        new Map(),   // loanId → Loan object
-  attestations: new Map(),   // attestationId → TrustAttestation object
-  scores:       new Map(),   // pubKey → CreditScore object
-  nonces:       new Map(),   // pubKey → { nonce, expiresAt }
-};
+We use MongoDB Atlas with Mongoose ORM for persistent data storage, replacing the initial in-memory maps.
+
+```typescript
+// lib/models.ts — Mongoose schemas
+export const User = models.User || model('User', UserSchema);
+export const Circle = models.Circle || model('Circle', CircleSchema);
+export const Loan = models.Loan || model('Loan', LoanSchema);
+export const Attestation = models.Attestation || model('Attestation', AttestationSchema);
+export const Score = models.Score || model('Score', ScoreSchema);
 ```
 
 **Trade-offs:**
-- ✅ Zero setup, zero dependencies, instant start
-- ✅ Perfect for testnet demo with small user base
-- ❌ Data lost on server restart
-- ❌ Not horizontally scalable
+- ✅ High flexibility for rapid schema iteration
+- ✅ Perfect for document-based attestation graphs
+- ✅ Standardized integration via `connectDB()`
+- ❌ No native relational integrity constraints
 
 ### Phase 2: PostgreSQL Schema (Planned)
 

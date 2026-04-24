@@ -60,11 +60,16 @@ export const Score = models.Score || model<IScore>('Score', ScoreSchema);
 export interface ICircle extends Document {
   name: string;
   description?: string;
+  circleRules?: string;         // Owner-editable rules/charter
+  socialLink?: string;          // Optional social media link for owner contact
+  uci: string;                  // Unique Circle Identification (immutable after creation)
   creatorId: string;
   isPublic: boolean;
   members: string[];
+  pendingJoinRequests: string[]; // pubKeys of users awaiting owner approval
   status: string;
   inviteCode: string;
+  borrowApprovalEnabled: boolean; // Platinum-only: owner must approve borrow requests
   isPool: boolean;
   poolOpenToOutside: boolean;
   poolManualApproval: boolean;
@@ -74,14 +79,30 @@ export interface ICircle extends Document {
   createdAt: Date;
 }
 
+function generateUCI(): string {
+  const prefix = 'UCI';
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no O,0,I,1 for clarity
+  let code = '';
+  for (let i = 0; i < 12; i++) {
+    if (i === 4 || i === 8) code += '-';
+    code += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return `${prefix}-${code}`;
+}
+
 const CircleSchema = new Schema<ICircle>({
   name: { type: String, required: true },
   description: String,
+  circleRules: { type: String, default: '' },
+  socialLink: { type: String, default: '' },
+  uci: { type: String, unique: true, default: generateUCI },
   creatorId: { type: String, required: true },
   isPublic: { type: Boolean, default: true },
   members: [String],
+  pendingJoinRequests: [String],
   status: { type: String, default: 'ACTIVE' },
-  inviteCode: { type: String, default: () => Math.random().toString(36).slice(2, 10) },
+  inviteCode: { type: String, default: () => Math.random().toString(36).slice(2, 10).toUpperCase() },
+  borrowApprovalEnabled: { type: Boolean, default: false },
   isPool: { type: Boolean, default: false },
   poolOpenToOutside: { type: Boolean, default: false },
   poolManualApproval: { type: Boolean, default: true },

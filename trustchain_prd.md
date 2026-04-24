@@ -140,7 +140,7 @@ Individual → Trust Circle → On-Chain Credit Score → Micro-Loan Access
    │               │                   │              │
 ┌──▼───────────────▼───────────────────▼──────────────▼──────────┐
 │                      DATA LAYER                                  │
-│    PostgreSQL (relational) + Redis (cache) + MongoDB (graph)    │
+│    Next.js Serverless API + MongoDB Atlas (Persistence)          │
 └──────────────────────────────┬──────────────────────────────────┘
                                │
 ┌──────────────────────────────▼──────────────────────────────────┐
@@ -233,9 +233,10 @@ PENDING → ACTIVE → SUSPENDED → DISSOLVED
 - [ ] Circle creation requires a minimum of 3 members
 - [ ] All members must mutually attest each other (bidirectional graph edge)
 - [ ] Maximum 20 members per circle (v1); configurable per operator
-- [ ] Circle reliability score is an aggregate of member scores
+- [ ] **Privacy:** Circles can be public (joinable) or private (stealth, hidden from global directory)
+- [ ] **UCI:** Every circle receives a Unique Circle Identifier (UCI) for precise searching and routing
+- [ ] **Invite Signatures:** Private circle owners can distribute bypass keys for instant join approvals
 - [ ] Leaving a circle triggers a score recalculation for all remaining members
-- [ ] Circles can be public (joinable) or private (invite-only)
 
 #### Data Contract
 ```json
@@ -243,7 +244,10 @@ PENDING → ACTIVE → SUSPENDED → DISSOLVED
   "circleId": "uuid",
   "name": "string",
   "description": "string",
-  "creatorPubKey": "Stellar public key",
+  "creatorId": "Stellar public key",
+  "isPublic": true,
+  "uci": "string",
+  "socialLink": "string (optional)",
   "members": ["pubKey1", "pubKey2"],
   "attestations": [{ "from": "pubKey1", "to": "pubKey2", "weight": 0.8 }],
   "status": "ACTIVE",

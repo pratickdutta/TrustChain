@@ -127,7 +127,7 @@ export default function LoansPage() {
 
   if (!isConnected && !loading) {
     return (
-      <div style={{ minHeight: '100vh', background: 'var(--c-bg)' }}>
+      <div style={{ minHeight: '100vh' }}>
         <Navbar />
         <div className="container page-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '80vh' }}>
           <div className="glass-card animate-scale-in" style={{ padding: '48px 36px', textAlign: 'center', maxWidth: 500, width: '100%' }}>
@@ -150,7 +150,7 @@ export default function LoansPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--c-bg)' }}>
+    <div style={{ minHeight: '100vh' }}>
       <Navbar />
       <div className="container page-content">
         <h1 className="section-title">Liquidity Gateway</h1>

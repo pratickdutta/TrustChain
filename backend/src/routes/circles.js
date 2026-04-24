@@ -11,10 +11,15 @@ router.post('/', authMiddleware, (req, res) => {
   if (!name) return res.status(400).json({ error: 'Circle name is required' });
 
   const circleId = uuidv4();
+  const uci = `UCI-${uuidv4().slice(0, 8).toUpperCase()}-${uuidv4().slice(0, 4).toUpperCase()}`;
+
   const circle = {
     id: circleId,
+    uci: uci,
     name: name.slice(0, 80),
     description: description?.slice(0, 300) || '',
+    circleRules: req.body.circleRules || '',
+    borrowApprovalEnabled: false,
     creatorId: req.pubKey,
     isPublic: isPublic !== false,
     maxMembers: 20,
@@ -55,6 +60,55 @@ router.get('/public', (req, res) => {
   res.json(publicCircles);
 });
 
+// GET /api/circles/search - Search public circles
+router.get('/search', (req, res) => {
+  const query = (req.query.q || '').toLowerCase();
+  const results = [...db.circles.values()]
+    .filter(c => c.isPublic && c.status === 'ACTIVE' && c.name.toLowerCase().includes(query))
+    .map(c => ({
+      id: c.id,
+      name: c.name,
+      description: c.description,
+      memberCount: c.members.length,
+      reliabilityScore: c.reliabilityScore,
+      createdAt: c.createdAt,
+    }));
+  res.json(results);
+});
+
+// GET /api/circles/search/uci - Search by UCI
+router.get('/search/uci', (req, res) => {
+  const q = req.query.q || '';
+  const uci = q.toUpperCase().startsWith('UCI-') ? q.toUpperCase() : `UCI-${q.toUpperCase()}`;
+  const results = [...db.circles.values()]
+    .filter(c => c.uci === uci)
+    .map(c => ({
+      id: c.id,
+      name: c.name,
+      description: c.description,
+      memberCount: c.members.length,
+      reliabilityScore: c.reliabilityScore,
+      createdAt: c.createdAt,
+    }));
+  res.json(results);
+});
+
+// PATCH /api/circles/:id - Update circle settings
+router.patch('/:id', authMiddleware, (req, res) => {
+  const circle = db.circles.get(req.params.id);
+  if (!circle) return res.status(404).json({ error: 'Circle not found' });
+  if (circle.creatorId !== req.pubKey) {
+    return res.status(403).json({ error: 'Only creator can modify settings' });
+  }
+
+  const { circleRules, borrowApprovalEnabled } = req.body;
+  if (circleRules !== undefined) circle.circleRules = circleRules;
+  if (borrowApprovalEnabled !== undefined) circle.borrowApprovalEnabled = borrowApprovalEnabled;
+
+  db.circles.set(circle.id, circle);
+  res.json({ message: 'Settings updated successfully', circle });
+});
+
 // GET /api/circles/:id - Circle details
 router.get('/:id', authMiddleware, (req, res) => {
   const circle = db.circles.get(req.params.id);
@@ -74,19 +128,24 @@ router.get('/:id', authMiddleware, (req, res) => {
     };
   });
 
-  res.json({ ...circle, enrichedMembers });
+  const enrichedPendingMembers = (circle.pendingMembers || []).map(pubKey => {
+    const user = db.users.get(pubKey);
+    const score = db.scores.get(pubKey);
+    return {
+      stellarPublicKey: pubKey,
+      displayName: user?.displayName || pubKey.slice(0, 8) + '...',
+      score: score?.totalScore || 0,
+      tier: score?.tier || 'establishing',
+    };
+  });
+
+  res.json({ ...circle, enrichedMembers, enrichedPendingMembers });
 });
 
 // POST /api/circles/:id/join - Join a circle
 router.post('/:id/join', authMiddleware, (req, res) => {
   const circle = db.circles.get(req.params.id);
   if (!circle) return res.status(404).json({ error: 'Circle not found' });
-  if (!circle.isPublic) {
-    const { inviteCode } = req.body;
-    if (inviteCode !== circle.inviteCode) {
-      return res.status(403).json({ error: 'Invalid invite code' });
-    }
-  }
   if (circle.members.includes(req.pubKey)) {
     return res.status(400).json({ error: 'Already a member' });
   }
@@ -94,11 +153,51 @@ router.post('/:id/join', authMiddleware, (req, res) => {
     return res.status(400).json({ error: 'Circle is full' });
   }
 
-  circle.members.push(req.pubKey);
-  db.circles.set(circle.id, circle);
-  recalculateCircleMemberScores(circle.id);
+  // Check invite code for private circles
+  if (!circle.isPublic) {
+    const { inviteCode } = req.body;
+    if (inviteCode !== circle.inviteCode) {
+      return res.status(403).json({ error: 'Invalid invite code' });
+    }
+  }
 
-  res.json({ message: 'Joined circle successfully', circle });
+  if (!circle.pendingMembers) circle.pendingMembers = [];
+  if (circle.pendingMembers.includes(req.pubKey)) {
+    return res.status(400).json({ error: 'Join request already pending' });
+  }
+
+  circle.pendingMembers.push(req.pubKey);
+  db.circles.set(circle.id, circle);
+
+  res.json({ message: 'Join request sent to circle owner', circle });
+});
+
+// POST /api/circles/:id/approve-join - Approve or reject a join request
+router.post('/:id/approve-join', authMiddleware, (req, res) => {
+  const { targetPubKey, action } = req.body;
+  const circle = db.circles.get(req.params.id);
+  
+  if (!circle) return res.status(404).json({ error: 'Circle not found' });
+  if (circle.creatorId !== req.pubKey) {
+    return res.status(403).json({ error: 'Only creator can approve join requests' });
+  }
+  
+  if (!circle.pendingMembers || !circle.pendingMembers.includes(targetPubKey)) {
+    return res.status(400).json({ error: 'No pending join request for this user' });
+  }
+  
+  circle.pendingMembers = circle.pendingMembers.filter(m => m !== targetPubKey);
+  
+  if (action === 'APPROVE') {
+    if (circle.members.length >= circle.maxMembers) {
+      return res.status(400).json({ error: 'Circle is full' });
+    }
+    circle.members.push(targetPubKey);
+    recalculateCircleMemberScores(circle.id);
+  }
+  
+  db.circles.set(circle.id, circle);
+  res.json({ message: `Join request ${action.toLowerCase()}d` });
 });
 
 // POST /api/circles/:id/attest - Attest a member

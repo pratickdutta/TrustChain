@@ -5,8 +5,8 @@
 ═══════════════════════════════════════════════════════ */
 :root {
   /* Palette */
-  --c-bg:           #06000F;
-  --c-bg-alt:       #04000C;
+  --c-bg:           #18102A;
+  --c-bg-alt:       #100A1C;
   --c-surface:      rgba(255, 255, 255, 0.06);
   --c-surface-2:    rgba(255, 255, 255, 0.12);
   --c-border:       rgba(255, 255, 255, 0.1);
@@ -119,10 +119,12 @@ body::before {
   position: fixed;
   inset: -10vw;
   background:
-    radial-gradient(circle at 15% 15%, rgba(163, 140, 237, 0.35) 0%, transparent 45%),
-    radial-gradient(circle at 85% 85%, rgba(130, 107, 218, 0.3) 0%, transparent 45%),
-    radial-gradient(circle at 50% 50%, rgba(200, 224, 35, 0.15) 0%, transparent 60%);
-  filter: blur(60px);
+    radial-gradient(circle at 15% 15%, rgba(163, 140, 237, 0.45) 0%, transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(130, 107, 218, 0.38) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(200, 224, 35, 0.12) 0%, transparent 55%),
+    radial-gradient(circle at 80% 10%, rgba(200, 224, 35, 0.1) 0%, transparent 35%),
+    radial-gradient(circle at 5% 85%, rgba(163, 140, 237, 0.2) 0%, transparent 40%);
+  filter: blur(70px);
   pointer-events: none;
   z-index: -2;
   animation: auroraFlow 16s ease-in-out infinite alternate;

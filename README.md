@@ -8,7 +8,7 @@
 *"Trust today, empower tomorrow."*
 
 [![Stellar Testnet](https://img.shields.io/badge/Stellar-Testnet-7B3FE4?style=for-the-badge&logo=stellar&logoColor=white)](https://stellar.expert/explorer/testnet)
-[![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
+[![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)](https://mongodb.com)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Status: Beta](https://img.shields.io/badge/Status-Beta_Release-FFB347?style=for-the-badge)](#)
@@ -38,7 +38,7 @@ TrustChain solves this by making community reputation cryptographically verifiab
 
 ## How It Works
 
-```
+```text
 User connects wallet
        │
        ▼
@@ -80,7 +80,9 @@ Repayment history feeds back into Behavior Score
 
 ### System Overview
 
-```
+We utilize a modern, decoupled architecture powered natively by Next.js 16 App Router for both client rendering and serverless backend routes, with MongoDB for persistence.
+
+```text
 ┌─────────────────────────────────────────────────────┐
 │                   CLIENT LAYER                       │
 │  Next.js 16 (App Router) · TypeScript · Zustand     │
@@ -89,14 +91,14 @@ Repayment history feeds back into Behavior Score
                          │ HTTPS / REST (Bearer JWT)
 ┌────────────────────────▼────────────────────────────┐
 │                    API LAYER                         │
-│            Node.js + Express · Helmet · CORS         │
-│  /auth  /users  /circles  /loans  /score  /stellar  │
+│   Next.js API Routes (Serverless) · Mongoose ORM     │
+│  /api/auth  /api/circles  /api/loans  /api/score     │
 └────┬──────────────┬──────────────┬──────────────────┘
      │              │              │
 ┌────▼──────┐ ┌─────▼──────┐ ┌────▼──────────────────┐
 │  Auth     │ │  Credit    │ │  Trust Graph Manager  │
-│  Service  │ │  Engine    │ │  Attestation Graph    │
-│  (JWT)    │ │  T·B·A     │ │  Sybil Resistance     │
+│  Service  │ │  Engine    │ │  MongoDB Database     │
+│  (JWT)    │ │  T·B·A     │ │  Schema Validation    │
 └───────────┘ └────────────┘ └───────────────────────┘
                          │
 ┌────────────────────────▼────────────────────────────┐
@@ -107,7 +109,7 @@ Repayment history feeds back into Behavior Score
 
 ### Authentication Flow
 
-```
+```text
 1. User clicks "Connect Wallet" → Freighter browser extension
 2. POST /api/auth/challenge { pubKey } → Server issues UUID nonce
 3. Freighter signs nonce cryptographically
@@ -119,22 +121,29 @@ Repayment history feeds back into Behavior Score
 
 ## Features
 
+### Trust Circles & Architecture
+- **UCI (Unique Circle Identification)** — Cryptographically unique identifiers ensuring privacy routing.
+- **Invite Signatures** — Bypass codes enabling instant private circle joining.
+- **Public & Private Visibility** — Stealth controls for communities.
+- **Platinum Approvals** — Strict permission gating for high-level operations.
+- **MoneyPools** — Convert any Trust Circle into a decentralized lending pool.
+
 ### For Borrowers
-- **Score Dashboard** — Animated SVG arc gauge showing live T·B·A breakdown
-- **Trust Circles** — Create or join peer groups, vouch for members with a weighted attestation
-- **Loan Centre** — Request micro-loans, view repayment history, track active drawdowns
-- **Leaderboard** — Community-wide credit score ranking
+- **Score Dashboard** — Animated SVG arc gauge showing live T·B·A breakdown.
+- **Trust Circles** — Create or join peer groups, vouch for members with a weighted attestation.
+- **Liquidity Gateway** — Request micro-loans, view repayment history (including Principal + Interest), track active drawdowns.
+- **Leaderboard** — Community-wide credit score ranking.
 
 ### For Lenders
-- **Lender Gateway** — Register as a lender, set exposure limits, minimum borrower score thresholds
-- **Manual Review Mode** — Toggle between smart contract auto-approval and personal loan review
-- **Portfolio View** — Track active loans you've approved and their repayment status
+- **Lender Gateway** — Register as a lender, set exposure limits, minimum borrower score thresholds.
+- **Manual Review Mode** — Toggle between smart contract auto-approval and personal loan review.
+- **Portfolio View** — Track active loans you've approved and their repayment status.
 
 ### Protocol
-- **Hybrid Lending Model** — Pool-to-Peer architecture; lenders deposit into a shared pool and the smart contract auto-approves eligible borrowers
-- **Social Slashing** — Defaults trigger cascading penalties across the defaulter's entire Trust Circle
-- **TRUST Token Burning** — All of a defaulter's TRUST tokens are seized and burned on-chain
-- **Cinematic Splash Screen** — Branded intro animation on first load with smooth transitions
+- **Hybrid Lending Model** — Pool-to-Peer architecture; lenders deposit into a shared pool and the smart contract auto-approves eligible borrowers.
+- **Social Slashing** — Defaults trigger cascading penalties across the defaulter's entire Trust Circle.
+- **TRUST Token Burning** — All of a defaulter's TRUST tokens are seized and burned on-chain.
+- **Cinematic UI** — Branded intro animations, glassmorphism, and responsive interactions.
 
 ---
 
@@ -151,16 +160,6 @@ TrustChain enforces accountability without traditional collateral through a **th
 ### Why This Works
 Because borrowers' peers are penalized for a default, the **community itself becomes the enforcement mechanism**. Friends, circle members, and vouchers apply real social pressure for repayment — making defaults socially costly, not just financially costly.
 
-```
-Borrower Defaults
-      │
-      ├─► Borrower: trustTokens = 0, behaviorScore -= 150
-      │
-      └─► For each attester who vouched for them:
-              attester.trustTokens -= 100
-              attester.behaviorScore -= 40
-```
-
 ---
 
 ## Tech Stack
@@ -171,66 +170,17 @@ Borrower Defaults
 | Next.js 16 (App Router) | React framework, routing, SSR |
 | TypeScript 5 | Type safety |
 | Zustand | Global wallet & auth state |
-| Vanilla CSS (Design System) | Custom dark-mode theme with CSS variables |
+| Vanilla CSS | Custom dark-mode theme with CSS variables |
 | `@stellar/freighter-api` | Freighter wallet browser integration |
 | `lucide-react` | Professional icon library |
 
 ### Backend
 | Technology | Purpose |
 |-----------|---------|
-| Node.js + Express | API server |
+| Next.js API Routes | Serverless backend execution |
+| MongoDB + Mongoose | Persistent data storage |
 | JWT (`jsonwebtoken`) | Stateless session management |
-| Helmet + express-rate-limit | Security hardening |
 | `@stellar/stellar-sdk` | Horizon API queries |
-| In-Memory Maps (`db.js`) | MVP data store (Phase 2: PostgreSQL) |
-
----
-
-## Directory Structure
-
-```
-TrustChain/
-├── frontend/
-│   ├── public/
-│   │   └── logo.png               # App logo (used in Navbar, Footer, favicon)
-│   └── src/
-│       ├── app/
-│       │   ├── page.tsx            # Landing page with splash screen
-│       │   ├── dashboard/          # Score gauge, stellar account, quick actions
-│       │   ├── circles/            # Trust Circles: create, join, attest
-│       │   ├── loans/              # Loan request, history, repayment
-│       │   ├── lender/             # Lender gateway and portfolio
-│       │   ├── leaderboard/        # Community rankings
-│       │   └── about/              # About page: mission, founder, roadmap
-│       ├── components/
-│       │   ├── Navbar.tsx          # Sticky nav with Freighter wallet connect
-│       │   ├── Footer.tsx          # Footer with About Us link
-│       │   ├── ScoreGauge.tsx      # Animated SVG credit score arc
-│       │   └── FloatingLogos.tsx   # Animated background blockchain icons
-│       ├── lib/
-│       │   └── api.ts              # Typed REST API client
-│       └── store/
-│           └── walletStore.ts      # Zustand global state
-│
-├── backend/
-│   └── src/
-│       ├── server.js               # Express app + middleware
-│       ├── db.js                   # In-memory Map database
-│       ├── routes/
-│       │   ├── auth.js             # Challenge/verify JWT flow
-│       │   ├── users.js            # User profile endpoints
-│       │   ├── circles.js          # Circle CRUD + attestations
-│       │   ├── loans.js            # Loan lifecycle + default penalties
-│       │   ├── score.js            # TBA score computation
-│       │   ├── lender.js           # Lender gateway + portfolio
-│       │   └── stellar.js          # Horizon API + Friendbot
-│       └── services/
-│           ├── creditEngine.js     # T·B·A hybrid scoring algorithm
-│           └── stellar.js          # Stellar SDK wrapper
-│
-├── ARCHITECTURE.md
-└── README.md
-```
 
 ---
 
@@ -238,6 +188,7 @@ TrustChain/
 
 ### Prerequisites
 - Node.js 18+
+- MongoDB instance (local or Atlas)
 - [Freighter Wallet](https://freighter.app) browser extension
 - A Stellar Testnet account (fund via [Friendbot](https://friendbot.stellar.org))
 
@@ -248,29 +199,25 @@ TrustChain/
 git clone https://github.com/pratickdutta/TrustChain.git
 cd TrustChain
 
-# Install all dependencies (frontend + backend)
-npm install --prefix frontend
-npm install --prefix backend
+# Install all dependencies (frontend)
+cd frontend
+npm install
 
-# Start both servers concurrently
+# Start the application
 npm run dev
 ```
 
-Frontend runs at `http://localhost:3000`  
-Backend runs at `http://localhost:4000`
+Frontend & Next.js API run concurrently at `http://localhost:3000`.
 
 ### Environment Variables
 
-Create `backend/.env`:
-```env
-PORT=4000
-JWT_SECRET=your_jwt_secret_here
-STELLAR_NETWORK=testnet
-```
-
 Create `frontend/.env.local`:
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:4000
+MONGODB_URI=mongodb://localhost:27017/trustchain
+JWT_SECRET=your_jwt_secret_here
+STELLAR_NETWORK=testnet
+NEXT_PUBLIC_API_URL=/api
+NEXT_PUBLIC_ADMIN_PUBKEY=your_stellar_public_key_here
 ```
 
 ---
@@ -280,7 +227,7 @@ NEXT_PUBLIC_API_URL=http://localhost:4000
 | Phase | Status | Description |
 |-------|--------|-------------|
 | Phase 1 — MVP | ✅ Complete | Core lending, scoring, circles, Freighter auth |
-| Phase 2 — Persistence | 🔜 Planned | PostgreSQL + Redis replacing in-memory store |
+| Phase 2 — Persistence | ✅ Complete | MongoDB + Mongoose integration, Next.js API transition |
 | Phase 3 — Soroban | 🔜 Planned | Full smart contract loan agreements on Stellar |
 | Phase 4 — Oracles | 🔜 Planned | Off-chain identity verification layer |
 | Phase 5 — B2B API | 🔜 Planned | License TrustChain scoring engine to other dApps |

@@ -60,15 +60,24 @@ export const scoreAPI = {
 
 // ─── Circles ──────────────────────────────────────────────────────────────
 export const circlesAPI = {
-  create: (data: { name: string; description?: string; isPublic?: boolean }) =>
+  create: (data: { name: string; description?: string; isPublic?: boolean; circleRules?: string; socialLink?: string }) =>
     apiFetch<any>('/circles', { method: 'POST', body: JSON.stringify(data) }),
   list: () => apiFetch<any[]>('/circles'),
   public: () => apiFetch<any[]>('/circles/public'),
+  search: (q: string) => apiFetch<any[]>(`/circles?q=${encodeURIComponent(q)}`),
+  searchByUCI: (uci: string) => apiFetch<any[]>(`/circles?uci=${encodeURIComponent(uci)}`),
   get: (id: string) => apiFetch<any>(`/circles/${id}`),
+  patch: (id: string, data: { name?: string; description?: string; circleRules?: string; isPublic?: boolean; borrowApprovalEnabled?: boolean; socialLink?: string }) =>
+    apiFetch<any>(`/circles/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   join: (id: string, inviteCode?: string) =>
     apiFetch<any>(`/circles/${id}/join`, {
       method: 'POST',
       body: JSON.stringify({ inviteCode }),
+    }),
+  approveJoin: (id: string, targetPubKey: string, action: 'APPROVE' | 'REJECT') =>
+    apiFetch<any>(`/circles/${id}/approve-join`, {
+      method: 'POST',
+      body: JSON.stringify({ targetPubKey, action }),
     }),
   attest: (id: string, targetPubKey: string, weight: number) =>
     apiFetch<any>(`/circles/${id}/attest`, {
@@ -78,6 +87,7 @@ export const circlesAPI = {
   leave: (id: string) =>
     apiFetch<any>(`/circles/${id}/leave`, { method: 'DELETE' }),
 };
+
 
 // ─── Loans ────────────────────────────────────────────────────────────────
 export const loansAPI = {

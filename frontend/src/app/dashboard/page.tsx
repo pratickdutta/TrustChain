@@ -66,7 +66,7 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', background: 'var(--c-bg)' }}>
+      <div style={{ minHeight: '100vh' }}>
         <Navbar />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', flexDirection: 'column', gap: 20 }}>
           <div style={{ width: 48, height: 48, border: '3px solid var(--c-surface-2)', borderTopColor: 'var(--c-primary)', borderRadius: '50%', animation: 'spin 0.9s linear infinite' }} />
@@ -79,7 +79,7 @@ export default function DashboardPage() {
   // Not connected UI
   if (!isConnected) {
     return (
-      <div style={{ minHeight: '100vh', background: 'var(--c-bg)' }}>
+      <div style={{ minHeight: '100vh' }}>
         <Navbar />
         <div className="container page-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '80vh' }}>
           <div className="glass-card animate-scale-in" style={{ padding: '48px 36px', textAlign: 'center', maxWidth: 500, width: '100%' }}>
@@ -121,7 +121,7 @@ export default function DashboardPage() {
   const tierColor = score ? (tierColors[score.tier] || 'var(--c-primary)') : 'var(--c-primary)';
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--c-bg)' }}>
+    <div style={{ minHeight: '100vh' }}>
       <Navbar />
       <div className="container page-content">
 
