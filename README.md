@@ -14,7 +14,7 @@
 [![Status: Beta](https://img.shields.io/badge/Status-Beta_Release-FFB347?style=for-the-badge)](#)
 
 <br/>
-<h3>🚀 Live Demo: <a href="https://trustchain-khaki.vercel.app">trustchain-khaki.vercel.app</a></h3>
+<h3>🚀 Live Demo: <a href="https://trustchain-official.vercel.app">trustchain-official.vercel.app</a></h3>
 
 </div>
 
