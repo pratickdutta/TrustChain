@@ -459,65 +459,67 @@ export default function LoansPage() {
                     </div>
                   )}
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                    <div>
-                      <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--c-text-2)', display: 'block', marginBottom: 8 }}>Capital Request (XLM Equiv) *</label>
-                      <input
-                        type="number" className="input"
-                        placeholder={`1 – ${eligibleTier.maxAmount}`}
-                        value={form.amount}
-                        onChange={e => setForm({ ...form, amount: e.target.value })}
-                        min="1" max={eligibleTier.maxAmount}
-                        style={{ padding: '14px 16px', fontSize: '1.1rem' }}
-                      />
-                    </div>
-                    <div>
-                      <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--c-text-2)', display: 'block', marginBottom: 8 }}>Utilization Vector *</label>
-                      <div style={{ position: 'relative' }}>
-                        <select className="input" value={form.purpose} onChange={e => setForm({ ...form, purpose: e.target.value })} style={{ padding: '14px 16px', appearance: 'none' }}>
-                          {PURPOSES.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
-                        </select>
-                        <div style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--c-text-3)' }}>
-                          <ChevronRight size={16} style={{ transform: 'rotate(90deg)' }} />
+                  {eligibleTier && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                      <div>
+                        <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--c-text-2)', display: 'block', marginBottom: 8 }}>Capital Request (XLM Equiv) *</label>
+                        <input
+                          type="number" className="input"
+                          placeholder={`1 – ${eligibleTier.maxAmount}`}
+                          value={form.amount}
+                          onChange={e => setForm({ ...form, amount: e.target.value })}
+                          min="1" max={eligibleTier.maxAmount}
+                          style={{ padding: '14px 16px', fontSize: '1.1rem' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--c-text-2)', display: 'block', marginBottom: 8 }}>Utilization Vector *</label>
+                        <div style={{ position: 'relative' }}>
+                          <select className="input" value={form.purpose} onChange={e => setForm({ ...form, purpose: e.target.value })} style={{ padding: '14px 16px', appearance: 'none' }}>
+                            {PURPOSES.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
+                          </select>
+                          <div style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--c-text-3)' }}>
+                            <ChevronRight size={16} style={{ transform: 'rotate(90deg)' }} />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div>
-                      <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--c-text-2)', display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-                        <span>Maturity Term</span>
-                        <strong style={{ color: 'var(--c-primary)' }}>{form.durationDays} days</strong>
-                      </label>
-                      <input
-                        type="range" min="7" max={eligibleTier.duration.split(' ')[0]}
-                        value={form.durationDays}
-                        onChange={e => setForm({ ...form, durationDays: parseInt(e.target.value) })}
-                        style={{ width: '100%', accentColor: 'var(--c-primary)' }}
-                      />
-                    </div>
-                    {form.amount && (
-                      <div style={{ padding: 18, borderRadius: 'var(--radius-md)', background: 'var(--c-surface-2)', border: '1px solid var(--c-border)', fontSize: '0.85rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                          <span style={{ color: 'var(--c-text-3)' }}>Principal Sum</span>
-                          <span style={{ fontWeight: 600, color: 'var(--c-text)' }}>${form.amount}</span>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                          <span style={{ color: 'var(--c-text-3)' }}>Network Fee ({eligibleTier.fee})</span>
-                          <span style={{ color: 'var(--c-secondary)', fontWeight: 600 }}>{(parseFloat(form.amount || '0') * parseFloat(eligibleTier.fee) / 100).toFixed(2)} TRUST</span>
-                        </div>
-                        <div style={{ height: 1, background: 'var(--c-border)', margin: '10px 0' }} />
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700 }}>
-                          <span style={{ color: 'var(--c-text-2)' }}>Settlement Deadline</span>
-                          <span style={{ color: 'var(--c-text)' }}>{new Date(Date.now() + form.durationDays * 86400000).toLocaleDateString()}</span>
-                        </div>
+                      <div>
+                        <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--c-text-2)', display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+                          <span>Maturity Term</span>
+                          <strong style={{ color: 'var(--c-primary)' }}>{form.durationDays} days</strong>
+                        </label>
+                        <input
+                          type="range" min="7" max={eligibleTier.duration.split(' ')[0]}
+                          value={form.durationDays}
+                          onChange={e => setForm({ ...form, durationDays: parseInt(e.target.value) })}
+                          style={{ width: '100%', accentColor: 'var(--c-primary)' }}
+                        />
                       </div>
-                    )}
-                    <button onClick={requestLoan} disabled={submitting || !form.amount} className="btn btn-primary" style={{ padding: '14px', fontSize: '1rem' }}>
-                      {submitting ? 'Executing Contract...' : 'Initialize Drawdown'}
-                    </button>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--c-text-3)', textAlign: 'center' }}>
-                      Smart contracts deploy to Stellar Testnet automatically.
-                    </p>
-                  </div>
+                      {form.amount && (
+                        <div style={{ padding: 18, borderRadius: 'var(--radius-md)', background: 'var(--c-surface-2)', border: '1px solid var(--c-border)', fontSize: '0.85rem' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                            <span style={{ color: 'var(--c-text-3)' }}>Principal Sum</span>
+                            <span style={{ fontWeight: 600, color: 'var(--c-text)' }}>${form.amount}</span>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                            <span style={{ color: 'var(--c-text-3)' }}>Network Fee ({eligibleTier.fee})</span>
+                            <span style={{ color: 'var(--c-secondary)', fontWeight: 600 }}>{(parseFloat(form.amount || '0') * parseFloat(eligibleTier.fee) / 100).toFixed(2)} TRUST</span>
+                          </div>
+                          <div style={{ height: 1, background: 'var(--c-border)', margin: '10px 0' }} />
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700 }}>
+                            <span style={{ color: 'var(--c-text-2)' }}>Settlement Deadline</span>
+                            <span style={{ color: 'var(--c-text)' }}>{new Date(Date.now() + form.durationDays * 86400000).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                      )}
+                      <button onClick={requestLoan} disabled={submitting || !form.amount} className="btn btn-primary" style={{ padding: '14px', fontSize: '1rem' }}>
+                        {submitting ? 'Executing Contract...' : 'Initialize Drawdown'}
+                      </button>
+                      <p style={{ fontSize: '0.75rem', color: 'var(--c-text-3)', textAlign: 'center' }}>
+                        Smart contracts deploy to Stellar Testnet automatically.
+                      </p>
+                    </div>
+                  )}
                 </>
               )}
             </div>
