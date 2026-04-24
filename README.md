@@ -13,6 +13,9 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Status: Beta](https://img.shields.io/badge/Status-Beta_Release-FFB347?style=for-the-badge)](#)
 
+<br/>
+<h3>🚀 Live Demo: <a href="https://trustchain-khaki.vercel.app">trustchain-khaki.vercel.app</a></h3>
+
 </div>
 
 ---
