@@ -1,7 +1,7 @@
 'use client';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { Network, ShieldCheck, Target, Rocket, Users, Milestone, ArrowRight, Code2, Mail, KeySquare } from 'lucide-react';
+import { Network, ShieldCheck, Target, Rocket, Users, Milestone, ArrowRight, Code2, Mail, KeySquare, Coins } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AboutPage() {
@@ -124,10 +124,52 @@ export default function AboutPage() {
                 title: 'Invite Signatures (Bypass keys)',
                 desc: "When a user attempts to join a private circle, the request usually goes into a pending state for manual owner approval. However, owners can distribute an 'Invite Signature'—a cryptographic passkey that grants instant, automated access to the circle without review.",
               },
+              {
+                icon: <Coins size={20} color="var(--c-secondary)" />,
+                title: 'MoneyPools',
+                desc: "Circle owners can upgrade their Trust Circle into a MoneyPool, enabling collective lending. Members deposit XLM to build the pool's liquidity, which is then used to fund loans. It diversifies risk and allows members to earn a pro-rata share of the interest generated from peer loans.",
+              },
             ].map(item => (
               <div key={item.title} style={{ padding: '18px 20px', borderRadius: 'var(--radius-md)', background: 'var(--c-surface-2)', border: '1px solid var(--c-border)' }}>
                 <div style={{ marginBottom: 12 }}>{item.icon}</div>
                 <div style={{ fontWeight: 700, color: 'var(--c-text)', marginBottom: 8, fontSize: '0.9rem' }}>{item.title}</div>
+                <p style={{ fontSize: '0.82rem', color: 'var(--c-text-2)', lineHeight: 1.6 }}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── INTEREST & YIELD MECHANICS ── */}
+        <div className="glass-card animate-fade-in-up" style={{ padding: 40, marginBottom: 80, border: '1px solid rgba(130, 107, 218, 0.25)', background: 'linear-gradient(135deg, var(--c-surface) 0%, rgba(130, 107, 218, 0.04) 100%)', animationDelay: '490ms' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28 }}>
+            <div style={{ width: 48, height: 48, borderRadius: 12, background: 'rgba(130, 107, 218, 0.1)', color: 'var(--c-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Coins size={24} />
+            </div>
+            <div>
+              <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--c-primary)', marginBottom: 4 }}>ECONOMIC MODEL</div>
+              <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--c-text)' }}>Interest & Yield Mechanics</h3>
+            </div>
+          </div>
+          <p style={{ color: 'var(--c-text-2)', lineHeight: 1.7, marginBottom: 28 }}>
+            TrustChain ensures fair compensation for lenders providing liquidity. The protocol automatically manages interest calculations and transparently handles profit distribution.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+            {[
+              {
+                title: 'Risk-Adjusted Interest Rates',
+                desc: 'Loan interest rates are dynamically determined by the borrower’s TBA Credit Score tier. Higher-tier borrowers (e.g., Platinum) receive lower interest rates (0.5%), while lower-tier borrowers pay slightly higher rates (up to 2%) to offset the statistical risk.',
+              },
+              {
+                title: 'MoneyPool Dividends',
+                desc: 'When a MoneyPool is dissolved or distributes yields, all collected interest is split proportionally among depositors based on their capital contribution relative to the total pool size.',
+              },
+              {
+                title: 'Protocol Fee',
+                desc: 'A small protocol fee (e.g., 0.2%) is automatically deducted from repayments. This sustains the TrustChain network infrastructure and funds future protocol developments.',
+              },
+            ].map(item => (
+              <div key={item.title} style={{ padding: '18px 20px', borderRadius: 'var(--radius-md)', background: 'var(--c-surface-2)', border: '1px solid var(--c-border)' }}>
+                <div style={{ fontWeight: 700, color: 'var(--c-primary)', marginBottom: 8, fontSize: '0.9rem' }}>{item.title}</div>
                 <p style={{ fontSize: '0.82rem', color: 'var(--c-text-2)', lineHeight: 1.6 }}>{item.desc}</p>
               </div>
             ))}

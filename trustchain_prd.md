@@ -173,6 +173,7 @@ Individual → Trust Circle → On-Chain Credit Score → Micro-Loan Access
 | TrustGraphManager | Node/edge CRUD, Dijkstra-based trust propagation |
 | LoanEngine | Risk threshold evaluation, loan lifecycle management |
 | RepaymentTracker | Horizon event listener, score delta computation |
+| MoneyPoolManager | Pool creation, deposit tracking, pro-rata interest payout distribution |
 
 #### Blockchain Layer (Stellar)
 - **Network:** Stellar Testnet (Phase 1) → Mainnet (Phase 2)
@@ -349,6 +350,25 @@ DRAFT → SUBMITTED → UNDER_REVIEW → APPROVED → DISBURSED
 
 - Email + in-app: loan approved, repayment due (3 days, 1 day, overdue), circle invitation, score change
 - Push notifications via PWA for mobile users
+
+---
+
+### F-09: MoneyPools & Yield Mechanics
+
+**Priority:** P1 (Should Have)
+
+#### User Stories
+- As a Circle Owner, I want to upgrade my Trust Circle to a MoneyPool to allow members to pool capital.
+- As a Lender, I want to deposit XLM into a MoneyPool and earn a pro-rata share of the interest from loans funded by the pool.
+- As a Circle Owner, I want to be able to dissolve the MoneyPool and automatically distribute the principal and earned interest back to depositors.
+
+#### Acceptance Criteria
+- [ ] Circle owners can toggle "Activate MoneyPool" in circle settings.
+- [ ] Members can deposit and withdraw XLM to/from the pool.
+- [ ] Pool liquidity is used to automatically fund approved peer loans.
+- [ ] Dissolving a pool checks for active loans (must be 0) before closing.
+- [ ] Dissolving a pool calculates total interest earned (Total Repaid - Total Lent) and distributes it pro-rata based on each member's deposit share.
+- [ ] Full audit trail of payouts is permanently stored and visible to users.
 
 ---
 
