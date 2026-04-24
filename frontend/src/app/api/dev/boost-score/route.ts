@@ -9,8 +9,9 @@ export async function POST(req: NextRequest) {
   const auth = requireAuth(req);
   if (!auth) return unauthorized();
 
-  if (process.env.NODE_ENV === 'production') {
-    return NextResponse.json({ error: 'Not available in production' }, { status: 403 });
+  const ADMIN_PUBKEY = 'GAXY2BE75O3RAWQI3JJBDSNARQZTZE2C32IMGGNJFMZAUARTDVNTMGMT';
+  if (auth.pubKey !== ADMIN_PUBKEY) {
+    return NextResponse.json({ error: 'Not authorized for dev privileges' }, { status: 403 });
   }
 
   await connectDB();

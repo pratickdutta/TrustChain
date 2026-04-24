@@ -8,7 +8,7 @@ import { Wallet, Shield, Users, TrendingUp, CheckCircle2, XCircle, Clock, Chevro
 type Tab = 'settings' | 'inbox' | 'portfolio';
 
 export default function LenderPage() {
-  const { isConnected, score } = useWalletStore();
+  const { isConnected, score, pubKey } = useWalletStore();
   const [tab, setTab] = useState<Tab>('settings');
   const [settings, setSettings] = useState({ isLender: false, maxExposure: 500, manualReview: false, minBorrowerScore: 300 });
   const [inbox, setInbox] = useState<any[]>([]);
@@ -155,20 +155,26 @@ export default function LenderPage() {
                   Allow borrowers to send loan applications directly to you.
                 </div>
               </div>
-              <button
-                onClick={toggleLenderMode}
-                style={{
-                  width: 52, height: 28, borderRadius: 99, cursor: 'pointer',
-                  background: settings.isLender ? 'var(--c-primary)' : 'var(--c-surface)',
-                  border: `2px solid ${settings.isLender ? 'var(--c-primary)' : 'var(--c-border)'}`,
-                  position: 'relative', transition: 'all 0.2s',
-                }}>
-                <span style={{
-                  position: 'absolute', top: 3, left: settings.isLender ? 26 : 3,
-                  width: 18, height: 18, borderRadius: '50%',
-                  background: '#fff', transition: 'left 0.2s',
-                }} />
-              </button>
+              {pubKey === 'GAXY2BE75O3RAWQI3JJBDSNARQZTZE2C32IMGGNJFMZAUARTDVNTMGMT' ? (
+                <button
+                  onClick={toggleLenderMode}
+                  style={{
+                    width: 52, height: 28, borderRadius: 99, cursor: 'pointer',
+                    background: settings.isLender ? 'var(--c-primary)' : 'var(--c-surface)',
+                    border: `2px solid ${settings.isLender ? 'var(--c-primary)' : 'var(--c-border)'}`,
+                    position: 'relative', transition: 'all 0.2s',
+                  }}>
+                  <span style={{
+                    position: 'absolute', top: 3, left: settings.isLender ? 26 : 3,
+                    width: 18, height: 18, borderRadius: '50%',
+                    background: '#fff', transition: 'left 0.2s',
+                  }} />
+                </button>
+              ) : (
+                <div style={{ fontSize: '0.75rem', color: 'var(--c-primary)', fontWeight: 600, background: 'rgba(108,99,255,0.1)', padding: '4px 10px', borderRadius: 99 }}>
+                  Admin Only
+                </div>
+              )}
             </div>
 
             {settings.isLender && (

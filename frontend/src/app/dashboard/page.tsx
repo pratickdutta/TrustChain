@@ -144,18 +144,20 @@ export default function DashboardPage() {
               </div>
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
-              <button 
-                onClick={async () => {
-                  setRecalculating(true);
-                  try {
-                    const res = await scoreAPI.devBoost();
-                    setScore(res.score);
-                  } catch(e){}
-                  setRecalculating(false);
-                }} 
-                className="btn btn-ghost" style={{ fontSize: '0.82rem', color: 'var(--c-primary)', border: '1px solid var(--c-primary)' }}>
-                [DEV] Boost to 800
-              </button>
+              {pubKey === 'GAXY2BE75O3RAWQI3JJBDSNARQZTZE2C32IMGGNJFMZAUARTDVNTMGMT' && (
+                <button 
+                  onClick={async () => {
+                    setRecalculating(true);
+                    try {
+                      const res = await scoreAPI.devBoost();
+                      setScore(res.score);
+                    } catch(e){}
+                    setRecalculating(false);
+                  }} 
+                  className="btn btn-ghost" style={{ fontSize: '0.82rem', color: 'var(--c-primary)', border: '1px solid var(--c-primary)' }}>
+                  [DEV] Boost to 800
+                </button>
+              )}
               <button onClick={recalculate} disabled={recalculating} className="btn btn-ghost" style={{ fontSize: '0.82rem', gap: 8 }}>
                 <RefreshCw size={14} className={recalculating ? 'animate-spin' : ''} />
                 {recalculating ? 'Syncing...' : 'Sync Score'}
