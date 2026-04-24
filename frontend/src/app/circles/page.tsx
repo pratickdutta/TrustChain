@@ -377,7 +377,11 @@ export default function CirclesPage() {
                         <div style={{ marginTop: 24, paddingTop: 16, borderTop: '1px solid rgba(255,71,87,0.2)' }}>
                           <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#FF4757', marginBottom: 8 }}>Danger Zone</div>
                           
-                          {!showDeleteConfirm ? (
+                          {selectedCircle.isPool ? (
+                            <div style={{ padding: '12px 16px', background: 'rgba(255,71,87,0.05)', border: '1px solid rgba(255,71,87,0.2)', borderRadius: 'var(--radius-md)', fontSize: '0.8rem', color: 'var(--c-text-2)', lineHeight: 1.5 }}>
+                              <strong style={{ color: '#FF4757' }}>Deletion Disabled:</strong> This circle is operating as an active MoneyPool. To protect lender liquidity and active loans, MoneyPool circles cannot be deleted. If you need to delete this circle, please disable the MoneyPool first.
+                            </div>
+                          ) : !showDeleteConfirm ? (
                             <button
                               onClick={() => {
                                 setShowDeleteConfirm(true);

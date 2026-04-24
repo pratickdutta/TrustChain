@@ -105,6 +105,9 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   if (circle.creatorId !== auth.pubKey) {
     return NextResponse.json({ error: 'Only the circle owner can delete this circle' }, { status: 403 });
   }
+  if (circle.isPool) {
+    return NextResponse.json({ error: 'MoneyPool circles cannot be deleted to protect lender liquidity and loans.' }, { status: 403 });
+  }
 
   const members = [...circle.members];
 
