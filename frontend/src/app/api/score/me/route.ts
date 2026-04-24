@@ -10,7 +10,9 @@ export async function GET(req: NextRequest) {
   if (!auth) return unauthorized();
 
   await connectDB();
-  const score = await Score.findOne({ userId: auth.pubKey });
-  if (!score) return NextResponse.json({ error: 'Score not found' }, { status: 404 });
+  let score = await Score.findOne({ userId: auth.pubKey });
+  if (!score) {
+    score = await computeScore(auth.pubKey);
+  }
   return NextResponse.json(score);
 }

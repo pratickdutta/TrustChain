@@ -43,8 +43,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (isNew) {
-      // Fire-and-forget initial score computation
-      computeScore(pubKey).catch(console.error);
+      await computeScore(pubKey).catch(console.error);
     }
 
     const token = signToken({ pubKey, userId: user._id.toString() });
