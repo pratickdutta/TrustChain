@@ -98,6 +98,9 @@ impl TrustChainLoan {
         let admin: Address = env.storage().instance().get(&DataKey::Admin).unwrap();
         admin.require_auth();
 
+        lender.require_auth();
+        borrower.require_auth();
+
         if amount_xlm <= 0 {
             panic!("amount must be > 0");
         }
