@@ -243,10 +243,10 @@ export default function LoansPage() {
                   display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
                 }} onClick={() => setEligibilityModal(false)}>
                   <div style={{
-                    background: 'var(--c-surface)', borderRadius: 'var(--radius-lg)',
+                    background: '#0E081A', borderRadius: 'var(--radius-lg)',
                     border: '1px solid rgba(249,115,22,0.4)', padding: 36,
                     maxWidth: 420, width: '100%', textAlign: 'center',
-                    boxShadow: '0 24px 64px rgba(0,0,0,0.4)',
+                    boxShadow: '0 24px 64px rgba(0,0,0,0.6)',
                   }} onClick={e => e.stopPropagation()}>
                     <div style={{ background: 'rgba(249,115,22,0.1)', width: 64, height: 64, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
                       <Lock size={32} color="#F97316" />
