@@ -7,7 +7,8 @@ import { loansAPI, lenderAPI, poolsAPI, scoreAPI } from '@/lib/api';
 import { 
   Building2, GraduationCap, Stethoscope, Tractor, Wrench, Package, 
   Lock, Link2, PlusCircle, Activity, Coins, ShieldCheck, ChevronRight,
-  Zap, Users, Wallet2, CheckCircle2, Clock, Gem, AlertTriangle
+  Zap, Users, Wallet2, CheckCircle2, Clock, Gem, AlertTriangle,
+  Flame, TrendingDown
 } from 'lucide-react';
 
 const LOAN_TIERS = [
@@ -344,29 +345,34 @@ export default function LoansPage() {
                     <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
                       {[
                         {
-                          icon: '🔥',
+                          icon: Flame,
                           title: 'TRUST Token Seizure',
                           desc: 'If you default, your entire TRUST token balance will be immediately burned by the protocol. You lose all earned reputation capital.',
                         },
                         {
-                          icon: '⚡',
+                          icon: Zap,
                           title: 'Social Slashing',
                           desc: 'Every peer who vouched for you loses 100 TRUST tokens and takes a –40 point BehaviorScore penalty. Your default damages your entire circle.',
                         },
                         {
-                          icon: '📉',
+                          icon: TrendingDown,
                           title: 'Score Collapse',
                           desc: 'Your own BehaviorScore drops by 150 points immediately, likely collapsing your credit tier and locking you out of future loans.',
                         },
-                      ].map(item => (
-                        <div key={item.title} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                          <span style={{ fontSize: '1rem', flexShrink: 0 }}>{item.icon}</span>
-                          <div>
-                            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#EF4444', marginBottom: 2 }}>{item.title}</div>
-                            <div style={{ fontSize: '0.75rem', color: 'var(--c-text-2)', lineHeight: 1.55 }}>{item.desc}</div>
+                      ].map((item, idx) => {
+                        const Icon = item.icon;
+                        return (
+                          <div key={item.title} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                            <div style={{ padding: 6, background: 'rgba(239,68,68,0.15)', borderRadius: 'var(--radius-md)', flexShrink: 0 }}>
+                              <Icon size={16} color="#EF4444" />
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#EF4444', marginBottom: 2 }}>{item.title}</div>
+                              <div style={{ fontSize: '0.75rem', color: 'var(--c-text-2)', lineHeight: 1.55 }}>{item.desc}</div>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
 
