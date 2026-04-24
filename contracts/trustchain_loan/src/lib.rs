@@ -1,8 +1,7 @@
 #![no_std]
 
 use soroban_sdk::{
-    contract, contractimpl, contracttype, symbol_short,
-    token, Address, Env, Symbol,
+    contract, contractimpl, contracttype, symbol_short, token, Address, Env, Symbol,
 };
 
 // ── Storage Key Types ──────────────────────────────────────────────────────────
@@ -11,9 +10,9 @@ use soroban_sdk::{
 #[derive(Clone, Debug, PartialEq)]
 pub enum DataKey {
     Admin,
-    PlatformFeeBps,   // basis points: 20 = 0.20%
+    PlatformFeeBps, // basis points: 20 = 0.20%
     PlatformRevenue,
-    Loan(u64),        // loan_id → LoanData
+    Loan(u64), // loan_id → LoanData
     LoanCount,
 }
 
@@ -34,22 +33,22 @@ pub struct LoanData {
     pub id: u64,
     pub borrower: Address,
     pub lender: Address,
-    pub amount_xlm: i128,        // principal in stroops
-    pub fee_bps: u32,            // lender fee basis points
-    pub total_owed: i128,        // principal + fee, in stroops
-    pub repaid_amount: i128,     // how much has been repaid
-    pub platform_fee_bps: u32,   // protocol take rate in bps (e.g. 20 = 0.20%)
+    pub amount_xlm: i128,      // principal in stroops
+    pub fee_bps: u32,          // lender fee basis points
+    pub total_owed: i128,      // principal + fee, in stroops
+    pub repaid_amount: i128,   // how much has been repaid
+    pub platform_fee_bps: u32, // protocol take rate in bps (e.g. 20 = 0.20%)
     pub platform_fee_collected: i128,
-    pub due_ledger: u32,         // ledger number after which loan is overdue
+    pub due_ledger: u32, // ledger number after which loan is overdue
     pub status: LoanStatus,
 }
 
 // ── Events ─────────────────────────────────────────────────────────────────────
 
-const TOPIC_LOAN_CREATED:  Symbol = symbol_short!("CREATED");
-const TOPIC_REPAYMENT:     Symbol = symbol_short!("REPAID");
-const TOPIC_DEFAULTED:     Symbol = symbol_short!("DEFAULTED");
-const TOPIC_REV_WITHDRAW:  Symbol = symbol_short!("WITHDRAW");
+const TOPIC_LOAN_CREATED: Symbol = symbol_short!("CREATED");
+const TOPIC_REPAYMENT: Symbol = symbol_short!("REPAID");
+const TOPIC_DEFAULTED: Symbol = symbol_short!("DEFAULTED");
+const TOPIC_REV_WITHDRAW: Symbol = symbol_short!("WITHDRAW");
 
 // ── Contract ───────────────────────────────────────────────────────────────────
 
@@ -58,7 +57,6 @@ pub struct TrustChainLoan;
 
 #[contractimpl]
 impl TrustChainLoan {
-
     // ── Initialization (called once on deploy) ─────────────────────────────────
 
     /// Deploy and configure the contract.
@@ -70,8 +68,12 @@ impl TrustChainLoan {
         }
         admin.require_auth();
         env.storage().instance().set(&DataKey::Admin, &admin);
-        env.storage().instance().set(&DataKey::PlatformFeeBps, &platform_fee_bps);
-        env.storage().instance().set(&DataKey::PlatformRevenue, &0_i128);
+        env.storage()
+            .instance()
+            .set(&DataKey::PlatformFeeBps, &platform_fee_bps);
+        env.storage()
+            .instance()
+            .set(&DataKey::PlatformRevenue, &0_i128);
         env.storage().instance().set(&DataKey::LoanCount, &0_u64);
         env.storage().instance().extend_ttl(100_000, 100_000);
     }
@@ -101,7 +103,8 @@ impl TrustChainLoan {
         }
 
         let platform_fee_bps: u32 = env
-            .storage().instance()
+            .storage()
+            .instance()
             .get(&DataKey::PlatformFeeBps)
             .unwrap_or(20);
 
@@ -115,7 +118,8 @@ impl TrustChainLoan {
 
         // Assign sequential ID
         let loan_id: u64 = env
-            .storage().instance()
+            .storage()
+            .instance()
             .get(&DataKey::LoanCount)
             .unwrap_or(0)
             + 1;
@@ -137,8 +141,12 @@ impl TrustChainLoan {
             status: LoanStatus::Active,
         };
 
-        env.storage().persistent().set(&DataKey::Loan(loan_id), &loan);
-        env.storage().persistent().extend_ttl(&DataKey::Loan(loan_id), 200_000, 200_000);
+        env.storage()
+            .persistent()
+            .set(&DataKey::Loan(loan_id), &loan);
+        env.storage()
+            .persistent()
+            .extend_ttl(&DataKey::Loan(loan_id), 200_000, 200_000);
 
         // Emit event
         env.events().publish(
@@ -164,7 +172,8 @@ impl TrustChainLoan {
         caller.require_auth();
 
         let mut loan: LoanData = env
-            .storage().persistent()
+            .storage()
+            .persistent()
             .get(&DataKey::Loan(loan_id))
             .expect("loan not found");
 
@@ -196,11 +205,14 @@ impl TrustChainLoan {
 
         // Accumulate global platform revenue
         let mut total_rev: i128 = env
-            .storage().instance()
+            .storage()
+            .instance()
             .get(&DataKey::PlatformRevenue)
             .unwrap_or(0);
         total_rev += platform_fee;
-        env.storage().instance().set(&DataKey::PlatformRevenue, &total_rev);
+        env.storage()
+            .instance()
+            .set(&DataKey::PlatformRevenue, &total_rev);
 
         // Cap repaid at total_owed
         if loan.repaid_amount >= loan.total_owed {
@@ -210,12 +222,19 @@ impl TrustChainLoan {
             loan.status = LoanStatus::Repaying;
         }
 
-        env.storage().persistent().set(&DataKey::Loan(loan_id), &loan);
+        env.storage()
+            .persistent()
+            .set(&DataKey::Loan(loan_id), &loan);
 
         // Emit event
         env.events().publish(
             (TOPIC_REPAYMENT, symbol_short!("loan")),
-            (loan_id, caller, amount, loan.total_owed - loan.repaid_amount),
+            (
+                loan_id,
+                caller,
+                amount,
+                loan.total_owed - loan.repaid_amount,
+            ),
         );
 
         loan.status
@@ -228,7 +247,8 @@ impl TrustChainLoan {
         caller.require_auth();
 
         let mut loan: LoanData = env
-            .storage().persistent()
+            .storage()
+            .persistent()
             .get(&DataKey::Loan(loan_id))
             .expect("loan not found");
 
@@ -244,7 +264,9 @@ impl TrustChainLoan {
         }
 
         loan.status = LoanStatus::Defaulted;
-        env.storage().persistent().set(&DataKey::Loan(loan_id), &loan);
+        env.storage()
+            .persistent()
+            .set(&DataKey::Loan(loan_id), &loan);
 
         env.events().publish(
             (TOPIC_DEFAULTED, symbol_short!("loan")),
@@ -260,7 +282,8 @@ impl TrustChainLoan {
         admin.require_auth();
 
         let revenue: i128 = env
-            .storage().instance()
+            .storage()
+            .instance()
             .get(&DataKey::PlatformRevenue)
             .unwrap_or(0);
 
@@ -270,7 +293,9 @@ impl TrustChainLoan {
 
         // Note: fees were already transferred to admin wallet during repay(),
         // so this just resets the counter and emits an event.
-        env.storage().instance().set(&DataKey::PlatformRevenue, &0_i128);
+        env.storage()
+            .instance()
+            .set(&DataKey::PlatformRevenue, &0_i128);
 
         env.events().publish(
             (TOPIC_REV_WITHDRAW, symbol_short!("admin")),
@@ -283,25 +308,29 @@ impl TrustChainLoan {
     // ── Read-only Queries ──────────────────────────────────────────────────────
 
     pub fn get_loan(env: Env, loan_id: u64) -> LoanData {
-        env.storage().persistent()
+        env.storage()
+            .persistent()
             .get(&DataKey::Loan(loan_id))
             .expect("loan not found")
     }
 
     pub fn get_platform_revenue(env: Env) -> i128 {
-        env.storage().instance()
+        env.storage()
+            .instance()
             .get(&DataKey::PlatformRevenue)
             .unwrap_or(0)
     }
 
     pub fn get_loan_count(env: Env) -> u64 {
-        env.storage().instance()
+        env.storage()
+            .instance()
             .get(&DataKey::LoanCount)
             .unwrap_or(0)
     }
 
     pub fn get_admin(env: Env) -> Address {
-        env.storage().instance()
+        env.storage()
+            .instance()
             .get(&DataKey::Admin)
             .expect("not initialized")
     }
@@ -318,12 +347,19 @@ mod tests {
         Env,
     };
 
-    fn setup() -> (Env, TrustChainLoanClient<'static>, Address, Address, Address, Address) {
+    fn setup() -> (
+        Env,
+        TrustChainLoanClient<'static>,
+        Address,
+        Address,
+        Address,
+        Address,
+    ) {
         let env = Env::default();
         env.mock_all_auths();
 
-        let admin   = Address::generate(&env);
-        let lender  = Address::generate(&env);
+        let admin = Address::generate(&env);
+        let lender = Address::generate(&env);
         let borrower = Address::generate(&env);
 
         // Deploy the XLM mock token
@@ -387,10 +423,7 @@ mod tests {
         let (env, client, _admin, lender, borrower, xlm) = setup();
         let _ = env;
 
-        let loan_id = client.create_loan(
-            &borrower, &lender,
-            &100_000_000, &200, &518_400, &xlm,
-        );
+        let loan_id = client.create_loan(&borrower, &lender, &100_000_000, &200, &518_400, &xlm);
 
         // Repay half
         let status = client.repay(&loan_id, &borrower, &51_000_000, &xlm);
@@ -402,8 +435,11 @@ mod tests {
         let (env, client, _admin, lender, borrower, xlm) = setup();
 
         let loan_id = client.create_loan(
-            &borrower, &lender,
-            &100_000_000, &200, &10, // 10 ledger duration (very short)
+            &borrower,
+            &lender,
+            &100_000_000,
+            &200,
+            &10, // 10 ledger duration (very short)
             &xlm,
         );
 

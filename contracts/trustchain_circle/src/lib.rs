@@ -1,8 +1,7 @@
 #![no_std]
 
 use soroban_sdk::{
-    contract, contractimpl, contracttype, symbol_short,
-    Address, Env, String, Symbol, Vec,
+    contract, contractimpl, contracttype, symbol_short, Address, Env, String, Symbol, Vec,
 };
 
 // ── Storage Keys ───────────────────────────────────────────────────────────────
@@ -12,8 +11,8 @@ use soroban_sdk::{
 pub enum DataKey {
     Admin,
     CircleCount,
-    Circle(u64),          // circle_id → CircleData
-    Members(u64),         // circle_id → Vec<Address>
+    Circle(u64),               // circle_id → CircleData
+    Members(u64),              // circle_id → Vec<Address>
     MemberIndex(u64, Address), // (circle_id, user) → bool
 }
 
@@ -25,7 +24,7 @@ pub struct CircleData {
     pub id: u64,
     pub owner: Address,
     pub name: String,
-    pub uci: String,         // Unique Circle Identifier (6-char alphanumeric)
+    pub uci: String, // Unique Circle Identifier (6-char alphanumeric)
     pub is_private: bool,
     pub member_count: u32,
     pub created_ledger: u32,
@@ -34,7 +33,7 @@ pub struct CircleData {
 // ── Events ─────────────────────────────────────────────────────────────────────
 
 const TOPIC_CIRCLE_CREATED: Symbol = symbol_short!("C_CREATE");
-const TOPIC_MEMBER_ADDED:   Symbol = symbol_short!("C_JOIN");
+const TOPIC_MEMBER_ADDED: Symbol = symbol_short!("C_JOIN");
 const TOPIC_MEMBER_REMOVED: Symbol = symbol_short!("C_LEAVE");
 
 // ── Contract ───────────────────────────────────────────────────────────────────
@@ -44,7 +43,6 @@ pub struct TrustChainCircle;
 
 #[contractimpl]
 impl TrustChainCircle {
-
     // ── Initialization ─────────────────────────────────────────────────────────
 
     pub fn initialize(env: Env, admin: Address) {
@@ -70,11 +68,14 @@ impl TrustChainCircle {
         owner.require_auth();
 
         let circle_id: u64 = env
-            .storage().instance()
+            .storage()
+            .instance()
             .get(&DataKey::CircleCount)
             .unwrap_or(0)
             + 1;
-        env.storage().instance().set(&DataKey::CircleCount, &circle_id);
+        env.storage()
+            .instance()
+            .set(&DataKey::CircleCount, &circle_id);
 
         let circle = CircleData {
             id: circle_id,
@@ -87,20 +88,31 @@ impl TrustChainCircle {
         };
 
         // Store circle metadata
-        env.storage().persistent().set(&DataKey::Circle(circle_id), &circle);
-        env.storage().persistent().extend_ttl(&DataKey::Circle(circle_id), 200_000, 200_000);
+        env.storage()
+            .persistent()
+            .set(&DataKey::Circle(circle_id), &circle);
+        env.storage()
+            .persistent()
+            .extend_ttl(&DataKey::Circle(circle_id), 200_000, 200_000);
 
         // Initialize members list with owner
         let mut members: Vec<Address> = Vec::new(&env);
         members.push_back(owner.clone());
-        env.storage().persistent().set(&DataKey::Members(circle_id), &members);
-        env.storage().persistent().extend_ttl(&DataKey::Members(circle_id), 200_000, 200_000);
+        env.storage()
+            .persistent()
+            .set(&DataKey::Members(circle_id), &members);
+        env.storage()
+            .persistent()
+            .extend_ttl(&DataKey::Members(circle_id), 200_000, 200_000);
 
         // Set membership index
-        env.storage().persistent().set(&DataKey::MemberIndex(circle_id, owner.clone()), &true);
+        env.storage()
+            .persistent()
+            .set(&DataKey::MemberIndex(circle_id, owner.clone()), &true);
         env.storage().persistent().extend_ttl(
             &DataKey::MemberIndex(circle_id, owner.clone()),
-            200_000, 200_000,
+            200_000,
+            200_000,
         );
 
         env.events().publish(
@@ -118,7 +130,8 @@ impl TrustChainCircle {
         caller.require_auth();
 
         let mut circle: CircleData = env
-            .storage().persistent()
+            .storage()
+            .persistent()
             .get(&DataKey::Circle(circle_id))
             .expect("circle not found");
 
@@ -128,7 +141,8 @@ impl TrustChainCircle {
 
         // Check not already a member
         let already: bool = env
-            .storage().persistent()
+            .storage()
+            .persistent()
             .get(&DataKey::MemberIndex(circle_id, new_member.clone()))
             .unwrap_or(false);
         if already {
@@ -137,22 +151,32 @@ impl TrustChainCircle {
 
         // Update members list
         let mut members: Vec<Address> = env
-            .storage().persistent()
+            .storage()
+            .persistent()
             .get(&DataKey::Members(circle_id))
             .unwrap_or(Vec::new(&env));
         members.push_back(new_member.clone());
-        env.storage().persistent().set(&DataKey::Members(circle_id), &members);
-        env.storage().persistent().extend_ttl(&DataKey::Members(circle_id), 200_000, 200_000);
+        env.storage()
+            .persistent()
+            .set(&DataKey::Members(circle_id), &members);
+        env.storage()
+            .persistent()
+            .extend_ttl(&DataKey::Members(circle_id), 200_000, 200_000);
 
         // Update index
-        env.storage().persistent().set(&DataKey::MemberIndex(circle_id, new_member.clone()), &true);
+        env.storage()
+            .persistent()
+            .set(&DataKey::MemberIndex(circle_id, new_member.clone()), &true);
         env.storage().persistent().extend_ttl(
             &DataKey::MemberIndex(circle_id, new_member.clone()),
-            200_000, 200_000,
+            200_000,
+            200_000,
         );
 
         circle.member_count += 1;
-        env.storage().persistent().set(&DataKey::Circle(circle_id), &circle);
+        env.storage()
+            .persistent()
+            .set(&DataKey::Circle(circle_id), &circle);
 
         env.events().publish(
             (TOPIC_MEMBER_ADDED, symbol_short!("circle")),
@@ -165,7 +189,8 @@ impl TrustChainCircle {
         caller.require_auth();
 
         let mut circle: CircleData = env
-            .storage().persistent()
+            .storage()
+            .persistent()
             .get(&DataKey::Circle(circle_id))
             .expect("circle not found");
 
@@ -179,7 +204,8 @@ impl TrustChainCircle {
         }
 
         let is_member: bool = env
-            .storage().persistent()
+            .storage()
+            .persistent()
             .get(&DataKey::MemberIndex(circle_id, member.clone()))
             .unwrap_or(false);
         if !is_member {
@@ -188,7 +214,8 @@ impl TrustChainCircle {
 
         // Rebuild members list without the removed member
         let members: Vec<Address> = env
-            .storage().persistent()
+            .storage()
+            .persistent()
             .get(&DataKey::Members(circle_id))
             .unwrap_or(Vec::new(&env));
         let mut new_members: Vec<Address> = Vec::new(&env);
@@ -197,14 +224,22 @@ impl TrustChainCircle {
                 new_members.push_back(m);
             }
         }
-        env.storage().persistent().set(&DataKey::Members(circle_id), &new_members);
-        env.storage().persistent().extend_ttl(&DataKey::Members(circle_id), 200_000, 200_000);
+        env.storage()
+            .persistent()
+            .set(&DataKey::Members(circle_id), &new_members);
+        env.storage()
+            .persistent()
+            .extend_ttl(&DataKey::Members(circle_id), 200_000, 200_000);
 
         // Clear index
-        env.storage().persistent().remove(&DataKey::MemberIndex(circle_id, member.clone()));
+        env.storage()
+            .persistent()
+            .remove(&DataKey::MemberIndex(circle_id, member.clone()));
 
         circle.member_count = circle.member_count.saturating_sub(1);
-        env.storage().persistent().set(&DataKey::Circle(circle_id), &circle);
+        env.storage()
+            .persistent()
+            .set(&DataKey::Circle(circle_id), &circle);
 
         env.events().publish(
             (TOPIC_MEMBER_REMOVED, symbol_short!("circle")),
@@ -215,25 +250,29 @@ impl TrustChainCircle {
     // ── Read-only Queries ──────────────────────────────────────────────────────
 
     pub fn get_circle(env: Env, circle_id: u64) -> CircleData {
-        env.storage().persistent()
+        env.storage()
+            .persistent()
             .get(&DataKey::Circle(circle_id))
             .expect("circle not found")
     }
 
     pub fn get_members(env: Env, circle_id: u64) -> Vec<Address> {
-        env.storage().persistent()
+        env.storage()
+            .persistent()
             .get(&DataKey::Members(circle_id))
             .unwrap_or(Vec::new(&env))
     }
 
     pub fn is_member(env: Env, circle_id: u64, user: Address) -> bool {
-        env.storage().persistent()
+        env.storage()
+            .persistent()
             .get(&DataKey::MemberIndex(circle_id, user))
             .unwrap_or(false)
     }
 
     pub fn get_circle_count(env: Env) -> u64 {
-        env.storage().instance()
+        env.storage()
+            .instance()
             .get(&DataKey::CircleCount)
             .unwrap_or(0)
     }
@@ -298,7 +337,7 @@ mod tests {
     #[should_panic(expected = "only the circle owner")]
     fn test_non_owner_cannot_add_member() {
         let (env, client, owner) = setup();
-        let rando  = Address::generate(&env);
+        let rando = Address::generate(&env);
         let member = Address::generate(&env);
 
         let id = client.create_circle(

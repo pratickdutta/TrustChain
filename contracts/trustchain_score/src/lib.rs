@@ -1,8 +1,7 @@
 #![no_std]
 
 use soroban_sdk::{
-    contract, contractimpl, contracttype, symbol_short,
-    Address, Env, String, Symbol,
+    contract, contractimpl, contracttype, symbol_short, Address, Env, String, Symbol,
 };
 
 // ── Storage Keys ───────────────────────────────────────────────────────────────
@@ -11,7 +10,7 @@ use soroban_sdk::{
 #[derive(Clone)]
 pub enum DataKey {
     Admin,
-    Updater,       // authorized backend wallet that can push scores
+    Updater, // authorized backend wallet that can push scores
     Score(Address),
 }
 
@@ -41,7 +40,6 @@ pub struct TrustChainScore;
 
 #[contractimpl]
 impl TrustChainScore {
-
     // ── Initialization ─────────────────────────────────────────────────────────
 
     /// Deploy once. `updater` is the backend service wallet.
@@ -92,12 +90,12 @@ impl TrustChainScore {
             updated_ledger: env.ledger().sequence(),
         };
 
-        env.storage().persistent().set(&DataKey::Score(user.clone()), &score);
-        env.storage().persistent().extend_ttl(
-            &DataKey::Score(user.clone()),
-            200_000,
-            200_000,
-        );
+        env.storage()
+            .persistent()
+            .set(&DataKey::Score(user.clone()), &score);
+        env.storage()
+            .persistent()
+            .extend_ttl(&DataKey::Score(user.clone()), 200_000, 200_000);
 
         env.events().publish(
             (TOPIC_SCORE_UPDATED, symbol_short!("score")),
@@ -112,7 +110,9 @@ impl TrustChainScore {
         if caller != admin {
             panic!("only admin can rotate updater");
         }
-        env.storage().instance().set(&DataKey::Updater, &new_updater);
+        env.storage()
+            .instance()
+            .set(&DataKey::Updater, &new_updater);
     }
 
     // ── Read-only Queries ──────────────────────────────────────────────────────
@@ -142,11 +142,17 @@ impl TrustChainScore {
     }
 
     pub fn get_updater(env: Env) -> Address {
-        env.storage().instance().get(&DataKey::Updater).expect("not initialized")
+        env.storage()
+            .instance()
+            .get(&DataKey::Updater)
+            .expect("not initialized")
     }
 
     pub fn get_admin(env: Env) -> Address {
-        env.storage().instance().get(&DataKey::Admin).expect("not initialized")
+        env.storage()
+            .instance()
+            .get(&DataKey::Admin)
+            .expect("not initialized")
     }
 }
 
@@ -157,13 +163,19 @@ mod tests {
     use super::*;
     use soroban_sdk::{testutils::Address as _, Env, String};
 
-    fn setup() -> (Env, TrustChainScoreClient<'static>, Address, Address, Address) {
+    fn setup() -> (
+        Env,
+        TrustChainScoreClient<'static>,
+        Address,
+        Address,
+        Address,
+    ) {
         let env = Env::default();
         env.mock_all_auths();
 
-        let admin   = Address::generate(&env);
+        let admin = Address::generate(&env);
         let updater = Address::generate(&env);
-        let user    = Address::generate(&env);
+        let user = Address::generate(&env);
 
         let contract_id = env.register(TrustChainScore, ());
         let client = TrustChainScoreClient::new(&env, &contract_id);
@@ -177,8 +189,12 @@ mod tests {
         let (env, client, _admin, updater, user) = setup();
 
         client.update_score(
-            &updater, &user,
-            &1000, &400, &400, &200,
+            &updater,
+            &user,
+            &1000,
+            &400,
+            &400,
+            &200,
             &5,
             &String::from_str(&env, "platinum"),
         );
@@ -205,8 +221,12 @@ mod tests {
         let (env, client, _admin, _updater, user) = setup();
         let rando = Address::generate(&env);
         client.update_score(
-            &rando, &user,
-            &100, &50, &30, &20,
+            &rando,
+            &user,
+            &100,
+            &50,
+            &30,
+            &20,
             &1,
             &String::from_str(&env, "building"),
         );
