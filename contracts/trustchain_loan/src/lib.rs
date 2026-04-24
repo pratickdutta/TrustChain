@@ -445,7 +445,7 @@ mod tests {
 
         // Advance ledger past due date
         env.ledger().with_mut(|l| {
-            l.sequence_number = l.sequence_number + 20;
+            l.sequence_number += 20;
         });
 
         client.mark_defaulted(&loan_id, &lender);
