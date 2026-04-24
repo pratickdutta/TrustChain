@@ -28,6 +28,7 @@ const PURPOSES = [
 
 export default function LoansPage() {
   const { score, isConnected } = useWalletStore();
+  const [eligibilityModal, setEligibilityModal] = useState(false);
   const router = useRouter();
   const [loans, setLoans] = useState<any[]>([]);
   const [form, setForm] = useState({ amount: '', purpose: 'working_capital', durationDays: 14 });
@@ -118,8 +119,7 @@ export default function LoansPage() {
     }
   }
 
-  // DEV BYPASS: Force a minimum score of 1000 (Platinum) for testing the UI
-  const userScore = Math.max(score?.totalScore || 0, 1000);
+  const userScore = score?.totalScore || 0;
   const eligibleTier = LOAN_TIERS.filter(t => userScore >= t.minScore).pop();
   // Only block new requests for actively running loans; PENDING/REJECTED should not block
   const activeLoan = loans.find(l => ['APPROVED', 'DISBURSED', 'REPAYING'].includes(l.status));
@@ -234,24 +234,41 @@ export default function LoansPage() {
         {tab === 'request' ? (
           <div style={{ maxWidth: 540 }}>
             <div className="glass-card animate-fade-in-up" style={{ padding: 32 }}>
-              {!eligibleTier ? (
-                <div style={{ textAlign: 'center', padding: '30px 0' }}>
-                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
-                    <div style={{ background: 'rgba(249,115,22,0.1)', padding: 16, borderRadius: '50%' }}>
-                      <Lock size={40} color="#F97316" />
+              {/* ── ELIGIBILITY POPUP MODAL ── */}
+              {eligibilityModal && (
+                <div style={{
+                  position: 'fixed', inset: 0, zIndex: 1000,
+                  background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
+                }} onClick={() => setEligibilityModal(false)}>
+                  <div style={{
+                    background: 'var(--c-surface)', borderRadius: 'var(--radius-lg)',
+                    border: '1px solid rgba(249,115,22,0.4)', padding: 36,
+                    maxWidth: 420, width: '100%', textAlign: 'center',
+                    boxShadow: '0 24px 64px rgba(0,0,0,0.4)',
+                  }} onClick={e => e.stopPropagation()}>
+                    <div style={{ background: 'rgba(249,115,22,0.1)', width: 64, height: 64, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                      <Lock size={32} color="#F97316" />
+                    </div>
+                    <h3 style={{ color: 'var(--c-text)', fontSize: '1.3rem', marginBottom: 12 }}>Score Too Low</h3>
+                    <p style={{ color: 'var(--c-text-2)', fontSize: '0.9rem', lineHeight: 1.7, marginBottom: 8 }}>
+                      Your current TBA score is <strong style={{ color: '#F97316' }}>{userScore}</strong>.
+                    </p>
+                    <p style={{ color: 'var(--c-text-2)', fontSize: '0.9rem', lineHeight: 1.7, marginBottom: 24 }}>
+                      You need at least <strong style={{ color: 'var(--c-secondary)' }}>450</strong> (Bronze tier) to request a loan.
+                      Join Trust Circles and get peer attestations to boost your score!
+                    </p>
+                    <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+                      <button onClick={() => setEligibilityModal(false)} className="btn btn-ghost">Close</button>
+                      <button onClick={() => router.push('/circles')} className="btn btn-primary">
+                        Build Trust Score <ChevronRight size={14} />
+                      </button>
                     </div>
                   </div>
-                  <h3 style={{ marginBottom: 12, color: 'var(--c-text)', fontSize: '1.4rem' }}>Access Restricted</h3>
-                  <p style={{ color: 'var(--c-text-2)', fontSize: '0.95rem', lineHeight: 1.7, marginBottom: 24 }}>
-                    Current protocol rating is <strong style={{ color: '#F97316' }}>{userScore}</strong>.<br />
-                    Minimum threshold is <strong>450</strong> (Bronze).<br />
-                    Acquire attestations via Trust Circles to elevate tier.
-                  </p>
-                  <button onClick={() => router.push('/circles')} className="btn btn-primary" style={{ padding: '12px 28px' }}>
-                    Access Network Graphs <ChevronRight size={16} />
-                  </button>
                 </div>
-              ) : activeLoan ? (
+              )}
+
+              {activeLoan ? (
                 <div style={{ textAlign: 'center', padding: '30px 0' }}>
                   <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
                     <div style={{ background: 'rgba(255,179,71,0.1)', padding: 16, borderRadius: '50%' }}>
@@ -268,11 +285,46 @@ export default function LoansPage() {
                 </div>
               ) : (
                 <>
-                  <div style={{ marginBottom: 20, padding: '14px 18px', borderRadius: 'var(--radius-md)', background: 'rgba(0,217,166,0.08)', border: '1px solid rgba(0,217,166,0.25)', fontSize: '0.85rem', color: 'var(--c-secondary)', display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <ShieldCheck size={16} /> Authorized for <strong>{eligibleTier.tier} Tier</strong> drawdown (Max ${eligibleTier.maxAmount})
-                  </div>
+                  {eligibleTier && (
+                    <div style={{ marginBottom: 20, padding: '14px 18px', borderRadius: 'var(--radius-md)', background: 'rgba(0,217,166,0.08)', border: '1px solid rgba(0,217,166,0.25)', fontSize: '0.85rem', color: 'var(--c-secondary)', display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <ShieldCheck size={16} /> Authorized for <strong>{eligibleTier.tier} Tier</strong> drawdown (Max ${eligibleTier.maxAmount})
+                    </div>
+                  )}
 
-                  {/* ── DEFAULT PENALTY WARNING ── */}
+                  {/* ── FUNDING SOURCE SELECTOR (always visible) ── */}
+                  <div style={{ marginBottom: 24 }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em', color: 'var(--c-text-3)', marginBottom: 12 }}>SELECT FUNDING SOURCE</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+                      {[
+                        { key: 'defi', label: 'DeFi Protocol', sub: 'Auto-approved by Smart Contract', icon: Zap, color: 'var(--c-secondary)' },
+                        { key: 'individual', label: 'Individual Lender', sub: `${lenders.length} lender${lenders.length !== 1 ? 's' : ''} available`, icon: Wallet2, color: 'var(--c-primary)' },
+                        { key: 'pool', label: 'Trust Pool', sub: `${pools.length} pool${pools.length !== 1 ? 's' : ''} available`, icon: Users, color: 'var(--c-accent)' },
+                      ].map(src => {
+                        const Icon = src.icon;
+                        const active = fundingSource === src.key;
+                        return (
+                          <button key={src.key}
+                            onClick={() => {
+                              if (!eligibleTier) { setEligibilityModal(true); return; }
+                              setFundingSource(src.key as any); setSelectedLender(null); setSelectedPool(null);
+                            }}
+                            style={{
+                              padding: '14px 12px', borderRadius: 'var(--radius-md)', cursor: 'pointer',
+                              background: active && eligibleTier ? `${src.color}15` : 'var(--c-surface)',
+                              border: `2px solid ${active && eligibleTier ? src.color : 'var(--c-border)'}`,
+                              textAlign: 'center', transition: 'all 0.2s',
+                              opacity: !eligibleTier ? 0.7 : 1,
+                            }}>
+                            <Icon size={20} color={!eligibleTier ? 'var(--c-text-3)' : src.color} style={{ display: 'block', margin: '0 auto 8px' }} />
+                            <div style={{ fontWeight: 700, fontSize: '0.78rem', color: 'var(--c-text)', marginBottom: 4 }}>{src.label}</div>
+                            <div style={{ fontSize: '0.68rem', color: 'var(--c-text-3)', lineHeight: 1.4 }}>
+                              {!eligibleTier ? '🔒 Score 450+ required' : src.sub}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                   <div style={{
                     marginBottom: 24,
                     borderRadius: 'var(--radius-md)',
@@ -318,34 +370,7 @@ export default function LoansPage() {
                     </div>
                   </div>
 
-                  {/* ── FUNDING SOURCE SELECTOR ── */}
-                  <div style={{ marginBottom: 24 }}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em', color: 'var(--c-text-3)', marginBottom: 12 }}>SELECT FUNDING SOURCE</div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
-                      {[
-                        { key: 'defi', label: 'DeFi Protocol', sub: 'Auto-approved by Smart Contract', icon: Zap, color: 'var(--c-secondary)' },
-                        { key: 'individual', label: 'Individual Lender', sub: `${lenders.length} lender${lenders.length !== 1 ? 's' : ''} available`, icon: Wallet2, color: 'var(--c-primary)' },
-                        { key: 'pool', label: 'Trust Pool', sub: `${pools.length} pool${pools.length !== 1 ? 's' : ''} available`, icon: Users, color: 'var(--c-accent)' },
-                      ].map(src => {
-                        const Icon = src.icon;
-                        const active = fundingSource === src.key;
-                        return (
-                          <button key={src.key}
-                            onClick={() => { setFundingSource(src.key as any); setSelectedLender(null); setSelectedPool(null); }}
-                            style={{
-                              padding: '14px 12px', borderRadius: 'var(--radius-md)', cursor: 'pointer',
-                              background: active ? `${src.color}15` : 'var(--c-surface)',
-                              border: `2px solid ${active ? src.color : 'var(--c-border)'}`,
-                              textAlign: 'center', transition: 'all 0.2s',
-                            }}>
-                            <Icon size={20} color={src.color} style={{ display: 'block', margin: '0 auto 8px' }} />
-                            <div style={{ fontWeight: 700, fontSize: '0.78rem', color: 'var(--c-text)', marginBottom: 4 }}>{src.label}</div>
-                            <div style={{ fontSize: '0.68rem', color: 'var(--c-text-3)', lineHeight: 1.4 }}>{src.sub}</div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
+
 
                   {/* Individual Lender Picker */}
                   {fundingSource === 'individual' && (

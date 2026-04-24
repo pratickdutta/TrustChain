@@ -155,8 +155,7 @@ export default function LenderPage() {
                   Allow borrowers to send loan applications directly to you.
                 </div>
               </div>
-              {pubKey === 'GAXY2BE75O3RAWQI3JJBDSNARQZTZE2C32IMGGNJFMZAUARTDVNTMGMT' ? (
-                <button
+              <button
                   onClick={toggleLenderMode}
                   style={{
                     width: 52, height: 28, borderRadius: 99, cursor: 'pointer',
@@ -170,11 +169,6 @@ export default function LenderPage() {
                     background: '#fff', transition: 'left 0.2s',
                   }} />
                 </button>
-              ) : (
-                <div style={{ fontSize: '0.75rem', color: 'var(--c-primary)', fontWeight: 600, background: 'rgba(108,99,255,0.1)', padding: '4px 10px', borderRadius: 99 }}>
-                  Admin Only
-                </div>
-              )}
             </div>
 
             {settings.isLender && (
