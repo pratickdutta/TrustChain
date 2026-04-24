@@ -4,8 +4,12 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import useWalletStore from '@/store/walletStore';
 import { authAPI, scoreAPI } from '@/lib/api';
-import { requestAccess, getAddress } from '@stellar/freighter-api';
 import { Activity, Shield, Coins, Trophy, Sun, Moon, Link as LinkIcon, LogOut, ChevronRight, Droplets, Wallet } from 'lucide-react';
+import { StellarWalletsKit, Networks } from '@creit.tech/stellar-wallets-kit';
+import { FreighterModule, FREIGHTER_ID } from '@creit.tech/stellar-wallets-kit/modules/freighter';
+import { AlbedoModule } from '@creit.tech/stellar-wallets-kit/modules/albedo';
+import { LobstrModule } from '@creit.tech/stellar-wallets-kit/modules/lobstr';
+import { xBullModule } from '@creit.tech/stellar-wallets-kit/modules/xbull';
 
 const NAV_LINKS = [
   { href: '/dashboard',   label: 'Dashboard',   icon: Activity },
@@ -45,6 +49,22 @@ export default function Navbar() {
         setWallet(savedPubKey, savedToken, null as any);
         scoreAPI.me().then(s => setScore(s)).catch(() => disconnect());
       }
+      
+      // Initialize Wallet Kit globally on mount
+      try {
+        StellarWalletsKit.init({
+          network: Networks.TESTNET,
+          selectedWalletId: FREIGHTER_ID,
+          modules: [
+            new FreighterModule(),
+            new AlbedoModule(),
+            new LobstrModule(),
+            new xBullModule(),
+          ],
+        });
+      } catch (e) {
+        // already initialized
+      }
     }
     
     return () => window.removeEventListener('scroll', onScroll);
@@ -74,26 +94,23 @@ export default function Navbar() {
     }
   };
 
-  const connectFreighter = async () => {
+  const connectWalletsKit = async () => {
     try {
       setConnecting(true);
       setError('');
       
-      const accessDetails = await requestAccess();
-      if (accessDetails.error) {
-        throw new Error(accessDetails.error);
+      const { address: pubKey } = await StellarWalletsKit.authModal();
+      if (!pubKey) {
+        throw new Error('Wallet connection cancelled.');
       }
       
-      const session = await getAddress();
-      if (session.error) {
-        throw new Error(session.error);
-      }
-      
-      // Found address, run auth backend logic
-      await handleConnect(session.address);
+      await handleConnect(pubKey);
     } catch (err: any) {
-      console.error(err);
-      setError('Freighter connection failed. Check if wallet is unlocked.');
+      console.error('Wallet connect error:', err);
+      if (err.message && !err.message.includes('closed') && !err.message.includes('cancel')) {
+        setError(err.message || 'Connection failed.');
+      }
+    } finally {
       setConnecting(false);
     }
   };
@@ -231,11 +248,16 @@ export default function Navbar() {
               </div>
             ) : (
               <button
-                onClick={() => setConnectModal(true)}
+                onClick={connectWalletsKit}
+                disabled={isConnecting}
                 className="btn btn-primary"
                 style={{ fontSize: '0.875rem', padding: '9px 20px', gap: 6 }}
               >
-                <LinkIcon size={14} /> Connect Wallet
+                {isConnecting ? (
+                  <><span className="animate-spin" style={{ display: 'inline-block', width: 14, height: 14, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%' }} /> Connecting...</>
+                ) : (
+                  <><LinkIcon size={14} /> Connect Wallet</>
+                )}
               </button>
             )}
           </div>
@@ -283,97 +305,7 @@ export default function Navbar() {
         )}
       </nav>
 
-      {/* Connect Modal */}
-      {connectModal && (
-        <div style={{
-          position: 'fixed', inset: 0, zIndex: 2000,
-          background: 'rgba(0,0,0,0.5)',
-          backdropFilter: 'blur(8px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          padding: 24,
-          animation: 'fadeIn 0.2s ease',
-        }}
-        onClick={(e) => { if (e.target === e.currentTarget) { setConnectModal(false); setError(''); } }}
-        >
-          <div style={{
-            width: '100%', maxWidth: 420,
-            background: 'var(--c-surface)',
-            border: '1px solid var(--c-border)',
-            borderRadius: 'var(--radius-xl)',
-            padding: 36,
-            boxShadow: 'var(--shadow-lg)',
-            animation: 'scaleIn 0.25s cubic-bezier(0.34,1.56,0.64,1)',
-            position: 'relative'
-          }}>
-            <button
-              onClick={() => { setConnectModal(false); setError(''); }}
-              style={{ position: 'absolute', top: 20, right: 20, background: 'none', border: 'none', color: 'var(--c-text-3)', cursor: 'pointer', padding: 4 }}
-            >✕</button>
-
-            {/* Header */}
-            <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <div style={{
-                width: 56, height: 56, margin: '0 auto 16px',
-                background: 'var(--grad-primary)',
-                borderRadius: 16,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#fff',
-              }}><LinkIcon size={24} /></div>
-              <h2 style={{ fontSize: '1.4rem', marginBottom: 6, fontFamily: 'var(--font-heading)', color: 'var(--c-text)' }}>
-                Connect Wallet
-              </h2>
-              <p style={{ color: 'var(--c-text-2)', fontSize: '0.875rem', lineHeight: 1.6 }}>
-                Securely authenticate to access your TrustChain multi-chain credit profile.
-              </p>
-            </div>
-
-            {/* Wallet Options */}
-            <button
-              onClick={connectFreighter}
-              disabled={isConnecting}
-              style={{
-                width: '100%', padding: '16px 20px', marginBottom: 12,
-                background: 'var(--c-surface-2)',
-                border: '1px solid var(--c-border)',
-                borderRadius: 'var(--radius-md)',
-                color: 'var(--c-text)',
-                display: 'flex', alignItems: 'center', gap: 14,
-                cursor: 'pointer', transition: 'var(--transition)',
-                textAlign: 'left',
-              }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--c-primary)'; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--c-border)'; }}
-            >
-              <div style={{
-                width: 42, height: 42, borderRadius: 12, flexShrink: 0,
-                background: '#fff',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <img src="https://freighter.app/images/freighter-logo.svg" alt="Freighter" style={{ width: 20 }} onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = '<span style="color:#000;font-weight:bold;">F</span>'; }} />
-              </div>
-              <div>
-                <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>Freighter</div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--c-text-2)', marginTop: 2 }}>
-                  Official Stellar browser wallet
-                </div>
-              </div>
-              <div style={{ marginLeft: 'auto', color: 'var(--c-text-3)' }}>
-                {isConnecting ? <span className="animate-spin" style={{ width: 14, height: 14, border: '2px solid var(--c-primary)', borderTopColor: 'transparent', borderRadius: '50%', display: 'block' }} /> : <ChevronRight size={18} />}
-              </div>
-            </button>
-
-            {error && (
-              <div className="alert alert-error" style={{ marginTop: 16 }}>
-                <span style={{ fontSize: '1rem', marginRight: 4 }}>!</span> {error}
-              </div>
-            )}
-
-            <p style={{ fontSize: '0.75rem', color: 'var(--c-text-3)', textAlign: 'center', marginTop: 24, lineHeight: 1.6 }}>
-              New to Web3? <a href="https://freighter.app" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--c-primary)', fontWeight: 600 }}>Download Freighter</a>
-            </p>
-          </div>
-        </div>
-      )}
+      {/* Connect Modal REMOVED, now using StellarWalletsKit */}
 
       <style>{`
         @media (max-width: 768px) {
