@@ -17,5 +17,6 @@ export async function GET(req: NextRequest) {
     activeLoans: active.length,
     defaulted: defaulted.length,
     repaymentRate: allLoans.length > 0 ? Math.round((repaid.length / allLoans.length) * 100) : 100,
+    platformRevenue: allLoans.reduce((s, l) => s + (l.platformFeeCollected || 0), 0).toFixed(2),
   });
 }

@@ -114,7 +114,6 @@ const CircleSchema = new Schema<ICircle>({
 
 export const Circle = models.Circle || model<ICircle>('Circle', CircleSchema);
 
-// ── Loan ──────────────────────────────────────────────────────────────────
 export interface ILoan extends Document {
   borrowerId: string;
   amount: number;
@@ -130,6 +129,7 @@ export interface ILoan extends Document {
   dueDate: Date;
   repaidAmount: number;
   feePercent: number;
+  platformFeeCollected?: number; // Added for protocol revenue
   stellarTxHash?: string;
   scoreTierAtRequest: string;
   defaultedAt?: Date;
@@ -140,20 +140,21 @@ const LoanSchema = new Schema<ILoan>({
   borrowerId: { type: String, required: true, index: true },
   amount: { type: Number, required: true },
   currency: { type: String, default: 'XLM' },
-  durationDays: Number,
+  durationDays: { type: Number, required: true },
   purpose: { type: String, required: true },
   fundingSource: { type: String, default: 'defi' },
-  lenderKey: String,
-  poolId: String,
-  approvedBy: String,
+  lenderKey: { type: String },
+  poolId: { type: String },
+  approvedBy: { type: String },
   status: { type: String, default: 'APPROVED' },
-  disbursedAt: Date,
+  disbursedAt: { type: Date },
   dueDate: { type: Date, required: true },
   repaidAmount: { type: Number, default: 0 },
-  feePercent: Number,
-  stellarTxHash: String,
-  scoreTierAtRequest: String,
-  defaultedAt: Date,
+  feePercent: { type: Number, default: 0 },
+  platformFeeCollected: { type: Number, default: 0 },
+  stellarTxHash: { type: String },
+  scoreTierAtRequest: { type: String, required: true },
+  defaultedAt: { type: Date },
   createdAt: { type: Date, default: Date.now },
 });
 

@@ -18,31 +18,39 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   if (loan.borrowerId !== auth.pubKey) return NextResponse.json({ error: 'Not your loan' }, { status: 403 });
   if (loan.status === 'REPAID') return NextResponse.json({ error: 'Already repaid' }, { status: 400 });
 
+  const PLATFORM_FEE_RATE = 0.002; // 0.2%
   const repayAmount = parseFloat(amount);
   if (!repayAmount || repayAmount <= 0) return NextResponse.json({ error: 'Invalid amount' }, { status: 400 });
 
-  loan.repaidAmount = Math.min(loan.amount, loan.repaidAmount + repayAmount);
+  loan.repaidAmount += repayAmount;
   loan.stellarTxHash = txHash || undefined;
 
+  const totalOwed = loan.amount + (loan.amount * loan.feePercent / 100);
   const isOnTime = new Date(loan.dueDate) >= new Date();
 
-  if (loan.repaidAmount >= loan.amount) {
+  let message = '';
+  
+  if (loan.repaidAmount >= totalOwed) {
     loan.status = 'REPAID';
+    loan.repaidAmount = totalOwed; // cap it
+    
+    // Calculate and store platform fee
+    const platformFee = loan.amount * PLATFORM_FEE_RATE;
+    loan.platformFeeCollected = platformFee;
+
     await User.updateOne(
       { stellarPublicKey: auth.pubKey },
       { $inc: { trustTokens: isOnTime ? 50 : 20 } }
     );
+    
+    message = `🎉 Loan fully repaid! +${isOnTime ? 50 : 20} TRUST tokens earned. (Platform Fee of $${platformFee.toFixed(2)} collected)`;
   } else {
     loan.status = 'REPAYING';
+    message = `Partial repayment recorded. Remaining: $${(totalOwed - loan.repaidAmount).toFixed(2)}`;
   }
 
   await loan.save();
   computeScore(auth.pubKey).catch(console.error);
 
-  return NextResponse.json({
-    loan,
-    message: loan.status === 'REPAID'
-      ? `🎉 Loan fully repaid! +${isOnTime ? 50 : 20} TRUST tokens earned.`
-      : `Partial repayment recorded. Remaining: $${(loan.amount - loan.repaidAmount).toFixed(2)}`,
-  });
+  return NextResponse.json({ loan, message });
 }
