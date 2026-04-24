@@ -13,6 +13,7 @@ export default function CirclesPage() {
   const [publicCircles, setPublicCircles] = useState<any[]>([]);
   const [selectedCircle, setSelectedCircle] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingCircleDetail, setLoadingCircleDetail] = useState(false);
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState({ name: '', description: '', circleRules: '', socialLink: '', isPublic: true });
   const [attestWeight, setAttestWeight] = useState(0.7);
@@ -76,16 +77,24 @@ export default function CirclesPage() {
   }
 
   async function loadCircle(id: string) {
-    const c = await circlesAPI.get(id);
-    setSelectedCircle(c);
-    setSettingsForm({ circleRules: c.circleRules || '', borrowApprovalEnabled: c.borrowApprovalEnabled || false, isPublic: c.isPublic ?? true, socialLink: c.socialLink || '' });
+    // Eagerly set the circle to provide instant visual feedback (fixes click lag)
+    const placeholder = circles.find((c: any) => c.id === id) || publicCircles.find((c: any) => c.id === id);
+    if (placeholder) {
+      setSelectedCircle(placeholder);
+    }
     
-    if (c.isPool) {
-      try {
+    setLoadingCircleDetail(true);
+    try {
+      const c = await circlesAPI.get(id);
+      setSelectedCircle(c);
+      setSettingsForm({ circleRules: c.circleRules || '', borrowApprovalEnabled: c.borrowApprovalEnabled || false, isPublic: c.isPublic ?? true, socialLink: c.socialLink || '' });
+      
+      if (c.isPool) {
         const d = await poolsAPI.getUserDeposit(id);
         setUserPoolDeposit(d.total);
-      } catch (e) {}
-    }
+      }
+    } catch (e) {}
+    setLoadingCircleDetail(false);
   }
 
   async function handleSearch(e: React.FormEvent) {
@@ -297,7 +306,10 @@ export default function CirclesPage() {
           {selectedCircle && (
             <div className="glass-card animate-scale-in" style={{ padding: 32, height: 'fit-content', position: 'sticky', top: 100 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-                <h3 style={{ fontSize: '1.25rem', color: 'var(--c-text)' }}>{selectedCircle.name}</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <h3 style={{ fontSize: '1.25rem', color: 'var(--c-text)' }}>{selectedCircle.name}</h3>
+                  {loadingCircleDetail && <div className="spinner" style={{ width: 14, height: 14, border: '2px solid var(--c-text-3)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />}
+                </div>
                 <button onClick={() => setSelectedCircle(null)} style={{ background: 'var(--c-surface-2)', border: '1px solid var(--c-border)', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--c-text-2)', cursor: 'pointer' }}>×</button>
               </div>
 

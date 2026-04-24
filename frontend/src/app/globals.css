@@ -526,3 +526,7 @@ h1, h2, h3, h4, h5 { font-family: var(--font-heading); font-weight: 700; line-he
   border-radius: 6px;
   border: 1px solid rgba(0,217,166,0.15);
 }
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
