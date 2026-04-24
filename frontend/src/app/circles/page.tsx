@@ -27,6 +27,12 @@ export default function CirclesPage() {
   const [settingsForm, setSettingsForm] = useState({ circleRules: '', borrowApprovalEnabled: false, isPublic: true, socialLink: '' });
   const [savingSettings, setSavingSettings] = useState(false);
 
+  // Delete Circle states
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteCodeStr, setDeleteCodeStr] = useState('');
+  const [deleteInput, setDeleteInput] = useState('');
+  const [deletingCircle, setDeletingCircle] = useState(false);
+
   useEffect(() => {
     const savedToken = localStorage.getItem('tc_token');
     const savedPubKey = localStorage.getItem('tc_pubkey');
@@ -367,6 +373,69 @@ export default function CirclesPage() {
                           style={{ fontSize: '0.82rem', padding: '9px 18px' }}>
                           {savingSettings ? 'Saving...' : 'Save Settings'}
                         </button>
+
+                        <div style={{ marginTop: 24, paddingTop: 16, borderTop: '1px solid rgba(255,71,87,0.2)' }}>
+                          <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#FF4757', marginBottom: 8 }}>Danger Zone</div>
+                          
+                          {!showDeleteConfirm ? (
+                            <button
+                              onClick={() => {
+                                setShowDeleteConfirm(true);
+                                setDeleteCodeStr(Math.random().toString(36).substring(2, 10).toUpperCase());
+                                setDeleteInput('');
+                              }}
+                              className="btn btn-ghost"
+                              style={{ width: '100%', color: '#FF4757', border: '1px solid rgba(255,71,87,0.3)' }}
+                            >
+                              Delete Circle Network
+                            </button>
+                          ) : (
+                            <div style={{ background: 'rgba(255,71,87,0.05)', border: '1px solid rgba(255,71,87,0.2)', padding: 16, borderRadius: 'var(--radius-md)' }}>
+                              <p style={{ fontSize: '0.75rem', color: 'var(--c-text-2)', marginBottom: 12 }}>
+                                This action is permanent and cannot be undone. All nodes will be disconnected.
+                                To verify deletion, type the following 8-character code:
+                              </p>
+                              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '1.1rem', fontWeight: 800, color: 'var(--c-text)', textAlign: 'center', letterSpacing: '2px', marginBottom: 12, userSelect: 'none', background: 'var(--c-surface-2)', padding: '8px', borderRadius: 4 }}>
+                                {deleteCodeStr}
+                              </div>
+                              <input
+                                className="input"
+                                value={deleteInput}
+                                onChange={e => setDeleteInput(e.target.value.toUpperCase())}
+                                placeholder="TYPE CODE HERE"
+                                style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', marginBottom: 12, borderColor: deleteInput === deleteCodeStr ? 'var(--c-secondary)' : 'var(--c-border)' }}
+                              />
+                              <div style={{ display: 'flex', gap: 8 }}>
+                                <button
+                                  onClick={() => setShowDeleteConfirm(false)}
+                                  className="btn btn-ghost"
+                                  style={{ flex: 1, fontSize: '0.8rem' }}
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  onClick={async () => {
+                                    if (deleteInput !== deleteCodeStr) return;
+                                    setDeletingCircle(true);
+                                    try {
+                                      await circlesAPI.delete(selectedCircle.id);
+                                      setMsg('Circle deleted successfully.');
+                                      setSelectedCircle(null);
+                                      load();
+                                    } catch (e: any) { setMsg('Error: ' + e.message); }
+                                    setDeletingCircle(false);
+                                  }}
+                                  disabled={deleteInput !== deleteCodeStr || deletingCircle}
+                                  className="btn"
+                                  style={{ flex: 1, fontSize: '0.8rem', background: '#FF4757', color: '#fff', border: 'none' }}
+                                >
+                                  {deletingCircle ? 'Deleting...' : 'Confirm Delete'}
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
                       </div>
                     )}
                   </div>

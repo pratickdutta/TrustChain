@@ -1,5 +1,5 @@
 'use client';
-import { useState, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import useWalletStore from '@/store/walletStore';
 import { authAPI, scoreAPI } from '@/lib/api';
 import { StellarWalletsKit, Networks } from '@creit.tech/stellar-wallets-kit';
@@ -14,20 +14,29 @@ export default function WalletConnect({ compact = false }: { compact?: boolean }
   const [mode, setMode] = useState<'freighter' | 'manual'>('freighter');
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        StellarWalletsKit.init({
+          network: Networks.TESTNET,
+          selectedWalletId: FREIGHTER_ID,
+          modules: [
+            new FreighterModule(),
+            new AlbedoModule(),
+            new LobstrModule(),
+            new xBullModule(),
+          ],
+        });
+      } catch (e) {
+        console.warn('Kit already initialized', e);
+      }
+    }
+  }, []);
+
   const connectWalletsKit = async () => {
     setConnecting(true);
     setError('');
     try {
-      StellarWalletsKit.init({
-        network: Networks.TESTNET,
-        selectedWalletId: FREIGHTER_ID,
-        modules: [
-          new FreighterModule(),
-          new AlbedoModule(),
-          new LobstrModule(),
-          new xBullModule(),
-        ],
-      });
 
       const { address: pubKey } = await StellarWalletsKit.authModal();
       
@@ -43,8 +52,9 @@ export default function WalletConnect({ compact = false }: { compact?: boolean }
       const userScore = await scoreAPI.me();
       setScore(userScore);
     } catch (err: any) {
+      console.error('Wallet connect error:', err);
       // Avoid showing error if user just closed the modal
-      if (err.message && !err.message.includes('closed')) {
+      if (err.message && !err.message.includes('closed') && !err.message.includes('cancel')) {
         setError(err.message || 'Failed to authenticate');
       }
     } finally {

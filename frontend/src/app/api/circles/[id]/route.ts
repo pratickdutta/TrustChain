@@ -92,3 +92,30 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   return NextResponse.json(formatted);
 }
+
+// DELETE /api/circles/[id] — owner deletes circle
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const auth = requireAuth(req);
+  if (!auth) return unauthorized();
+  const { id } = await params;
+
+  await connectDB();
+  const circle = await Circle.findById(id);
+  if (!circle) return NextResponse.json({ error: 'Circle not found' }, { status: 404 });
+  if (circle.creatorId !== auth.pubKey) {
+    return NextResponse.json({ error: 'Only the circle owner can delete this circle' }, { status: 403 });
+  }
+
+  const members = [...circle.members];
+
+  // Delete the circle and its specific attestations
+  await Circle.findByIdAndDelete(id);
+  await Attestation.deleteMany({ circleId: id });
+
+  // Re-compute scores for all former members since their attestations changed
+  for (const member of members) {
+    await computeScore(member);
+  }
+
+  return NextResponse.json({ success: true });
+}

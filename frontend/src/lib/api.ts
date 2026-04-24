@@ -86,6 +86,8 @@ export const circlesAPI = {
     }),
   leave: (id: string) =>
     apiFetch<any>(`/circles/${id}/leave`, { method: 'DELETE' }),
+  delete: (id: string) =>
+    apiFetch<any>(`/circles/${id}`, { method: 'DELETE' }),
 };
 
 
