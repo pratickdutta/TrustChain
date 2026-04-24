@@ -205,7 +205,42 @@ router.post('/:id/default', authMiddleware, (req, res) => {
   db.loans.set(loan.id, loan);
 
   // ── Apply default penalties ──
-  // If a human approved (individual lender or platinum pool owner), penalise their B score
+  // 1. Borrower loses all TRUST tokens and behavior score drops heavily
+  const borrower = db.users.get(req.pubKey);
+  if (borrower) {
+    borrower.trustTokens = 0; // Seize all tokens!
+    db.users.set(req.pubKey, borrower);
+  }
+
+  const borrowerScore = db.scores.get(req.pubKey);
+  if (borrowerScore) {
+    borrowerScore.behaviorScore = Math.max(0, (borrowerScore.behaviorScore || 0) - 150); // Massive penalty for default
+    borrowerScore.totalScore = (borrowerScore.trustScore || 0) + borrowerScore.behaviorScore + (borrowerScore.activityScore || 0);
+    db.scores.set(req.pubKey, borrowerScore);
+  }
+
+  // 2. SOCIAL SLASHING: Penalize everyone who vouched for the defaulter
+  const attestationsToBorrower = [...db.attestations.values()].filter(a => a.toUserId === req.pubKey);
+  attestationsToBorrower.forEach(attestation => {
+    const attesterId = attestation.fromUserId;
+    
+    // Slash Attester's TRUST balance
+    const attester = db.users.get(attesterId);
+    if (attester) {
+      attester.trustTokens = Math.max(0, (attester.trustTokens || 0) - 100); // Burn 100 TRUST per bad attestation
+      db.users.set(attesterId, attester);
+    }
+    
+    // Slash Attester's Behavior Score (they made a bad vouch)
+    const attesterScore = db.scores.get(attesterId);
+    if (attesterScore) {
+      attesterScore.behaviorScore = Math.max(0, (attesterScore.behaviorScore || 0) - 40);
+      attesterScore.totalScore = (attesterScore.trustScore || 0) + attesterScore.behaviorScore + (attesterScore.activityScore || 0);
+      db.scores.set(attesterId, attesterScore);
+    }
+  });
+
+  // 3. Slashing Approver (if manual human approved it)
   const approver = loan.approvedBy;
   if (approver && approver !== 'smart_contract') {
     const approverScore = db.scores.get(approver);
@@ -219,15 +254,7 @@ router.post('/:id/default', authMiddleware, (req, res) => {
     }
   }
 
-  // Borrower's own behavior score also drops
-  const borrowerScore = db.scores.get(req.pubKey);
-  if (borrowerScore) {
-    borrowerScore.behaviorScore = Math.max(0, (borrowerScore.behaviorScore || 0) - 50);
-    borrowerScore.totalScore = (borrowerScore.trustScore || 0) + borrowerScore.behaviorScore + (borrowerScore.activityScore || 0);
-    db.scores.set(req.pubKey, borrowerScore);
-  }
-
-  res.json({ message: 'Loan marked as defaulted. Penalties applied.', loan });
+  res.json({ message: 'Default processed: Social Slashing initiated and TRUST tokens burned.', loan });
 });
 
 // GET /api/loans/stats/global - Protocol stats

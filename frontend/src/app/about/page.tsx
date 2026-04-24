@@ -49,6 +49,50 @@ export default function AboutPage() {
           </div>
         </div>
 
+        {/* ── DEFAULT PENALTY MECHANISM ── */}
+        <div className="glass-card animate-fade-in-up" style={{ padding: 40, marginBottom: 80, border: '1px solid rgba(239,68,68,0.25)', background: 'linear-gradient(135deg, var(--c-surface) 0%, rgba(239,68,68,0.04) 100%)', animationDelay: '450ms' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28 }}>
+            <div style={{ width: 48, height: 48, borderRadius: 12, background: 'rgba(239,68,68,0.1)', color: '#EF4444', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <ShieldCheck size={24} />
+            </div>
+            <div>
+              <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', color: '#EF4444', marginBottom: 4 }}>PROTOCOL ENFORCEMENT</div>
+              <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--c-text)' }}>Default Penalty System</h3>
+            </div>
+          </div>
+          <p style={{ color: 'var(--c-text-2)', lineHeight: 1.7, marginBottom: 28 }}>
+            TrustChain does not rely on collateral — it relies on <strong style={{ color: 'var(--c-text)' }}>community accountability</strong>. A borrower who defaults isn't just hurting themselves; they are breaking the trust of every peer who vouched for them. The protocol enforces this mathematically.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+            {[
+              {
+                emoji: '🔥',
+                title: 'TRUST Token Seizure',
+                color: '#EF4444',
+                desc: "On default, the borrower's entire TRUST token balance is immediately burned. All earned reputation capital is wiped.",
+              },
+              {
+                emoji: '⚡',
+                title: 'Social Slashing',
+                color: '#F97316',
+                desc: 'Every attester who vouched for the defaulter loses 100 TRUST tokens and a –40 BehaviorScore penalty. The default is their responsibility too.',
+              },
+              {
+                emoji: '📉',
+                title: 'Score Collapse',
+                color: '#FBBF24',
+                desc: "The borrower's BehaviorScore drops by 150 points, typically causing a full tier downgrade and blocking future loan access.",
+              },
+            ].map(item => (
+              <div key={item.title} style={{ padding: '18px 20px', borderRadius: 'var(--radius-md)', background: `color-mix(in srgb, ${item.color} 6%, transparent)`, border: `1px solid color-mix(in srgb, ${item.color} 25%, transparent)` }}>
+                <div style={{ fontSize: '1.4rem', marginBottom: 10 }}>{item.emoji}</div>
+                <div style={{ fontWeight: 700, color: item.color, marginBottom: 8, fontSize: '0.9rem' }}>{item.title}</div>
+                <p style={{ fontSize: '0.82rem', color: 'var(--c-text-2)', lineHeight: 1.6 }}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* ── ABOUT THE FOUNDER ── */}
         <div className="glass-card animate-fade-in-up" style={{ padding: '60px 40px', marginBottom: 80, border: '1px solid rgba(130, 107, 218, 0.3)', background: 'linear-gradient(135deg, var(--c-surface) 0%, rgba(130, 107, 218, 0.05) 100%)', animationDelay: '500ms' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>

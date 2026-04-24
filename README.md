@@ -11,6 +11,7 @@
 [![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Status: Beta](https://img.shields.io/badge/Status-Beta_Release-FFB347?style=for-the-badge)](#)
 
 </div>
 
@@ -127,9 +128,35 @@ Repayment history feeds back into Behavior Score
 - **Portfolio View** — Track active loans you've approved and their repayment status
 
 ### Protocol
-- **Hybrid Lending Model** — Pool-to-Peer architecture inspired by Aave; lenders deposit into a shared pool and the smart contract auto-approves eligible borrowers
-- **Default Penalty Engine** — Loan defaults trigger a cascading `behaviorScore` penalty on the borrower and their manual approver
+- **Hybrid Lending Model** — Pool-to-Peer architecture; lenders deposit into a shared pool and the smart contract auto-approves eligible borrowers
+- **Social Slashing** — Defaults trigger cascading penalties across the defaulter's entire Trust Circle
+- **TRUST Token Burning** — All of a defaulter's TRUST tokens are seized and burned on-chain
 - **Cinematic Splash Screen** — Branded intro animation on first load with smooth transitions
+
+---
+
+## Default Penalty System
+
+TrustChain enforces accountability without traditional collateral through a **three-layer penalty cascade** that fires automatically on loan default:
+
+| Layer | Who Is Penalized | Penalty |
+|-------|-----------------|---------|
+| 🔥 **TRUST Token Seizure** | Borrower | Entire TRUST token balance burned to zero |
+| 📉 **Score Collapse** | Borrower | BehaviorScore drops **–150 points** (often a full tier downgrade) |
+| ⚡ **Social Slashing** | Every attester who vouched for the borrower | –100 TRUST tokens + **–40 BehaviorScore** each |
+
+### Why This Works
+Because borrowers' peers are penalized for a default, the **community itself becomes the enforcement mechanism**. Friends, circle members, and vouchers apply real social pressure for repayment — making defaults socially costly, not just financially costly.
+
+```
+Borrower Defaults
+      │
+      ├─► Borrower: trustTokens = 0, behaviorScore -= 150
+      │
+      └─► For each attester who vouched for them:
+              attester.trustTokens -= 100
+              attester.behaviorScore -= 40
+```
 
 ---
 

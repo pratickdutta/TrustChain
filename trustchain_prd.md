@@ -840,6 +840,7 @@ impl LoanAgreement {
 ### Phase 3 — Scale (Months 7–12)
 **Goal: Community growth, governance, and multilingual expansion**
 
+- [ ] **Automated Wallet Garnishing (Soroban)**: Programmable debt agreements granting TrustChain "Allowance" rights. On default, smart contract enters "Overdue Intercept" mode, instantly routing future XLM/USDC deposits to the lender until debt is paid.
 - [ ] TRUST token DAO governance module
 - [ ] AI-assisted credit risk modeling (off-chain ML inference)
 - [ ] Fiat on/off ramps (via local payment partners)
@@ -849,7 +850,19 @@ impl LoanAgreement {
 - [ ] Community grants program
 - [ ] Public analytics dashboard
 
-**Deliverable:** 100k users, self-sustaining credit economy
+**Deliverable:** 100k users, self-sustaining credit economy, automated garnishing system active
+
+---
+
+### Phase 4 — Identity & Exile (Year 2+)
+**Goal: Advanced Web3 identity locking and inescapable reputational permanence**
+
+- [ ] **Identity Blacklisting via Oracles**: Prevent users from simply abandoning a defaulted wallet. Link wallet to a real-world identifier (e.g., phone number via SMS OTP, Gitcoin Passport) via decentralized oracles.
+- [ ] **Permanent Exile**: A default permanently blacklists the associated human identity from TrustChain and any connected Web3 credit architectures until the debt + massive late fee is repaid.
+- [ ] Zero-Knowledge Proofs for identity preservation without KYC data leakage
+- [ ] Decentralized Debt Collection Bounties (on-chain debt purchasing)
+
+**Deliverable:** Sybil-proof identity layer with permanent default penalties
 
 ---
 

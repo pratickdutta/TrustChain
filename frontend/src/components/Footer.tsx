@@ -20,7 +20,8 @@ export default function Footer() {
           {/* Brand & About */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-              <img src="/logo.png" alt="TrustChain Logo" style={{ width: 36, height: 36, objectFit: 'contain', borderRadius: 8 }} />
+              <img src="/logo-light.png" alt="TrustChain Logo" className="logo-light-only" style={{ width: 36, height: 36, objectFit: 'contain', borderRadius: 8 }} />
+              <img src="/logo.png" alt="TrustChain Logo" className="logo-dark-only" style={{ width: 36, height: 36, objectFit: 'contain', borderRadius: 8 }} />
               <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.2rem', color: 'var(--c-text)' }}>
                 TrustChain
               </span>

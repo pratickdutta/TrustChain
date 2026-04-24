@@ -110,22 +110,23 @@ export default function Navbar() {
         backdropFilter: 'blur(32px)',
         WebkitBackdropFilter: 'blur(32px)',
         background: (scrolled || !isHome)
-          ? 'rgba(0, 0, 0, 0.65)'
-          : 'rgba(0, 0, 0, 0.15)',
-        borderBottom: `1px solid ${(scrolled || !isHome) ? 'rgba(255,255,255,0.08)' : 'transparent'}`,
-        boxShadow: (scrolled || !isHome) ? '0 4px 30px rgba(0, 0, 0, 0.4)' : 'none',
-        color: 'var(--c-text)',
+          ? (theme === 'light' ? 'rgba(190, 165, 235, 0.98)' : 'rgba(0, 0, 0, 0.65)')
+          : (theme === 'light' ? 'rgba(190, 165, 235, 0.5)' : 'rgba(0, 0, 0, 0.15)'),
+        borderBottom: `1px solid ${(scrolled || !isHome) ? (theme === 'light' ? 'rgba(59,34,110,0.15)' : 'rgba(255,255,255,0.08)') : 'transparent'}`,
+        boxShadow: (scrolled || !isHome) ? (theme === 'light' ? '0 4px 40px rgba(59, 34, 110, 0.12)' : '0 4px 30px rgba(0, 0, 0, 0.4)') : 'none',
+        color: theme === 'light' ? '#2A1550' : 'var(--c-text)',
       }}>
         <div className="container" style={{ display: 'flex', alignItems: 'center', gap: 0, height: 68 }}>
 
           {/* Logo */}
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, marginRight: 'auto', textDecoration: 'none' }}>
-            <img src="/logo.png" alt="TrustChain Logo" style={{ width: 44, height: 44, objectFit: 'contain', borderRadius: 10 }} />
+            <img src="/logo-light.png" alt="TrustChain Logo" className="logo-light-only" style={{ width: 44, height: 44, objectFit: 'contain', borderRadius: 10 }} />
+            <img src="/logo.png" alt="TrustChain Logo" className="logo-dark-only" style={{ width: 44, height: 44, objectFit: 'contain', borderRadius: 10 }} />
             <div>
-              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.05rem', color: '#fff', letterSpacing: '-0.01em' }}>
+              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.05rem', color: theme === 'light' ? '#3B226E' : '#fff', letterSpacing: '-0.01em' }}>
                 TrustChain
               </div>
-              <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.6)', fontWeight: 600, letterSpacing: '0.08em', marginTop: -2 }}>
+              <div style={{ fontSize: '0.6rem', color: theme === 'light' ? 'rgba(59,34,110,0.6)' : 'rgba(255,255,255,0.6)', fontWeight: 600, letterSpacing: '0.08em', marginTop: -2 }}>
                 MULTI-CHAIN NETWORK
               </div>
             </div>
@@ -143,15 +144,15 @@ export default function Navbar() {
                   borderRadius: 'var(--radius-full)',
                   fontSize: '0.85rem',
                   fontWeight: active ? 700 : 500,
-                  color: active ? '#0A0A0A' : 'rgba(255, 255, 255, 0.8)',
-                  background: active ? '#FFFFFF' : 'transparent',
+                  color: active ? (theme === 'light' ? '#fff' : '#0A0A0A') : (theme === 'light' ? 'rgba(0,0,0,0.6)' : 'rgba(255, 255, 255, 0.8)'),
+                  background: active ? (theme === 'light' ? 'var(--c-bg)' : '#FFFFFF') : 'transparent',
                   border: `1px solid transparent`,
                   transition: 'var(--transition)',
                   textDecoration: 'none',
                   display: 'flex', alignItems: 'center', gap: 6,
                 }}
-                onMouseEnter={(e) => { if (!active) { (e.currentTarget as HTMLElement).style.color = '#FFFFFF'; (e.currentTarget as HTMLElement).style.background = 'rgba(255, 255, 255, 0.1)'; }}}
-                onMouseLeave={(e) => { if (!active) { (e.currentTarget as HTMLElement).style.color = 'rgba(255, 255, 255, 0.8)'; (e.currentTarget as HTMLElement).style.background = 'transparent'; }}}
+                onMouseEnter={(e) => { if (!active) { (e.currentTarget as HTMLElement).style.color = theme === 'light' ? '#000' : '#FFFFFF'; (e.currentTarget as HTMLElement).style.background = theme === 'light' ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.1)'; }}}
+                onMouseLeave={(e) => { if (!active) { (e.currentTarget as HTMLElement).style.color = theme === 'light' ? 'rgba(0,0,0,0.6)' : 'rgba(255, 255, 255, 0.8)'; (e.currentTarget as HTMLElement).style.background = 'transparent'; }}}
                 >
                   <Icon size={14} style={{ opacity: active ? 1 : 0.7 }} />
                   {link.label}
@@ -163,7 +164,7 @@ export default function Navbar() {
           {/* Right side controls */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <button onClick={toggleTheme} style={{
-              background: 'transparent', border: 'none', color: 'var(--c-text-2)',
+              background: 'transparent', border: 'none', color: theme === 'light' ? '#3B226E' : 'var(--c-text-2)',
               cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center'
             }}>
               {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
@@ -190,7 +191,7 @@ export default function Navbar() {
                     <span style={{ fontSize: '0.8rem', fontWeight: 700, color: tierColor, fontFamily: 'var(--font-heading)' }}>
                       {score.totalScore}
                     </span>
-                    <span style={{ fontSize: '0.7rem', color: 'var(--c-text-3)', textTransform: 'capitalize' }}>
+                    <span style={{ fontSize: '0.7rem', color: theme === 'light' ? 'rgba(59,34,110,0.7)' : 'var(--c-text-3)', textTransform: 'capitalize' }}>
                       {score.tier}
                     </span>
                   </div>
@@ -201,11 +202,11 @@ export default function Navbar() {
                   <button style={{
                     display: 'flex', alignItems: 'center', gap: 8,
                     padding: '7px 16px 7px 10px',
-                    background: 'var(--c-surface)',
-                    border: '1px solid var(--c-border)',
+                    background: theme === 'light' ? 'rgba(59, 34, 110, 0.04)' : 'var(--c-surface)',
+                    border: `1px solid ${theme === 'light' ? 'rgba(59, 34, 110, 0.1)' : 'var(--c-border)'}`,
                     borderRadius: 'var(--radius-full)',
-                    color: 'var(--c-text)',
-                    fontSize: '0.82rem', fontWeight: 500,
+                    color: theme === 'light' ? '#3B226E' : 'var(--c-text)',
+                    fontSize: '0.82rem', fontWeight: 600,
                     transition: 'var(--transition)',
                     cursor: 'pointer',
                     fontFamily: 'var(--font-mono)',
@@ -224,7 +225,7 @@ export default function Navbar() {
                       {shortKey.charAt(0).toUpperCase()}
                     </div>
                     {shortKey} 
-                    <LogOut size={12} color="var(--c-text-3)" />
+                    <LogOut size={12} color={theme === 'light' ? 'rgba(59,34,110,0.6)' : "var(--c-text-3)"} />
                   </button>
                 </div>
               </div>
@@ -244,7 +245,7 @@ export default function Navbar() {
             onClick={() => setMenuOpen(!menuOpen)}
             className="mobile-menu-btn"
             style={{
-              background: 'none', border: 'none', color: 'var(--c-text-2)',
+              background: 'none', border: 'none', color: theme === 'light' ? '#3B226E' : 'var(--c-text-2)',
               padding: 8, marginLeft: 8, display: 'none', cursor: 'pointer',
             }}
           >

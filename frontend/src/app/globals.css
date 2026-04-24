@@ -132,6 +132,12 @@ body::before {
   opacity: 0.5;
 }
 
+/* Theme-responsive Logic Overrides */
+.logo-light-only { display: none !important; }
+.logo-dark-only { display: block !important; }
+:root.light .logo-light-only { display: block !important; }
+:root.light .logo-dark-only { display: none !important; }
+
 body::after {
   content: '';
   position: fixed;

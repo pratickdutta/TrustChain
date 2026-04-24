@@ -42,12 +42,12 @@ const HOW_IT_WORKS = [
 ];
 
 const TIERS = [
-  { name: 'Establishing', range: '0–299',   color: '#EF4444' },
-  { name: 'Building',     range: '300–449', color: '#F97316' },
-  { name: 'Bronze',       range: '450–599', color: 'var(--c-accent)' },
-  { name: 'Silver',       range: '600–749', color: 'var(--c-secondary)' },
-  { name: 'Gold',         range: '750–899', color: 'var(--c-accent)' },
-  { name: 'Platinum',     range: '900–1000',color: 'var(--c-primary)' },
+  { name: 'Establishing', range: '0–299',   color: '#EF4444' }, // Red
+  { name: 'Building',     range: '300–449', color: '#F97316' }, // Orange
+  { name: 'Bronze',       range: '450–599', color: '#F59E0B' }, // Bronze/Amber
+  { name: 'Silver',       range: '600–749', color: '#9CA3AF' }, // Silver/Gray
+  { name: 'Gold',         range: '750–899', color: '#FBBF24' }, // Gold/Yellow
+  { name: 'Platinum',     range: '900–1000',color: '#A78BFA' }, // Platinum/Purple
 ];
 
 const FEATURES = [
@@ -285,24 +285,24 @@ export default function LandingPage() {
             {TIERS.map(tier => (
               <div key={tier.name} style={{
                 padding: '18px 16px',
-                background: `${tier.color}0a`,
-                border: `1px solid ${tier.color}30`,
+                background: `color-mix(in srgb, ${tier.color} 12%, transparent)`,
+                border: `1px solid color-mix(in srgb, ${tier.color} 30%, transparent)`,
                 borderRadius: 'var(--radius-md)',
                 textAlign: 'center',
-                transition: 'var(--transition)',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 cursor: 'default',
                 position: 'relative',
                 overflow: 'hidden',
               }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.background = `${tier.color}18`;
-                (e.currentTarget as HTMLElement).style.borderColor = `${tier.color}55`;
+                (e.currentTarget as HTMLElement).style.background = `color-mix(in srgb, ${tier.color} 20%, transparent)`;
+                (e.currentTarget as HTMLElement).style.borderColor = `color-mix(in srgb, ${tier.color} 55%, transparent)`;
                 (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)';
-                (e.currentTarget as HTMLElement).style.boxShadow = `0 12px 40px ${tier.color}20`;
+                (e.currentTarget as HTMLElement).style.boxShadow = `0 12px 40px color-mix(in srgb, ${tier.color} 25%, transparent)`;
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.background = `${tier.color}0a`;
-                (e.currentTarget as HTMLElement).style.borderColor = `${tier.color}30`;
+                (e.currentTarget as HTMLElement).style.background = `color-mix(in srgb, ${tier.color} 12%, transparent)`;
+                (e.currentTarget as HTMLElement).style.borderColor = `color-mix(in srgb, ${tier.color} 30%, transparent)`;
                 (e.currentTarget as HTMLElement).style.transform = '';
                 (e.currentTarget as HTMLElement).style.boxShadow = '';
               }}

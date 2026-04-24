@@ -7,7 +7,7 @@ import { loansAPI, lenderAPI, poolsAPI, scoreAPI } from '@/lib/api';
 import { 
   Building2, GraduationCap, Stethoscope, Tractor, Wrench, Package, 
   Lock, Link2, PlusCircle, Activity, Coins, ShieldCheck, ChevronRight,
-  Zap, Users, Wallet2, CheckCircle2, Clock, Gem
+  Zap, Users, Wallet2, CheckCircle2, Clock, Gem, AlertTriangle
 } from 'lucide-react';
 
 const LOAN_TIERS = [
@@ -270,6 +270,52 @@ export default function LoansPage() {
                 <>
                   <div style={{ marginBottom: 20, padding: '14px 18px', borderRadius: 'var(--radius-md)', background: 'rgba(0,217,166,0.08)', border: '1px solid rgba(0,217,166,0.25)', fontSize: '0.85rem', color: 'var(--c-secondary)', display: 'flex', alignItems: 'center', gap: 10 }}>
                     <ShieldCheck size={16} /> Authorized for <strong>{eligibleTier.tier} Tier</strong> drawdown (Max ${eligibleTier.maxAmount})
+                  </div>
+
+                  {/* ── DEFAULT PENALTY WARNING ── */}
+                  <div style={{
+                    marginBottom: 24,
+                    borderRadius: 'var(--radius-md)',
+                    border: '1px solid rgba(239,68,68,0.35)',
+                    background: 'rgba(239,68,68,0.06)',
+                    overflow: 'hidden',
+                  }}>
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: 10,
+                      padding: '10px 16px',
+                      background: 'rgba(239,68,68,0.12)',
+                      borderBottom: '1px solid rgba(239,68,68,0.2)',
+                      color: '#EF4444', fontWeight: 700, fontSize: '0.8rem', letterSpacing: '0.06em',
+                    }}>
+                      <AlertTriangle size={15} /> DEFAULT PENALTY NOTICE — READ BEFORE PROCEEDING
+                    </div>
+                    <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      {[
+                        {
+                          icon: '🔥',
+                          title: 'TRUST Token Seizure',
+                          desc: 'If you default, your entire TRUST token balance will be immediately burned by the protocol. You lose all earned reputation capital.',
+                        },
+                        {
+                          icon: '⚡',
+                          title: 'Social Slashing',
+                          desc: 'Every peer who vouched for you loses 100 TRUST tokens and takes a –40 point BehaviorScore penalty. Your default damages your entire circle.',
+                        },
+                        {
+                          icon: '📉',
+                          title: 'Score Collapse',
+                          desc: 'Your own BehaviorScore drops by 150 points immediately, likely collapsing your credit tier and locking you out of future loans.',
+                        },
+                      ].map(item => (
+                        <div key={item.title} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                          <span style={{ fontSize: '1rem', flexShrink: 0 }}>{item.icon}</span>
+                          <div>
+                            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#EF4444', marginBottom: 2 }}>{item.title}</div>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--c-text-2)', lineHeight: 1.55 }}>{item.desc}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
                   {/* ── FUNDING SOURCE SELECTOR ── */}
