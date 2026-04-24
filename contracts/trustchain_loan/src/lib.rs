@@ -401,9 +401,10 @@ mod tests {
         // Borrower repays full amount (10 XLM + 2% = 10.2 XLM)
         let total_owed = 102_000_000_i128; // 10.2 XLM in stroops
 
-        // Mint repayment funds to borrower
-        let xlm_id = env.register_stellar_asset_contract_v2(_admin.clone());
-        let _ = xlm_id; // already minted in setup
+        // Mint repayment funds to borrower (for interest)
+        use soroban_sdk::token::StellarAssetClient;
+        let xlm_admin = StellarAssetClient::new(&env, &xlm);
+        xlm_admin.mint(&borrower, &5_000_000);
 
         let loan = client.get_loan(&loan_id);
         assert_eq!(loan.total_owed, total_owed);
