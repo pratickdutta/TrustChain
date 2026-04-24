@@ -65,7 +65,7 @@ export default function ScoreGauge({ totalScore, trustScore, behaviorScore, acti
   return (
     <div style={{ width: '100%' }}>
       {/* Gauge */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32, position: 'relative' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 32, position: 'relative' }}>
         {/* Glow behind gauge */}
         <div style={{
           position: 'absolute', top: '50%', left: '50%',
@@ -138,8 +138,7 @@ export default function ScoreGauge({ totalScore, trustScore, behaviorScore, acti
 
         {/* Tier Label positioned below */}
         <div style={{
-          position: 'absolute', bottom: -5, left: '50%', transform: 'translateX(-50%)',
-          background: 'var(--c-surface)', padding: '4px', borderRadius: 'var(--radius-full)'
+          display: 'flex', justifyContent: 'center', marginTop: -20, marginBottom: 12, position: 'relative', zIndex: 10
         }}>
           <div style={{
             display: 'flex', alignItems: 'center', gap: 6,
