@@ -4,11 +4,11 @@ Soroban (Stellar) smart contracts for TrustChain — the Decentralized Social Cr
 
 ## Contracts
 
-| Contract | Description | WASM Size |
-|---|---|---|
-| `trustchain_loan` | Core loan lifecycle: disburse, repay, default, platform revenue | ~22 KB |
-| `trustchain_score` | On-chain credit score registry (B2B API anchor) | ~11 KB |
-| `trustchain_circle` | On-chain social circle & membership graph | ~15 KB |
+| Contract | Description | WASM Size | Testnet ID |
+|---|---|---|---|
+| `trustchain_loan` | Core loan lifecycle: disburse, repay, default, platform revenue | ~22 KB | `CCGAK2YJ2WPGE74QTYPXHX5NONQWZMTF6NY2JWHLGDZZC3MYPDBUVWMV` |
+| `trustchain_score` | On-chain credit score registry (B2B API anchor) | ~11 KB | `CB6P6UZEYJ77DGSLRIGJY4YK4HFMYGQNZAIJQWXYTVZ2A4STSXMIJP2W` |
+| `trustchain_circle` | On-chain social circle & membership graph | ~15 KB | `CB4ED6IJTJSSG7WJVL7ZK43EU4NVYL5WT2COT2METRE4FZODSCRM7HE7` |
 
 ## Architecture
 

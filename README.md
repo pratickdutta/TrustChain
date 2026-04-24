@@ -117,6 +117,16 @@ We utilize a modern, decoupled architecture powered natively by Next.js 16 App R
 5. JWT stored in localStorage → Bearer token on all API requests
 ```
 
+### Smart Contracts (Soroban)
+
+TrustChain relies on three core Rust smart contracts deployed to the Stellar Testnet:
+
+| Contract | Purpose | Testnet Address |
+|----------|---------|-----------------|
+| **Loan** | Core loan lifecycle, XLM disbursement, and fee collection. | `CCGAK2YJ2WPGE74QTYPXHX5NONQWZMTF6NY2JWHLGDZZC3MYPDBUVWMV` |
+| **Score** | On-chain credit score registry for B2B API access. | `CB6P6UZEYJ77DGSLRIGJY4YK4HFMYGQNZAIJQWXYTVZ2A4STSXMIJP2W` |
+| **Circle** | On-chain social circle and membership graph anchoring. | `CB4ED6IJTJSSG7WJVL7ZK43EU4NVYL5WT2COT2METRE4FZODSCRM7HE7` |
+
 ---
 
 ## Features
@@ -228,7 +238,7 @@ NEXT_PUBLIC_ADMIN_PUBKEY=your_stellar_public_key_here
 |-------|--------|-------------|
 | Phase 1 — MVP | ✅ Complete | Core lending, scoring, circles, Freighter auth |
 | Phase 2 — Persistence | ✅ Complete | MongoDB + Mongoose integration, Next.js API transition |
-| Phase 3 — Soroban | 🔜 Planned | Full smart contract loan agreements on Stellar |
+| Phase 3 — Soroban | ✅ Complete | Full smart contract loan agreements on Stellar |
 | Phase 4 — Oracles | 🔜 Planned | Off-chain identity verification layer |
 | Phase 5 — B2B API | 🔜 Planned | License TrustChain scoring engine to other dApps |
 
