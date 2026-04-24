@@ -124,6 +124,7 @@ export const lenderAPI = {
 
 // ─── Pools ────────────────────────────────────────────────────────────────
 export const poolsAPI = {
+  getPayouts: () => apiFetch<any[]>('/pools/payouts'),
   browse: () => apiFetch<any[]>('/pools/browse'),
   updateSettings: (circleId: string, data: { openToOutside?: boolean; manualApproval?: boolean; minBorrowerScore?: number; maxLoanPerBorrower?: number }) =>
     apiFetch<any>(`/pools/${circleId}/settings`, { method: 'PUT', body: JSON.stringify(data) }),

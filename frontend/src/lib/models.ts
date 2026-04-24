@@ -203,6 +203,29 @@ const PoolDepositSchema = new Schema<IPoolDeposit>({
 
 export const PoolDeposit = models.PoolDeposit || model<IPoolDeposit>('PoolDeposit', PoolDepositSchema);
 
+// ── Pool Payout ─────────────────────────────────────────────────────────
+export interface IPoolPayout extends Document {
+  userId: string;
+  circleId: string;
+  circleName: string;
+  principal: number;   // original deposit
+  interest: number;    // share of pool interest earned
+  total: number;       // principal + interest
+  createdAt: Date;
+}
+
+const PoolPayoutSchema = new Schema<IPoolPayout>({
+  userId:     { type: String, required: true, index: true },
+  circleId:   { type: String, required: true },
+  circleName: { type: String, required: true },
+  principal:  { type: Number, required: true },
+  interest:   { type: Number, required: true },
+  total:      { type: Number, required: true },
+  createdAt:  { type: Date, default: Date.now },
+});
+
+export const PoolPayout = models.PoolPayout || model<IPoolPayout>('PoolPayout', PoolPayoutSchema);
+
 // ── Nonce ─────────────────────────────────────────────────────────────────
 const NonceSchema = new Schema({
   pubKey: { type: String, required: true, unique: true },

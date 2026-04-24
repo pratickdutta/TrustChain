@@ -37,6 +37,9 @@ export default function CirclesPage() {
   const [deleteInput, setDeleteInput] = useState('');
   const [deletingCircle, setDeletingCircle] = useState(false);
 
+  // Pool dissolution payout state
+  const [payoutResult, setPayoutResult] = useState<any>(null);
+
   useEffect(() => {
     const savedToken = localStorage.getItem('tc_token');
     const savedPubKey = localStorage.getItem('tc_pubkey');
@@ -534,17 +537,28 @@ export default function CirclesPage() {
                       </button>
 
                       {selectedCircle.isPool && (
-                        <button
-                          onClick={async () => {
-                            try {
-                              await poolsAPI.disablePool(selectedCircle.id);
-                              setMsg('MoneyPool disabled');
-                              await loadCircle(selectedCircle.id);
-                            } catch (e: any) { setMsg('Error: ' + e.message); }
-                          }}
-                          style={{ fontSize: '0.78rem', padding: '7px 14px', background: 'none', border: '1px solid rgba(255,80,80,0.3)', color: '#FF5050', borderRadius: 'var(--radius-full)', cursor: 'pointer' }}>
-                          Disable MoneyPool
-                        </button>
+                        <div style={{ borderTop: '1px solid rgba(255,80,80,0.15)', paddingTop: 14 }}>
+                          <div style={{ fontSize: '0.72rem', color: 'var(--c-text-3)', marginBottom: 8, lineHeight: 1.4 }}>
+                            <strong style={{ color: '#FF5050' }}>Dissolve Pool:</strong> Disabling the MoneyPool will settle all lender contributions with their earned interest and permanently close the pool. All repaid loan interest is distributed pro-rata.
+                          </div>
+                          <button
+                            onClick={async () => {
+                              if (!confirm('Are you sure? This will distribute all capital + interest to lenders and permanently close the MoneyPool.')) return;
+                              setSavingPool(true);
+                              try {
+                                const result = await poolsAPI.disablePool(selectedCircle.id);
+                                setPayoutResult(result);
+                                setMsg(`MoneyPool dissolved. ${result.payouts?.length ?? 0} lender(s) paid out.`);
+                                setShowPoolPanel(false);
+                                await loadCircle(selectedCircle.id);
+                              } catch (e: any) { setMsg('Error: ' + e.message); }
+                              setSavingPool(false);
+                            }}
+                            disabled={savingPool}
+                            style={{ fontSize: '0.78rem', padding: '7px 16px', background: 'none', border: '1px solid rgba(255,80,80,0.4)', color: '#FF5050', borderRadius: 'var(--radius-full)', cursor: 'pointer' }}>
+                            {savingPool ? 'Processing...' : 'Dissolve & Pay Out Lenders'}
+                          </button>
+                        </div>
                       )}
                     </div>
                   )}
@@ -623,6 +637,37 @@ export default function CirclesPage() {
                   </div>
                 )}
                 </>
+              )}
+
+              {/* Payout result card — shown after pool dissolution */}
+              {payoutResult && (
+                <div className="glass-card animate-scale-in" style={{ padding: 20, marginBottom: 20, border: '1px solid rgba(0,217,166,0.3)', background: 'rgba(0,217,166,0.05)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <TrendingUp size={16} color="var(--c-secondary)" />
+                      <span style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--c-secondary)' }}>Pool Dissolved — Payout Summary</span>
+                    </div>
+                    <button onClick={() => setPayoutResult(null)} style={{ background: 'none', border: 'none', color: 'var(--c-text-3)', cursor: 'pointer', fontSize: '1.1rem' }}>×</button>
+                  </div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--c-text-3)', marginBottom: 12 }}>
+                    Total interest distributed: <strong style={{ color: 'var(--c-secondary)' }}>{payoutResult.totalInterestEarned?.toFixed(4) ?? '0'} XLM</strong>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {(payoutResult.payouts || []).map((p: any, i: number) => (
+                      <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: 'var(--c-surface-2)', borderRadius: 'var(--radius-sm)', fontSize: '0.78rem' }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--c-text-2)' }}>{p.userId.slice(0, 8)}…</span>
+                        <div style={{ textAlign: 'right' }}>
+                          <span style={{ color: 'var(--c-text-3)' }}>{p.principal.toFixed(2)} + </span>
+                          <span style={{ color: 'var(--c-secondary)' }}>{p.interest.toFixed(4)} interest</span>
+                          <strong style={{ color: 'var(--c-text)', marginLeft: 8 }}>= {p.total.toFixed(4)} XLM</strong>
+                        </div>
+                      </div>
+                    ))}
+                    {(payoutResult.payouts || []).length === 0 && (
+                      <div style={{ fontSize: '0.8rem', color: 'var(--c-text-3)', textAlign: 'center', padding: '12px 0' }}>No deposits on record — nothing to pay out.</div>
+                    )}
+                  </div>
+                </div>
               )}
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
