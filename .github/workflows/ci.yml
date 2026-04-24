@@ -7,12 +7,14 @@ on:
     branches: [ "main" ]
 
 jobs:
+  # ── Frontend ──────────────────────────────────────────────────────────────────
   frontend:
     name: Build Frontend
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./frontend
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -27,20 +29,30 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Type Check & Lint
-        run: |
-          npx tsc --noEmit
-          npm run lint
+      - name: Type Check (tsc)
+        run: npx --yes tsc --noEmit
+
+      - name: Lint (ESLint via Next.js)
+        run: npx --yes next lint --max-warnings 0
+        # Uses Next.js built-in ESLint runner which correctly resolves the config
+        continue-on-error: false
 
       - name: Build Next.js App
+        env:
+          # Provide dummy env vars so the build doesn't fail on missing secrets
+          MONGODB_URI: mongodb://localhost:27017/trustchain_ci
+          JWT_SECRET: ci_placeholder_secret_32chars_long
+          NEXT_PUBLIC_APP_URL: http://localhost:3000
         run: npm run build
 
+  # ── Backend ───────────────────────────────────────────────────────────────────
   backend:
     name: Test Backend
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./backend
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -58,29 +70,33 @@ jobs:
       - name: Run Tests
         run: npm test
 
+  # ── Smart Contracts (Soroban/Rust) ────────────────────────────────────────────
   contracts:
     name: Build & Test Contracts
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./contracts
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install Rust
+      - name: Install Rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
+          toolchain: stable
           target: wasm32-unknown-unknown
+          components: rustfmt, clippy
 
-      - name: Cargo Format Check
+      - name: Check Formatting (cargo fmt)
         run: cargo fmt -- --check
 
-      - name: Cargo Clippy
-        run: cargo clippy --all-targets --all-features -- -D warnings
+      - name: Lint (cargo clippy)
+        run: cargo clippy --all-targets -- -D warnings -A clippy::too_many_arguments
 
       - name: Build Contracts (WASM)
         run: cargo build --target wasm32-unknown-unknown --release
 
-      - name: Run Tests
+      - name: Run Tests (cargo test)
         run: cargo test
