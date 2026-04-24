@@ -78,7 +78,7 @@ export default function ScoreGauge({ totalScore, trustScore, behaviorScore, acti
           pointerEvents: 'none',
         }} />
 
-        <svg width={SVG} height={SVG * 0.8} viewBox={`0 0 ${SVG} ${SVG}`} style={{ overflow: 'visible', display: 'block' }}>
+        <svg width={SVG} height={SVG} viewBox={`0 0 ${SVG} ${SVG}`} style={{ overflow: 'visible', display: 'block' }}>
           <defs>
             <linearGradient id="scoreArcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="var(--c-primary)" />
@@ -138,7 +138,7 @@ export default function ScoreGauge({ totalScore, trustScore, behaviorScore, acti
 
         {/* Tier Label positioned below */}
         <div style={{
-          position: 'absolute', bottom: -28, left: '50%', transform: 'translateX(-50%)',
+          position: 'absolute', bottom: 12, left: '50%', transform: 'translateX(-50%)',
           background: 'var(--c-surface)', padding: '4px', borderRadius: 'var(--radius-full)'
         }}>
           <div style={{
