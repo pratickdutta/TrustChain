@@ -2,6 +2,11 @@
 import { useState, useCallback } from 'react';
 import useWalletStore from '@/store/walletStore';
 import { authAPI, scoreAPI } from '@/lib/api';
+import { StellarWalletsKit, Networks } from '@creit.tech/stellar-wallets-kit';
+import { FreighterModule, FREIGHTER_ID } from '@creit.tech/stellar-wallets-kit/modules/freighter';
+import { AlbedoModule } from '@creit.tech/stellar-wallets-kit/modules/albedo';
+import { LobstrModule } from '@creit.tech/stellar-wallets-kit/modules/lobstr';
+import { xBullModule } from '@creit.tech/stellar-wallets-kit/modules/xbull';
 
 export default function WalletConnect({ compact = false }: { compact?: boolean }) {
   const { setWallet, setScore, setConnecting, isConnecting } = useWalletStore();
@@ -9,22 +14,39 @@ export default function WalletConnect({ compact = false }: { compact?: boolean }
   const [mode, setMode] = useState<'freighter' | 'manual'>('freighter');
   const [error, setError] = useState('');
 
-  const connectFreighter = async () => {
+  const connectWalletsKit = async () => {
     setConnecting(true);
     setError('');
     try {
-      const freighter = (window as any).freighter;
-      if (!freighter) throw new Error('Freighter not installed');
-      await freighter.requestAccess();
-      const { address } = await freighter.getAddress();
-      const { nonce } = await authAPI.challenge(address);
-      const { token, user } = await authAPI.verify(address, nonce);
-      setWallet(address, token, user);
+      StellarWalletsKit.init({
+        network: Networks.TESTNET,
+        selectedWalletId: FREIGHTER_ID,
+        modules: [
+          new FreighterModule(),
+          new AlbedoModule(),
+          new LobstrModule(),
+          new xBullModule(),
+        ],
+      });
+
+      const { address: pubKey } = await StellarWalletsKit.authModal();
+      
+      if (!pubKey) {
+        throw new Error('Wallet connection was cancelled or failed.');
+      }
+
+      // Use the standard auth flow with the returned public key
+      const { nonce } = await authAPI.challenge(pubKey);
+      const { token, user } = await authAPI.verify(pubKey, nonce);
+      setWallet(pubKey, token, user);
+      
       const userScore = await scoreAPI.me();
       setScore(userScore);
     } catch (err: any) {
-      setError(err.message);
-      if (err.message.includes('not installed')) setMode('manual');
+      // Avoid showing error if user just closed the modal
+      if (err.message && !err.message.includes('closed')) {
+        setError(err.message || 'Failed to authenticate');
+      }
     } finally {
       setConnecting(false);
     }
@@ -49,7 +71,7 @@ export default function WalletConnect({ compact = false }: { compact?: boolean }
 
   if (compact) {
     return (
-      <button onClick={connectFreighter} disabled={isConnecting} className="btn btn-primary">
+      <button onClick={connectWalletsKit} disabled={isConnecting} className="btn btn-primary">
         {isConnecting ? 'Connecting...' : '🔐 Connect Wallet'}
       </button>
     );
@@ -77,7 +99,7 @@ export default function WalletConnect({ compact = false }: { compact?: boolean }
                 transition: 'all 0.2s',
               }}
             >
-              {m === 'freighter' ? '🌟 Freighter' : '🔑 Public Key'}
+              {m === 'freighter' ? '🌟 Web3 Wallet' : '🔑 Public Key'}
             </button>
           ))}
         </div>
@@ -89,19 +111,16 @@ export default function WalletConnect({ compact = false }: { compact?: boolean }
               background: 'rgba(108,99,255,0.06)', border: '1px solid rgba(108,99,255,0.2)',
               marginBottom: 20, fontSize: '0.8rem', color: 'var(--color-text-secondary)', lineHeight: 1.6,
             }}>
-              <strong style={{ color: 'var(--color-primary-light)' }}>Freighter Wallet</strong> is the official Stellar browser extension. 
-              It securely signs transactions without exposing your private key.
+              <strong style={{ color: 'var(--color-primary-light)' }}>Multi-Wallet Support</strong> is here. 
+              Connect securely using Freighter, Albedo, Lobstr, xBull, and more.
             </div>
-            <button onClick={connectFreighter} disabled={isConnecting} className="btn btn-primary" style={{ width: '100%' }}>
+            <button onClick={connectWalletsKit} disabled={isConnecting} className="btn btn-primary" style={{ width: '100%' }}>
               {isConnecting ? (
                 <><span className="animate-spin" style={{ display: 'inline-block', width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%' }} /> Connecting...</>
-              ) : '🌟 Connect Freighter'}
+              ) : '🌟 Connect Web3 Wallet'}
             </button>
             <p style={{ textAlign: 'center', marginTop: 12, fontSize: '0.78rem', color: 'var(--color-muted)' }}>
-              Don't have Freighter?{' '}
-              <a href="https://freighter.app" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary-light)' }}>
-                Install it here →
-              </a>
+              Supports Freighter, Albedo, Lobstr, & xBull
             </p>
           </div>
         ) : (
