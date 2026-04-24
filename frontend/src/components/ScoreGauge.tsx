@@ -3,10 +3,10 @@ import { useEffect, useState } from 'react';
 import { Shield, Sparkles, TrendingUp, Anchor, Mountain, Award } from 'lucide-react';
 
 const TIER_CONFIG: Record<string, { color: string; label: string; icon: any; glow: string }> = {
-  platinum: { color: 'var(--c-primary)', label: 'Platinum', icon: Award, glow: 'rgba(167,139,250,0.4)' },
-  gold: { color: 'var(--c-accent)', label: 'Gold', icon: Sparkles, glow: 'rgba(245,158,11,0.4)' },
-  silver: { color: 'var(--c-secondary)', label: 'Silver', icon: Shield, glow: 'rgba(148,163,184,0.4)' },
-  bronze: { color: 'var(--c-accent)', label: 'Bronze', icon: Mountain, glow: 'rgba(217,119,6,0.4)' },
+  platinum: { color: 'var(--c-primary)', label: 'Platinum', icon: Award, glow: 'rgba(106,76,219,0.4)' },
+  gold: { color: '#F59E0B', label: 'Gold', icon: Sparkles, glow: 'rgba(245,158,11,0.4)' },
+  silver: { color: '#94A3B8', label: 'Silver', icon: Shield, glow: 'rgba(148,163,184,0.4)' },
+  bronze: { color: '#D97706', label: 'Bronze', icon: Mountain, glow: 'rgba(217,119,6,0.4)' },
   building: { color: '#F97316', label: 'Building', icon: TrendingUp, glow: 'rgba(249,115,22,0.4)' },
   establishing: { color: '#EF4444', label: 'Establishing', icon: Anchor, glow: 'rgba(239,68,68,0.4)' },
 };
@@ -142,7 +142,7 @@ export default function ScoreGauge({ totalScore, trustScore, behaviorScore, acti
         }}>
           <div style={{
             display: 'flex', alignItems: 'center', gap: 6,
-            background: `rgba(${cfg.color === 'var(--c-primary)' ? '167,139,250' : cfg.color === 'var(--c-accent)' ? '245,158,11' : '108,99,255'},0.12)`,
+            background: `rgba(${cfg.color === 'var(--c-primary)' ? '106,76,219' : cfg.color === '#F59E0B' ? '245,158,11' : cfg.color === '#94A3B8' ? '148,163,184' : cfg.color === '#D97706' ? '217,119,6' : '106,76,219'},0.12)`,
             border: `1px solid ${cfg.color}40`,
             padding: '6px 14px', borderRadius: 'var(--radius-full)',
             color: cfg.color, fontWeight: 700, fontSize: '0.8rem',
