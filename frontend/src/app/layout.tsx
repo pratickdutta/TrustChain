@@ -12,6 +12,8 @@ export const metadata: Metadata = {
   },
 };
 
+import Footer from '@/components/Footer';
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -19,7 +21,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body>{children}</body>
+      <body>
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+          <main style={{ flex: 1 }}>{children}</main>
+          <Footer />
+        </div>
+      </body>
     </html>
   );
 }

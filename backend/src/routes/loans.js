@@ -16,11 +16,12 @@ const LOAN_TIERS = {
 
 // POST /api/loans - Request a loan
 router.post('/', authMiddleware, (req, res) => {
-  const { amount, currency, durationDays, purpose } = req.body;
+  const { amount, currency, durationDays, purpose, fundingSource, lenderKey, poolId } = req.body;
   if (!amount || !purpose) {
     return res.status(400).json({ error: 'amount and purpose are required' });
   }
 
+  const source = fundingSource || 'defi'; // 'defi' | 'individual' | 'pool'
   const score = db.scores.get(req.pubKey);
   if (!score) return res.status(400).json({ error: 'Credit score not computed yet' });
 
@@ -41,24 +42,64 @@ router.post('/', authMiddleware, (req, res) => {
 
   // Check for existing active loan
   const activeLoan = [...db.loans.values()].find(
-    l => l.borrowerId === req.pubKey && ['DISBURSED', 'REPAYING', 'APPROVED'].includes(l.status)
+    l => l.borrowerId === req.pubKey && ['DISBURSED', 'REPAYING', 'APPROVED', 'PENDING_LENDER', 'PENDING_POOL'].includes(l.status)
   );
   if (activeLoan) {
-    return res.status(400).json({ error: 'You already have an active loan. Repay it first.' });
+    return res.status(400).json({ error: 'You already have an active or pending loan.' });
+  }
+
+  // Validate individual lender if specified
+  if (source === 'individual') {
+    if (!lenderKey) return res.status(400).json({ error: 'lenderKey required for individual funding' });
+    const lender = db.users.get(lenderKey);
+    if (!lender || !lender.isLender) return res.status(400).json({ error: 'Target is not a registered lender' });
+    if (score.totalScore < (lender.lenderMinScore || 0)) {
+      return res.status(400).json({ error: `Your score (${score.totalScore}) is below this lender's minimum (${lender.lenderMinScore})` });
+    }
+  }
+
+  // Validate pool if specified
+  if (source === 'pool') {
+    if (!poolId) return res.status(400).json({ error: 'poolId required for pool funding' });
+    const pool = db.circles.get(poolId);
+    if (!pool || !pool.isPool) return res.status(400).json({ error: 'Target is not an active MoneyPool' });
+    if (!pool.poolOpenToOutside && !pool.members.includes(req.pubKey)) {
+      return res.status(403).json({ error: 'This pool only lends to its own members' });
+    }
+    if (score.totalScore < (pool.poolMinBorrowerScore || 300)) {
+      return res.status(400).json({ error: `Score too low for this pool (needs ${pool.poolMinBorrowerScore})` });
+    }
+    if (amount > (pool.poolMaxLoanPerBorrower || 500)) {
+      return res.status(400).json({ error: `Amount exceeds this pool's per-borrower cap of $${pool.poolMaxLoanPerBorrower}` });
+    }
   }
 
   const dueDate = new Date();
   dueDate.setDate(dueDate.getDate() + (durationDays || tier.durationDays));
 
+  // Determine status based on funding source and approval rules
+  let loanStatus = 'APPROVED'; // Default: DeFi auto-approves
+  if (source === 'individual') {
+    const lender = db.users.get(lenderKey);
+    loanStatus = lender?.lenderManualReview ? 'PENDING_LENDER' : 'APPROVED';
+  } else if (source === 'pool') {
+    const pool = db.circles.get(poolId);
+    loanStatus = pool?.poolManualApproval ? 'PENDING_POOL' : 'APPROVED';
+  }
+
   const loan = {
-    id: uuidv4(),
+    id: require('crypto').randomUUID ? require('crypto').randomUUID() : require('uuid').v4(),
     borrowerId: req.pubKey,
     amount: parseFloat(amount),
     currency: currency || 'XLM',
     durationDays: durationDays || tier.durationDays,
     purpose,
-    status: 'APPROVED', // Auto-approve for MVP (pool-backed)
-    disbursedAt: new Date().toISOString(),
+    fundingSource: source,
+    lenderKey: source === 'individual' ? lenderKey : null,
+    poolId: source === 'pool' ? poolId : null,
+    approvedBy: loanStatus === 'APPROVED' ? 'smart_contract' : null,
+    status: loanStatus,
+    disbursedAt: loanStatus === 'APPROVED' ? new Date().toISOString() : null,
     dueDate: dueDate.toISOString(),
     repaidAmount: 0,
     feePercent: tier.feePercent,
@@ -68,10 +109,15 @@ router.post('/', authMiddleware, (req, res) => {
   };
 
   db.loans.set(loan.id, loan);
-  res.status(201).json({
-    loan,
-    message: `Loan of $${amount} approved for ${score.tier} tier. Due: ${dueDate.toDateString()}`,
-    explorerNote: 'On mainnet, disbursement would be executed via Stellar payment operation.',
+
+  const message = loanStatus === 'APPROVED'
+    ? `Loan of $${amount} auto-approved via smart contract. Due: ${dueDate.toDateString()}`
+    : loanStatus === 'PENDING_LENDER'
+    ? `Loan request sent to lender for review. Awaiting approval.`
+    : `Loan request submitted to pool. Awaiting pool owner review.`;
+
+  res.status(201).json({ loan, message,
+    explorerNote: 'On mainnet, disbursement executed via Stellar payment operation.',
   });
 });
 
@@ -141,6 +187,47 @@ router.post('/:id/repay', authMiddleware, (req, res) => {
       ? `🎉 Loan fully repaid! +${isOnTime ? 50 : 20} TRUST tokens earned.`
       : `Partial repayment recorded. Remaining: $${(loan.amount - loan.repaidAmount).toFixed(2)}`,
   });
+});
+
+// POST /api/loans/:id/default — Mark loan as defaulted and apply penalties
+router.post('/:id/default', authMiddleware, (req, res) => {
+  const loan = db.loans.get(req.params.id);
+  if (!loan) return res.status(404).json({ error: 'Loan not found' });
+
+  // Only allow admin-style call or system (for now, borrower's own loan only after due date)
+  if (loan.borrowerId !== req.pubKey) return res.status(403).json({ error: 'Unauthorized' });
+
+  const isOverdue = new Date(loan.dueDate) < new Date();
+  if (!isOverdue) return res.status(400).json({ error: 'Loan is not yet overdue' });
+
+  loan.status = 'DEFAULTED';
+  loan.defaultedAt = new Date().toISOString();
+  db.loans.set(loan.id, loan);
+
+  // ── Apply default penalties ──
+  // If a human approved (individual lender or platinum pool owner), penalise their B score
+  const approver = loan.approvedBy;
+  if (approver && approver !== 'smart_contract') {
+    const approverScore = db.scores.get(approver);
+    if (approverScore) {
+      const maxExposure = db.users.get(approver)?.lenderMaxExposure || 500;
+      const penaltyRatio = Math.min(1, loan.amount / maxExposure);
+      const penalty = Math.round(penaltyRatio * 40); // Max -40 points
+      approverScore.behaviorScore = Math.max(0, (approverScore.behaviorScore || 0) - penalty);
+      approverScore.totalScore = (approverScore.trustScore || 0) + approverScore.behaviorScore + (approverScore.activityScore || 0);
+      db.scores.set(approver, approverScore);
+    }
+  }
+
+  // Borrower's own behavior score also drops
+  const borrowerScore = db.scores.get(req.pubKey);
+  if (borrowerScore) {
+    borrowerScore.behaviorScore = Math.max(0, (borrowerScore.behaviorScore || 0) - 50);
+    borrowerScore.totalScore = (borrowerScore.trustScore || 0) + borrowerScore.behaviorScore + (borrowerScore.activityScore || 0);
+    db.scores.set(req.pubKey, borrowerScore);
+  }
+
+  res.json({ message: 'Loan marked as defaulted. Penalties applied.', loan });
 });
 
 // GET /api/loans/stats/global - Protocol stats

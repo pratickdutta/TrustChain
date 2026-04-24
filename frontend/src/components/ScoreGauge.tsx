@@ -1,13 +1,14 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { Shield, Sparkles, TrendingUp, Anchor, Mountain, Award } from 'lucide-react';
 
-const TIER_CONFIG: Record<string, { color: string; label: string; emoji: string; glow: string }> = {
-  platinum:    { color: '#A78BFA', label: 'Platinum',    emoji: '💎', glow: 'rgba(167,139,250,0.4)' },
-  gold:        { color: '#F59E0B', label: 'Gold',        emoji: '🥇', glow: 'rgba(245,158,11,0.4)'  },
-  silver:      { color: '#94A3B8', label: 'Silver',      emoji: '🥈', glow: 'rgba(148,163,184,0.4)' },
-  bronze:      { color: '#D97706', label: 'Bronze',      emoji: '🥉', glow: 'rgba(217,119,6,0.4)'   },
-  building:    { color: '#F97316', label: 'Building',    emoji: '🏗️', glow: 'rgba(249,115,22,0.4)'  },
-  establishing:{ color: '#EF4444', label: 'Establishing',emoji: '🌱', glow: 'rgba(239,68,68,0.4)'   },
+const TIER_CONFIG: Record<string, { color: string; label: string; icon: any; glow: string }> = {
+  platinum: { color: 'var(--c-primary)', label: 'Platinum', icon: Award, glow: 'rgba(167,139,250,0.4)' },
+  gold: { color: 'var(--c-accent)', label: 'Gold', icon: Sparkles, glow: 'rgba(245,158,11,0.4)' },
+  silver: { color: 'var(--c-secondary)', label: 'Silver', icon: Shield, glow: 'rgba(148,163,184,0.4)' },
+  bronze: { color: 'var(--c-accent)', label: 'Bronze', icon: Mountain, glow: 'rgba(217,119,6,0.4)' },
+  building: { color: '#F97316', label: 'Building', icon: TrendingUp, glow: 'rgba(249,115,22,0.4)' },
+  establishing: { color: '#EF4444', label: 'Establishing', icon: Anchor, glow: 'rgba(239,68,68,0.4)' },
 };
 
 interface ScoreGaugeProps {
@@ -20,9 +21,9 @@ interface ScoreGaugeProps {
 }
 
 const BARS = [
-  { key: 'trust',    label: 'Trust Score',    max: 400, color: '#6C63FF', bg: 'rgba(108,99,255,0.08)' },
-  { key: 'behavior', label: 'Behavior Score', max: 400, color: '#00D9A6', bg: 'rgba(0,217,166,0.08)'  },
-  { key: 'activity', label: 'Activity Score', max: 200, color: '#FFB347', bg: 'rgba(255,179,71,0.08)' },
+  { key: 'trust', label: 'Trust Index', max: 400, color: 'var(--c-primary)', bg: 'var(--c-surface-2)' },
+  { key: 'behavior', label: 'Behavioral', max: 400, color: 'var(--c-secondary)', bg: 'var(--c-surface-2)' },
+  { key: 'activity', label: 'Activity Value', max: 200, color: 'var(--c-accent)', bg: 'var(--c-surface-2)' },
 ];
 
 export default function ScoreGauge({ totalScore, trustScore, behaviorScore, activityScore, tier, size = 'md' }: ScoreGaugeProps) {
@@ -45,13 +46,14 @@ export default function ScoreGauge({ totalScore, trustScore, behaviorScore, acti
   }, [totalScore]);
 
   const cfg = TIER_CONFIG[tier] || TIER_CONFIG.establishing;
+  const TierIcon = cfg.icon;
 
-  const R   = size === 'lg' ? 96 : size === 'md' ? 76 : 56;
-  const SW  = size === 'lg' ? 10  : 8;
+  const R = size === 'lg' ? 96 : size === 'md' ? 76 : 56;
+  const SW = size === 'lg' ? 10 : 8;
   const SVG = (R + SW + 6) * 2;
-  const C   = SVG / 2;
+  const C = SVG / 2;
   const circ = 2 * Math.PI * R;
-  const ARC  = circ * 0.75; // 270° arc
+  const ARC = circ * 0.75; // 270° arc
   const OFFSET = circ * 0.125; // start at 7 o'clock (135° = 225° from top)
 
   const filled = animate ? (totalScore / 1000) * ARC : 0;
@@ -79,8 +81,8 @@ export default function ScoreGauge({ totalScore, trustScore, behaviorScore, acti
         <svg width={SVG} height={SVG * 0.8} viewBox={`0 0 ${SVG} ${SVG}`} style={{ overflow: 'visible', display: 'block' }}>
           <defs>
             <linearGradient id="scoreArcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#6C63FF" />
-              <stop offset="50%" stopColor="#A855F7" />
+              <stop offset="0%" stopColor="var(--c-primary)" />
+              <stop offset="50%" stopColor="var(--c-secondary)" />
               <stop offset="100%" stopColor={cfg.color} />
             </linearGradient>
             <filter id="scoreGlow">
@@ -93,7 +95,7 @@ export default function ScoreGauge({ totalScore, trustScore, behaviorScore, acti
           <circle
             cx={C} cy={C} r={R}
             fill="none"
-            stroke="rgba(255,255,255,0.05)"
+            stroke="var(--c-surface-2)"
             strokeWidth={SW}
             strokeDasharray={`${ARC} ${circ - ARC}`}
             strokeDashoffset={-OFFSET}
@@ -116,61 +118,64 @@ export default function ScoreGauge({ totalScore, trustScore, behaviorScore, acti
           />
 
           {/* Center: score number */}
-          <text x={C} y={C - 12} textAnchor="middle"
+          <text x={C} y={C - 16} textAnchor="middle"
             fill={cfg.color}
-            fontSize={size === 'lg' ? 40 : 30}
+            fontSize={size === 'lg' ? 44 : 34}
             fontWeight="900"
-            fontFamily="'Space Grotesk', sans-serif"
+            fontFamily="var(--font-heading)"
             style={{ filter: `drop-shadow(0 0 8px ${cfg.glow})` }}
           >
             {displayScore}
           </text>
 
           {/* / 1000 */}
-          <text x={C} y={C + 12} textAnchor="middle"
-            fill="rgba(255,255,255,0.2)"
-            fontSize={11} fontWeight="500"
-            fontFamily="'JetBrains Mono', monospace"
-          >/ 1000</text>
-
-          {/* Tier */}
-          <text x={C} y={C + 32} textAnchor="middle"
-            fill={cfg.color}
-            fontSize={13} fontWeight="700"
-            fontFamily="'Space Grotesk', sans-serif"
-          >
-            {cfg.emoji} {cfg.label}
-          </text>
+          <text x={C} y={C + 16} textAnchor="middle"
+            fill="var(--c-text-3)"
+            fontSize={12} fontWeight="600"
+            fontFamily="var(--font-mono)"
+          >MAX 1000</text>
         </svg>
+
+        {/* Tier Label positioned below */}
+        <div style={{
+          position: 'absolute', bottom: -28, left: '50%', transform: 'translateX(-50%)',
+          background: 'var(--c-surface)', padding: '4px', borderRadius: 'var(--radius-full)'
+        }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            background: `rgba(${cfg.color === 'var(--c-primary)' ? '167,139,250' : cfg.color === 'var(--c-accent)' ? '245,158,11' : '108,99,255'},0.12)`,
+            border: `1px solid ${cfg.color}40`,
+            padding: '6px 14px', borderRadius: 'var(--radius-full)',
+            color: cfg.color, fontWeight: 700, fontSize: '0.8rem',
+            boxShadow: `0 0 16px ${cfg.glow}`,
+          }}>
+            <TierIcon size={14} /> {cfg.label.toUpperCase()}
+          </div>
+        </div>
       </div>
 
       {/* Score breakdown bars */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         {BARS.map(bar => {
-          const val = vals[bar.key];
+          const val = vals[bar.key] || 0;
           const pct = Math.min(100, (val / bar.max) * 100);
           return (
             <div key={bar.key} style={{ padding: '14px 16px', background: bar.bg, border: `1px solid ${bar.color}20`, borderRadius: 'var(--radius-md)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                 <div>
                   <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--c-text-2)' }}>{bar.label}</span>
-                  <span style={{ fontSize: '0.68rem', color: 'var(--c-text-3)', marginLeft: 4 }}>(T)</span>
                 </div>
                 <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '0.9rem', color: bar.color }}>
                   {val}
                   <span style={{ fontWeight: 400, fontSize: '0.72rem', color: 'var(--c-text-3)', marginLeft: 2 }}>/{bar.max}</span>
                 </div>
               </div>
-              <div className="progress-bar" style={{ height: 5 }}>
+              <div className="progress-bar" style={{ height: 6 }}>
                 <div className="progress-fill" style={{
                   width: `${animate ? pct : 0}%`,
                   background: bar.color,
                   boxShadow: `0 0 8px ${bar.color}80`,
-                  transition: 'width 1s cubic-bezier(0.4,0,0.2,1)',
                 }} />
-              </div>
-              <div style={{ textAlign: 'right', marginTop: 4, fontSize: '0.68rem', color: 'var(--c-text-3)' }}>
-                {Math.round(pct)}% of max
               </div>
             </div>
           );

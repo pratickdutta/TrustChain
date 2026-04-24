@@ -10,6 +10,9 @@ const circleRoutes = require('./routes/circles');
 const loanRoutes = require('./routes/loans');
 const scoreRoutes = require('./routes/score');
 const stellarRoutes = require('./routes/stellar');
+const lenderRoutes = require('./routes/lender');
+const poolRoutes = require('./routes/pools');
+const devRoutes = require('./routes/dev');
 
 const app = express();
 
@@ -46,6 +49,9 @@ app.use('/api/circles', circleRoutes);
 app.use('/api/loans', loanRoutes);
 app.use('/api/score', scoreRoutes);
 app.use('/api/stellar', stellarRoutes);
+app.use('/api/lender', lenderRoutes);
+app.use('/api/pools', poolRoutes);
+app.use('/api/dev', devRoutes);
 
 // 404 handler
 app.use((req, res) => {

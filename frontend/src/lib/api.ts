@@ -46,7 +46,7 @@ export const usersAPI = {
   update: (data: { displayName?: string }) =>
     apiFetch<any>('/users/me', { method: 'PUT', body: JSON.stringify(data) }),
   getByPubKey: (pubKey: string) => apiFetch<any>(`/users/${pubKey}`),
-  leaderboard: () => apiFetch<any[]>('/users'),
+  leaderboard: (filter?: string) => apiFetch<any[]>(filter ? `/users?filter=${filter}` : '/users'),
 };
 
 // ─── Score ────────────────────────────────────────────────────────────────
@@ -54,6 +54,8 @@ export const scoreAPI = {
   me: () => apiFetch<any>('/score/me'),
   recalculate: () =>
     apiFetch<any>('/score/recalculate', { method: 'POST' }),
+  devBoost: () =>
+    apiFetch<any>('/dev/boost-score', { method: 'POST' }),
 };
 
 // ─── Circles ──────────────────────────────────────────────────────────────
@@ -79,7 +81,7 @@ export const circlesAPI = {
 
 // ─── Loans ────────────────────────────────────────────────────────────────
 export const loansAPI = {
-  request: (data: { amount: number; currency?: string; durationDays?: number; purpose: string }) =>
+  request: (data: { amount: number; currency?: string; durationDays?: number; purpose: string; fundingSource?: string; lenderKey?: string; poolId?: string }) =>
     apiFetch<any>('/loans', { method: 'POST', body: JSON.stringify(data) }),
   list: () => apiFetch<any[]>('/loans'),
   get: (id: string) => apiFetch<any>(`/loans/${id}`),
@@ -88,7 +90,41 @@ export const loansAPI = {
       method: 'POST',
       body: JSON.stringify({ amount, txHash }),
     }),
+  markDefault: (id: string) =>
+    apiFetch<any>(`/loans/${id}/default`, { method: 'POST' }),
   globalStats: () => apiFetch<any>('/loans/stats/global'),
+};
+
+// ─── Lender ───────────────────────────────────────────────────────────────
+export const lenderAPI = {
+  getSettings: () => apiFetch<any>('/lender/settings'),
+  updateSettings: (data: { isLender?: boolean; maxExposure?: number; manualReview?: boolean; minBorrowerScore?: number }) =>
+    apiFetch<any>('/lender/settings', { method: 'PUT', body: JSON.stringify(data) }),
+  inbox: () => apiFetch<any[]>('/lender/inbox'),
+  decide: (loanId: string, decision: 'APPROVE' | 'REJECT', note?: string) =>
+    apiFetch<any>(`/lender/inbox/${loanId}/decide`, {
+      method: 'POST',
+      body: JSON.stringify({ decision, note }),
+    }),
+  portfolio: () => apiFetch<any>('/lender/portfolio'),
+  browse: () => apiFetch<any[]>('/lender/browse'),
+};
+
+// ─── Pools ────────────────────────────────────────────────────────────────
+export const poolsAPI = {
+  browse: () => apiFetch<any[]>('/pools/browse'),
+  updateSettings: (circleId: string, data: { openToOutside?: boolean; manualApproval?: boolean; minBorrowerScore?: number; maxLoanPerBorrower?: number }) =>
+    apiFetch<any>(`/pools/${circleId}/settings`, { method: 'PUT', body: JSON.stringify(data) }),
+  disablePool: (circleId: string) =>
+    apiFetch<any>(`/pools/${circleId}/settings`, { method: 'DELETE' }),
+  deposit: (circleId: string, amount: number) =>
+    apiFetch<any>(`/pools/${circleId}/deposit`, { method: 'POST', body: JSON.stringify({ amount }) }),
+  inbox: (circleId: string) => apiFetch<any[]>(`/pools/${circleId}/inbox`),
+  decide: (circleId: string, loanId: string, decision: 'APPROVE' | 'REJECT', note?: string) =>
+    apiFetch<any>(`/pools/${circleId}/inbox/${loanId}/decide`, {
+      method: 'POST',
+      body: JSON.stringify({ decision, note }),
+    }),
 };
 
 // ─── Stellar ──────────────────────────────────────────────────────────────
@@ -102,3 +138,4 @@ export const stellarAPI = {
     }),
   network: () => apiFetch<any>('/stellar/network'),
 };
+

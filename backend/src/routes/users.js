@@ -55,20 +55,48 @@ router.get('/:pubKey', (req, res) => {
   });
 });
 
+// Optional auth helper
+const optionalAuth = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return next();
+  const token = authHeader.split(' ')[1];
+  try {
+    const jwt = require('jsonwebtoken');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret123');
+    req.pubKey = decoded.pubKey;
+  } catch (err) {}
+  next();
+};
+
 // GET /api/users - List all users (for leaderboard)
-router.get('/', (req, res) => {
-  const users = [...db.users.values()].map(u => {
-    const score = db.scores.get(u.stellarPublicKey);
-    return {
-      stellarPublicKey: u.stellarPublicKey,
-      displayName: u.displayName,
-      score: score ? { totalScore: score.totalScore, tier: score.tier } : null,
-      createdAt: u.createdAt,
-    };
-  });
+router.get('/', optionalAuth, (req, res) => {
+  const filter = req.query.filter;
+  let targetPubKeys = null;
+
+  if (filter === 'my-circles' && req.pubKey) {
+    const userCircles = [...db.circles.values()].filter(c =>
+      c.members && c.members.includes(req.pubKey)
+    );
+    targetPubKeys = new Set();
+    userCircles.forEach(c => {
+      if (c.members) c.members.forEach(m => targetPubKeys.add(m));
+    });
+  }
+
+  const users = [...db.users.values()]
+    .filter(u => targetPubKeys ? targetPubKeys.has(u.stellarPublicKey) : true)
+    .map(u => {
+      const score = db.scores.get(u.stellarPublicKey);
+      return {
+        stellarPublicKey: u.stellarPublicKey,
+        displayName: u.displayName,
+        score: score ? { totalScore: score.totalScore, tier: score.tier } : null,
+        createdAt: u.createdAt,
+      };
+    });
 
   users.sort((a, b) => (b.score?.totalScore || 0) - (a.score?.totalScore || 0));
-  res.json(users.slice(0, 20));
+  res.json(users.slice(0, 50));
 });
 
 module.exports = router;

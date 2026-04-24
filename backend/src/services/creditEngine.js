@@ -46,7 +46,7 @@ function computeActivityScore(pubKey) {
 
   const createdAt = new Date(user.createdAt);
   const walletAgeDays = Math.floor((Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
-  
+
   const userCircles = [...db.circles.values()].filter(c =>
     c.members && c.members.includes(pubKey)
   );
