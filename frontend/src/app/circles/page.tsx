@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import useWalletStore from '@/store/walletStore';
 import { circlesAPI, scoreAPI, poolsAPI } from '@/lib/api';
-import { Network, Search, PlusCircle, CheckCircle2, ShieldCheck, Lock, Link2, KeySquare, Globe, Fingerprint, Coins, Settings2, ChevronDown, CircleCheck, Gem, Copy } from 'lucide-react';
+import { Network, Search, PlusCircle, CheckCircle2, ShieldCheck, Lock, Link2, KeySquare, Globe, Fingerprint, Coins, Settings2, ChevronDown, CircleCheck, Gem, Copy, TrendingUp } from 'lucide-react';
 
 export default function CirclesPage() {
   const { pubKey, setScore, isConnected } = useWalletStore();
@@ -26,6 +26,10 @@ export default function CirclesPage() {
   const [showSettingsPanel, setShowSettingsPanel] = useState(false);
   const [settingsForm, setSettingsForm] = useState({ circleRules: '', borrowApprovalEnabled: false, isPublic: true, socialLink: '' });
   const [savingSettings, setSavingSettings] = useState(false);
+  const [userPoolDeposit, setUserPoolDeposit] = useState(0);
+  const [depositAmount, setDepositAmount] = useState('');
+  const [withdrawing, setWithdrawing] = useState(false);
+  const [depositing, setDepositing] = useState(false);
 
   // Delete Circle states
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -72,6 +76,13 @@ export default function CirclesPage() {
     const c = await circlesAPI.get(id);
     setSelectedCircle(c);
     setSettingsForm({ circleRules: c.circleRules || '', borrowApprovalEnabled: c.borrowApprovalEnabled || false, isPublic: c.isPublic ?? true, socialLink: c.socialLink || '' });
+    
+    if (c.isPool) {
+      try {
+        const d = await poolsAPI.getUserDeposit(id);
+        setUserPoolDeposit(d.total);
+      } catch (e) {}
+    }
   }
 
   async function handleSearch(e: React.FormEvent) {
@@ -538,6 +549,79 @@ export default function CirclesPage() {
                     </div>
                   )}
                 </div>
+
+                {/* MoneyPool Capital Management (Visible to all members if isPool) */}
+                {selectedCircle.isPool && (
+                  <div className="glass-card animate-fade-in-up" style={{ padding: 20, marginBottom: 20, background: 'linear-gradient(135deg, rgba(130,107,218,0.05), rgba(0,217,166,0.05))', border: '1px solid var(--c-border-hover)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <TrendingUp size={18} color="var(--c-secondary)" />
+                        <h4 style={{ fontSize: '0.9rem', color: 'var(--c-text)' }}>Pool Capital</h4>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontSize: '0.7rem', color: 'var(--c-text-3)', fontWeight: 600 }}>LIQUIDITY</div>
+                        <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--c-secondary)' }}>{selectedCircle.poolBalance?.toFixed(2) || '0.00'} XLM</div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', background: 'var(--c-surface-2)', borderRadius: 'var(--radius-md)', marginBottom: 16 }}>
+                      <div>
+                        <div style={{ fontSize: '0.65rem', color: 'var(--c-text-3)', fontWeight: 700 }}>YOUR CONTRIBUTION</div>
+                        <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--c-text)' }}>{userPoolDeposit.toFixed(2)} XLM</div>
+                      </div>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <input 
+                          type="number" 
+                          className="input" 
+                          placeholder="Amount" 
+                          value={depositAmount} 
+                          onChange={e => setDepositAmount(e.target.value)}
+                          style={{ width: 80, padding: '6px 10px', fontSize: '0.8rem' }}
+                        />
+                        <button 
+                          onClick={async () => {
+                            if (!depositAmount || parseFloat(depositAmount) <= 0) return;
+                            setDepositing(true);
+                            try {
+                              await poolsAPI.deposit(selectedCircle.id, parseFloat(depositAmount));
+                              setMsg(`Successfully deposited ${depositAmount} XLM to pool`);
+                              setDepositAmount('');
+                              await loadCircle(selectedCircle.id);
+                            } catch (e: any) { setMsg('Error: ' + e.message); }
+                            setDepositing(false);
+                          }}
+                          disabled={depositing}
+                          className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.75rem' }}>
+                          {depositing ? '...' : 'Deposit'}
+                        </button>
+                        {userPoolDeposit > 0 && (
+                          <button 
+                            onClick={async () => {
+                              if (!depositAmount || parseFloat(depositAmount) <= 0) return;
+                              setWithdrawing(true);
+                              try {
+                                await poolsAPI.withdraw(selectedCircle.id, parseFloat(depositAmount));
+                                setMsg(`Successfully withdrawn ${depositAmount} XLM from pool`);
+                                setDepositAmount('');
+                                await loadCircle(selectedCircle.id);
+                              } catch (e: any) { setMsg('Error: ' + e.message); }
+                              setWithdrawing(false);
+                            }}
+                            disabled={withdrawing}
+                            className="btn btn-ghost" style={{ padding: '6px 12px', fontSize: '0.75rem', color: '#FF4757', border: '1px solid rgba(255,71,87,0.3)' }}>
+                            {withdrawing ? '...' : 'Withdraw'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    <div style={{ fontSize: '0.7rem', color: 'var(--c-text-3)', lineHeight: 1.4 }}>
+                      <p>• Deposits are added to the circle's lending liquidity.</p>
+                      <p>• You earn a pro-rata share of all interest collected by the pool.</p>
+                      <p>• Withdrawals are subject to available liquidity in the pool.</p>
+                    </div>
+                  </div>
+                )}
                 </>
               )}
 

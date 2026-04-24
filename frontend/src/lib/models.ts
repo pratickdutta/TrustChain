@@ -186,6 +186,23 @@ AttestationSchema.index({ fromUserId: 1, toUserId: 1, circleId: 1 }, { unique: t
 
 export const Attestation = models.Attestation || model<IAttestation>('Attestation', AttestationSchema);
 
+// ── Pool Deposit ──────────────────────────────────────────────────────────
+export interface IPoolDeposit extends Document {
+  userId: string;
+  circleId: string;
+  amount: number;
+  createdAt: Date;
+}
+
+const PoolDepositSchema = new Schema<IPoolDeposit>({
+  userId: { type: String, required: true, index: true },
+  circleId: { type: String, required: true, index: true },
+  amount: { type: Number, required: true },
+  createdAt: { type: Date, default: Date.now },
+});
+
+export const PoolDeposit = models.PoolDeposit || model<IPoolDeposit>('PoolDeposit', PoolDepositSchema);
+
 // ── Nonce ─────────────────────────────────────────────────────────────────
 const NonceSchema = new Schema({
   pubKey: { type: String, required: true, unique: true },

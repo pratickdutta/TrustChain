@@ -131,6 +131,10 @@ export const poolsAPI = {
     apiFetch<any>(`/pools/${circleId}/settings`, { method: 'DELETE' }),
   deposit: (circleId: string, amount: number) =>
     apiFetch<any>(`/pools/${circleId}/deposit`, { method: 'POST', body: JSON.stringify({ amount }) }),
+  withdraw: (circleId: string, amount: number) =>
+    apiFetch<any>(`/pools/${circleId}/withdraw`, { method: 'POST', body: JSON.stringify({ amount }) }),
+  getUserDeposit: (circleId: string) =>
+    apiFetch<{ total: number }>(`/pools/${circleId}/deposit`),
   inbox: (circleId: string) => apiFetch<any[]>(`/pools/${circleId}/inbox`),
   decide: (circleId: string, loanId: string, decision: 'APPROVE' | 'REJECT', note?: string) =>
     apiFetch<any>(`/pools/${circleId}/inbox/${loanId}/decide`, {
