@@ -225,7 +225,7 @@ export default function LenderPage() {
             )}
 
             <div style={{ marginTop: 28 }}>
-              <button onClick={saveSettings} disabled={saving} className="btn btn-primary" style={{ fontSize: '0.9rem' }}>
+              <button onClick={() => saveSettings()} disabled={saving} className="btn btn-primary" style={{ fontSize: '0.9rem' }}>
                 {saving ? 'Saving...' : 'Save Settings'}
               </button>
             </div>
