@@ -362,8 +362,11 @@ export default function LoansPage() {
                       </button>
                     </div>
                     {gaslessMode && (
-                      <div style={{ marginTop: 10, padding: '8px 12px', borderRadius: 8, background: 'rgba(163,140,237,0.08)', fontSize: '0.75rem', color: 'var(--c-primary)' }}>
-                        ✅ Fee Bump active: Your transaction will be wrapped in a Stellar FeeBumpTransaction. The protocol treasury covers the network fee on your behalf.
+                      <div style={{ marginTop: 10, padding: '10px 14px', borderRadius: 8, background: 'rgba(163,140,237,0.15)', border: '1px solid rgba(163,140,237,0.3)', fontSize: '0.75rem', color: 'var(--c-text-2)', display: 'flex', alignItems: 'flex-start', gap: 8, lineHeight: 1.5 }}>
+                        <div style={{ marginTop: 2 }}><CheckCircle2 size={14} color="var(--c-primary)" /></div>
+                        <div>
+                          <strong style={{ color: 'var(--c-text)' }}>Fee Bump active:</strong> Your transaction will be wrapped in a Stellar FeeBumpTransaction. The protocol treasury covers the network fee on your behalf.
+                        </div>
                       </div>
                     )}
                   </div>
@@ -394,8 +397,8 @@ export default function LoansPage() {
                             }}>
                             <Icon size={20} color={!eligibleTier ? 'var(--c-text-3)' : src.color} style={{ display: 'block', margin: '0 auto 8px' }} />
                             <div style={{ fontWeight: 700, fontSize: '0.78rem', color: 'var(--c-text)', marginBottom: 4 }}>{src.label}</div>
-                            <div style={{ fontSize: '0.68rem', color: 'var(--c-text-3)', lineHeight: 1.4 }}>
-                              {!eligibleTier ? '🔒 Score 450+ required' : src.sub}
+                            <div style={{ fontSize: '0.68rem', color: 'var(--c-text-3)', lineHeight: 1.4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+                              {!eligibleTier ? <><Lock size={12} color="var(--c-text-3)" /> Score 450+ required</> : src.sub}
                             </div>
                           </button>
                         );
