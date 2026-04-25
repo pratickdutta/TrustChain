@@ -45,6 +45,7 @@ export default function LoansPage() {
   const [msg, setMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   const [stats, setStats] = useState<any>(null);
   const [tab, setTab] = useState<'request' | 'history'>('request');
+  const [txStep, setTxStep] = useState(0);
 
   useEffect(() => {
     const savedToken = localStorage.getItem('tc_token');
@@ -87,6 +88,12 @@ export default function LoansPage() {
       setMsg({ text: 'Please select a Trust Pool from the list.', type: 'error' }); return;
     }
     setSubmitting(true);
+    setTxStep(1);
+    
+    // Simulate transaction steps for better visual UX
+    const step2Timer = setTimeout(() => setTxStep(2), 1200);
+    const step3Timer = setTimeout(() => setTxStep(3), 2800);
+
     try {
       const result = await loansAPI.request({
         amount: parseFloat(form.amount),
@@ -96,15 +103,22 @@ export default function LoansPage() {
         lenderKey: fundingSource === 'individual' ? selectedLender?.pubKey : undefined,
         poolId: fundingSource === 'pool' ? selectedPool?.id : undefined,
       });
+      
+      setTxStep(4); // Success step
+      clearTimeout(step2Timer); clearTimeout(step3Timer);
+      await new Promise(resolve => setTimeout(resolve, 800)); // Show success briefly
+      
       setMsg({ text: result.message, type: 'success' });
       setForm({ amount: '', purpose: 'working_capital', durationDays: 14 });
       setSelectedLender(null); setSelectedPool(null);
       load();
       setTab('history');
     } catch (err: any) {
+      clearTimeout(step2Timer); clearTimeout(step3Timer);
       setMsg({ text: err.message, type: 'error' });
     }
     setSubmitting(false);
+    setTxStep(0);
   }
 
   async function repayLoan(loanId: string) {
@@ -234,6 +248,27 @@ export default function LoansPage() {
 
         {tab === 'request' ? (
           <div style={{ maxWidth: 540 }}>
+            {/* Step-by-Step Guide for New Users */}
+            <div className="glass-card animate-fade-in-up" style={{ padding: '20px 24px', marginBottom: 24, border: '1px solid var(--c-primary)', background: 'rgba(106,76,219,0.05)' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--c-primary)', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Activity size={18} /> HOW TO BORROW
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+                <div>
+                  <div style={{ color: 'var(--c-text)', fontWeight: 600, fontSize: '0.85rem', marginBottom: 4 }}>1. Source</div>
+                  <div style={{ color: 'var(--c-text-3)', fontSize: '0.75rem', lineHeight: 1.5 }}>Select DeFi pool or a specific lender.</div>
+                </div>
+                <div>
+                  <div style={{ color: 'var(--c-text)', fontWeight: 600, fontSize: '0.85rem', marginBottom: 4 }}>2. Terms</div>
+                  <div style={{ color: 'var(--c-text-3)', fontSize: '0.75rem', lineHeight: 1.5 }}>Set amount and review the Interest Rate.</div>
+                </div>
+                <div>
+                  <div style={{ color: 'var(--c-text)', fontWeight: 600, fontSize: '0.85rem', marginBottom: 4 }}>3. Contract</div>
+                  <div style={{ color: 'var(--c-text-3)', fontSize: '0.75rem', lineHeight: 1.5 }}>Sign on Stellar to receive funds instantly.</div>
+                </div>
+              </div>
+            </div>
+
             <div className="glass-card animate-fade-in-up" style={{ padding: 32 }}>
               {/* ── ELIGIBILITY POPUP MODAL ── */}
               {eligibilityModal && (
@@ -502,7 +537,7 @@ export default function LoansPage() {
                             <span style={{ fontWeight: 600, color: 'var(--c-text)' }}>${form.amount}</span>
                           </div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                            <span style={{ color: 'var(--c-text-3)' }}>Network Fee ({eligibleTier.fee})</span>
+                            <span style={{ color: 'var(--c-text-3)' }}>Rate of Interest / Fee ({eligibleTier.fee})</span>
                             <span style={{ color: 'var(--c-secondary)', fontWeight: 600 }}>{(parseFloat(form.amount || '0') * parseFloat(eligibleTier.fee) / 100).toFixed(2)} TRUST</span>
                           </div>
                           <div style={{ height: 1, background: 'var(--c-border)', margin: '10px 0' }} />
@@ -512,6 +547,28 @@ export default function LoansPage() {
                           </div>
                         </div>
                       )}
+
+                      {/* Visual Transaction Status Indicator */}
+                      {submitting && (
+                        <div className="animate-fade-in" style={{ padding: 16, borderRadius: 'var(--radius-md)', background: 'rgba(106,76,219,0.1)', border: '1px solid rgba(106,76,219,0.3)', marginBottom: 8 }}>
+                          <div style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em', color: 'var(--c-primary)', marginBottom: 12 }}>TRANSACTION STATUS</div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: txStep >= 1 ? 'var(--c-text)' : 'var(--c-text-3)', fontSize: '0.85rem', transition: 'all 0.3s' }}>
+                              {txStep > 1 ? <CheckCircle2 size={16} color="var(--c-secondary)" /> : <Activity size={16} className={txStep === 1 ? 'animate-spin' : ''} color={txStep === 1 ? 'var(--c-primary)' : 'currentColor'} />} 
+                              1. Compiling Smart Contract parameters
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: txStep >= 2 ? 'var(--c-text)' : 'var(--c-text-3)', fontSize: '0.85rem', transition: 'all 0.3s' }}>
+                              {txStep > 2 ? <CheckCircle2 size={16} color="var(--c-secondary)" /> : <Lock size={16} color={txStep === 2 ? 'var(--c-primary)' : 'currentColor'} />} 
+                              2. Requesting cryptographic wallet signature
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: txStep >= 3 ? 'var(--c-text)' : 'var(--c-text-3)', fontSize: '0.85rem', transition: 'all 0.3s' }}>
+                              {txStep > 3 ? <CheckCircle2 size={16} color="var(--c-secondary)" /> : <Zap size={16} color={txStep === 3 ? 'var(--c-primary)' : 'currentColor'} />} 
+                              3. Confirming transaction on Stellar Network
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
                       <button onClick={requestLoan} disabled={submitting || !form.amount} className="btn btn-primary" style={{ padding: '14px', fontSize: '1rem' }}>
                         {submitting ? 'Executing Contract...' : 'Initialize Drawdown'}
                       </button>
