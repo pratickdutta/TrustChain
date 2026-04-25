@@ -7,7 +7,7 @@ import {
   Transaction,
 } from '@stellar/stellar-sdk';
 import { Horizon } from '@stellar/stellar-sdk';
-import { verifyToken } from '@/lib/apiAuth';
+import { requireAuth } from '@/lib/apiAuth';
 
 const HORIZON_URL = process.env.STELLAR_HORIZON_URL || 'https://horizon-testnet.stellar.org';
 const SPONSOR_SECRET = process.env.STELLAR_SPONSOR_SECRET_KEY || '';
@@ -30,7 +30,7 @@ const server = new Horizon.Server(HORIZON_URL);
  */
 export async function POST(req: NextRequest) {
   // Auth guard
-  const auth = verifyToken(req);
+  const auth = requireAuth(req);
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   if (!SPONSOR_SECRET) {
