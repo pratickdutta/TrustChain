@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 
+// Force dynamic rendering — prevents Vercel from caching this route
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 const startTime = Date.now();
 
 /**
@@ -24,7 +28,10 @@ export async function GET(req: NextRequest) {
   // Check Stellar Horizon connectivity
   const horizonStart = Date.now();
   try {
-    const horizonRes = await fetch('https://horizon-testnet.stellar.org/', { signal: AbortSignal.timeout(4000) });
+    const horizonRes = await fetch('https://horizon-testnet.stellar.org/', {
+      signal: AbortSignal.timeout(4000),
+      cache: 'no-store',
+    });
     checks.stellarHorizon = {
       status: horizonRes.ok ? 'healthy' : 'degraded',
       latencyMs: Date.now() - horizonStart,
