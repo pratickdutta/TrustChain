@@ -262,10 +262,10 @@ The following wallets connected to the application and tested the core functiona
 5. `GBBXQ4Y2XSEBBFXYAE76RCW6HQX54BGTO5H7SDMGN3XN77YA7AZ34HY3`
 
 ### 🚀 Future Evolution & Iteration 1
-Based on the collected feedback, users highlighted that `[PENDING: summary of feedback]`. In our next phase, we plan to evolve the project by `[PENDING: improvement plan]`.
+Based on the collected feedback, users highlighted that the loan booking flow and transaction confirmations could be clearer for users new to crypto, explicitly requesting visual transaction progress indicators, clear interest rate displays, and potentially a real-time chat system. In our next phase, we plan to evolve the project by exploring an in-app real-time communication layer between lenders and borrowers.
 
-**Completed Iteration:** We have already implemented our first UI/UX improvement based on this feedback cohort.
-* **Git Commit Link**: `[PENDING: link to commit]`
+**Completed Iteration:** We have already implemented our first major UI/UX improvement based on this feedback cohort. We built a clear "How to Borrow" step-by-step guide on the Loan Dashboard, explicitly clarified the "Rate of Interest" on the loan terms, and engineered a multi-step visual Transaction Status Indicator that guides users through the smart contract execution and wallet signing.
+* **Git Commit Link**: [f575c29 - Iteration 1: Add loan step-by-step guide and tx status](https://github.com/pratickdutta/TrustChain/commit/f575c29)
 
 ---
 
