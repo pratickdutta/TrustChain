@@ -17,6 +17,7 @@ const NAV_LINKS = [
   { href: '/loans',       label: 'Loans',       icon: Coins },
   { href: '/lender',      label: 'Lend',        icon: Wallet },
   { href: '/leaderboard', label: 'Leaderboard', icon: Trophy },
+  { href: '/metrics',     label: 'Metrics',     icon: Droplets },
 ];
 
 const TIER_COLORS: Record<string, string> = {

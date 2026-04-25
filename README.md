@@ -15,10 +15,13 @@
 [![Rust](https://img.shields.io/badge/Rust-Soroban-CE412B?style=for-the-badge&logo=rust&logoColor=white)](https://soroban.stellar.org)
 [![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://trustchain-official.vercel.app)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
-[![Status: Beta](https://img.shields.io/badge/Status-Beta_Release-FFB347?style=for-the-badge)](#)
+[![Status: Production](https://img.shields.io/badge/Status-Black_Belt_🥋-1a1a2e?style=for-the-badge)](#)
+[![Metrics](https://img.shields.io/badge/Metrics-Live_Dashboard-00C878?style=for-the-badge)](https://trustchain-official.vercel.app/metrics)
+[![Health](https://img.shields.io/badge/Health-Operational-7B3FE4?style=for-the-badge)](https://trustchain-official.vercel.app/api/health)
 
 <br/>
 <h3>🚀 Live Demo: <a href="https://trustchain-official.vercel.app">trustchain-official.vercel.app</a></h3>
+<h4>📊 <a href="https://trustchain-official.vercel.app/metrics">Metrics Dashboard</a> &nbsp;|&nbsp; ❤️ <a href="https://trustchain-official.vercel.app/api/health">Health API</a> &nbsp;|&nbsp; 🔐 <a href="./SECURITY.md">Security Checklist</a> &nbsp;|&nbsp; 📖 <a href="./USER_GUIDE.md">User Guide</a></h4>
 
 </div>
 
@@ -292,8 +295,62 @@ Built by **Pratick Dutta** — a student developer passionate about decentralize
 
 ---
 
+## 🥋 Level 6 Black Belt Submission
+
+This section documents all requirements for the **Stellar SCF Black Belt** level.
+
+### ✅ Submission Checklist
+
+| Requirement | Status | Link/Proof |
+|-------------|--------|-----------|
+| Public GitHub Repository | ✅ Done | [github.com/pratickdutta/TrustChain](https://github.com/pratickdutta/TrustChain) |
+| Live Demo (Vercel) | ✅ Done | [trustchain-official.vercel.app](https://trustchain-official.vercel.app) |
+| Complete README Documentation | ✅ Done | This file |
+| Technical User Guide | ✅ Done | [USER_GUIDE.md](./USER_GUIDE.md) |
+| Security Checklist | ✅ Done | [SECURITY.md](./SECURITY.md) |
+| Metrics Dashboard (Live) | ✅ Done | [/metrics](https://trustchain-official.vercel.app/metrics) |
+| Monitoring Dashboard (Health API) | ✅ Done | [/api/health](https://trustchain-official.vercel.app/api/health) |
+| Data Indexing | ✅ Done | MongoDB write-time indexing · [/api/metrics](https://trustchain-official.vercel.app/api/metrics) |
+| Advanced Feature | ✅ Done | **Fee Bump Sponsorship (Gasless Transactions)** — See below |
+| Minimum 30 Meaningful Commits | ✅ Done | [View Commits](https://github.com/pratickdutta/TrustChain/commits/main) |
+| User Feedback & Iteration | ✅ Done | [View Section](#-user-validation--mvp-feedback) |
+| Community Contribution (Twitter) | 🔜 Pending | `[Add Twitter post link here]` |
+| 30+ Verified User Wallet Addresses | 🔜 Pending | `[Add remaining wallets]` |
+
+---
+
+### 🚀 Advanced Feature: Fee Bump Sponsorship (Gasless Transactions)
+
+**Feature**: Users can toggle "Gasless Transaction" on the Loans page. When enabled, the TrustChain protocol treasury wraps their transaction in a Stellar **FeeBumpTransaction**, paying all network fees on the user's behalf.
+
+**Why this matters**: This removes the biggest onboarding friction for new crypto users — needing to hold XLM just to pay gas fees. Users can now take out their first loan without owning any XLM.
+
+**Technical Implementation**:
+- Backend: `/api/stellar/sponsor-tx` route — takes user's signed XDR, wraps it in `FeeBumpTransaction`, signs with treasury `Keypair`, submits to Horizon.
+- Frontend: Toggle switch on the Loan Dashboard with real-time status feedback.
+- Security: Endpoint is JWT-auth-gated; sponsor secret key is server-side only; XDR is validated against `Networks.TESTNET` before processing.
+
+**Commit**: [Phase 1 (Black Belt): Implement Fee Bump gasless transaction sponsorship](https://github.com/pratickdutta/TrustChain/commit/3a1cb57)
+
+---
+
+### 📊 Metrics Dashboard
+
+Live endpoint: **[trustchain-official.vercel.app/metrics](https://trustchain-official.vercel.app/metrics)**
+
+Tracks: Daily Active Users (DAU), Weekly Active Users (WAU), Monthly Active Users (MAU), Total Value Locked (TVL), Loan Repayment Rate, Credit Tier Distribution, System Health.
+
+### 🔍 Data Indexing Approach
+
+**Endpoint**: `/api/metrics`
+
+TrustChain uses a **write-time indexing** pattern. Every on-chain event (loan creation, repayment, attestation) is simultaneously written to MongoDB via our API routes at the time it happens. This creates a structured, queryable index over raw Stellar blockchain activity — enabling complex aggregations (DAU, tier distribution, TVL) that are impossible to compute directly on-chain. The Stellar Horizon API remains the immutable source of truth for all XLM balances and transaction hashes.
+
+---
+
 <div align="center">
 
-© 2026 TrustChain Protocol. Built on Stellar.
+© 2026 TrustChain Protocol. Built on Stellar. 🥋 Black Belt.
 
 </div>
+
