@@ -245,6 +245,30 @@ NEXT_PUBLIC_ADMIN_PUBKEY=your_stellar_public_key_here
 
 ---
 
+## 📝 User Validation & MVP Feedback
+
+As part of our real-world MVP validation, TrustChain was tested by 5+ active testnet users. Their feedback was collected and used to drive the first major iteration of the platform.
+
+### 📊 Feedback Collection
+* **Google Form**: [View Onboarding Form](https://docs.google.com/forms/d/e/1FAIpQLSdN0PP_iCfX_CbMJoyhpcliIDsVKv3W4oiGPaSkevWCFuxbhg/viewform)
+* **Raw Data Analysis**: [View Google Sheet Responses](https://docs.google.com/spreadsheets/d/1pAXSfOcxUEyig12Y8sUc1U0a9Z4jc0ZVf7VUJ9Q4620/edit?usp=sharing)
+
+### 👤 Verified Testnet Users
+The following wallets connected to the application and tested the core functionality on the Stellar Testnet:
+1. `[PENDING: Wallet Address 1]`
+2. `[PENDING: Wallet Address 2]`
+3. `[PENDING: Wallet Address 3]`
+4. `[PENDING: Wallet Address 4]`
+5. `[PENDING: Wallet Address 5]`
+
+### 🚀 Future Evolution & Iteration 1
+Based on the collected feedback, users highlighted that `[PENDING: summary of feedback]`. In our next phase, we plan to evolve the project by `[PENDING: improvement plan]`.
+
+**Completed Iteration:** We have already implemented our first UI/UX improvement based on this feedback cohort.
+* **Git Commit Link**: `[PENDING: link to commit]`
+
+---
+
 ## Roadmap
 
 | Phase | Status | Description |
