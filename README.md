@@ -15,7 +15,7 @@
 [![Rust](https://img.shields.io/badge/Rust-Soroban-CE412B?style=for-the-badge&logo=rust&logoColor=white)](https://soroban.stellar.org)
 [![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://trustchain-official.vercel.app)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
-[![Status: Production](https://img.shields.io/badge/Status-Black_Belt_🥋-1a1a2e?style=for-the-badge)](#)
+[![Status: Production](https://img.shields.io/badge/Status-Live_Release-00C878?style=for-the-badge)](#)
 [![Metrics](https://img.shields.io/badge/Metrics-Live_Dashboard-00C878?style=for-the-badge)](https://trustchain-official.vercel.app/metrics)
 [![Health](https://img.shields.io/badge/Health-Operational-7B3FE4?style=for-the-badge)](https://trustchain-official.vercel.app/api/health)
 
@@ -145,7 +145,7 @@ TrustChain relies on three core Rust smart contracts deployed to the Stellar Tes
 - **Platinum Approvals** — Strict permission gating for high-level operations.
 - **MoneyPools** — Convert any Trust Circle into a decentralized lending pool. Members deposit XLM, fund peer loans, and earn a pro-rata share of all interest collected upon dissolution.
 
-### 🥋 Black Belt & Production Features
+### ⚙️ Advanced Features & Architecture
 - **Gasless Transactions (Fee Sponsorship)** — Users pay 0 XLM for gas. TrustChain implements Stellar `FeeBumpTransaction` wrappers on the backend, allowing the protocol treasury to pay network fees on behalf of the user.
 - **Live Metrics Dashboard & Data Indexing** — Real-time tracking of DAU, WAU, MAU, protocol TVL, and credit tier distributions using a write-time MongoDB indexing architecture over the raw Horizon ledger.
 - **Production Health Monitoring** — Dedicated system APIs monitoring database connectivity and Stellar Horizon latency to ensure 99.9% uptime.
@@ -355,7 +355,7 @@ TrustChain uses a **write-time indexing** pattern. Every on-chain event (loan cr
 
 <div align="center">
 
-© 2026 TrustChain Protocol. Built on Stellar. 🥋 Black Belt.
+© 2026 TrustChain Protocol. Built on Stellar.
 
 </div>
 
