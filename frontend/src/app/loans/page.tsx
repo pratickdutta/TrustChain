@@ -322,9 +322,11 @@ export default function LoansPage() {
                 </div>
               ) : (
                 <>
-                  <div style={{ marginBottom: 20, padding: '14px 18px', borderRadius: 'var(--radius-md)', background: 'rgba(0,217,166,0.08)', border: '1px solid rgba(0,217,166,0.25)', fontSize: '0.85rem', color: 'var(--c-secondary)', display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <ShieldCheck size={16} /> Authorized for <strong>{eligibleTier.tier} Tier</strong> drawdown (Max ${eligibleTier.maxAmount})
-                  </div>
+                  {eligibleTier && (
+                    <div style={{ marginBottom: 20, padding: '14px 18px', borderRadius: 'var(--radius-md)', background: 'rgba(0,217,166,0.08)', border: '1px solid rgba(0,217,166,0.25)', fontSize: '0.85rem', color: 'var(--c-secondary)', display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <ShieldCheck size={16} /> Authorized for <strong>{eligibleTier.tier} Tier</strong> drawdown (Max ${eligibleTier.maxAmount})
+                    </div>
+                  )}
 
                   {/* ── GASLESS / FEE SPONSORSHIP TOGGLE ── */}
                   <div style={{
