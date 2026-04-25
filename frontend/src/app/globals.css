@@ -530,3 +530,20 @@ h1, h2, h3, h4, h5 { font-family: var(--font-heading); font-weight: 700; line-he
 @keyframes spin {
   100% { transform: rotate(360deg); }
 }
+
+/* ═══════════════════════════════════════════════════════
+   STELLAR WALLETS KIT OVERRIDES (GLASSMORPHISM)
+═══════════════════════════════════════════════════════ */
+:root {
+  /* This ensures the modal container itself can take the blur */
+  --swk-backdrop-filter: blur(24px) saturate(180%);
+}
+
+#swk-modal-container > div,
+.swk-modal,
+.swk-container {
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255,255,255,0.1) !important;
+  border: 1px solid var(--c-border) !important;
+}

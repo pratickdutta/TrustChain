@@ -62,6 +62,25 @@ export default function Navbar() {
             new xBullModule(),
           ],
         });
+        StellarWalletsKit.setTheme({
+          "background": "rgba(18, 10, 34, 0.75)",
+          "background-secondary": "rgba(255, 255, 255, 0.05)",
+          "foreground-strong": "#ffffff",
+          "foreground": "rgba(255, 255, 255, 0.9)",
+          "foreground-secondary": "rgba(255, 255, 255, 0.6)",
+          "primary": "#8B5CF6",
+          "primary-foreground": "#ffffff",
+          "transparent": "transparent",
+          "lighter": "rgba(255, 255, 255, 0.1)",
+          "light": "rgba(255, 255, 255, 0.05)",
+          "light-gray": "rgba(255, 255, 255, 0.1)",
+          "gray": "rgba(255, 255, 255, 0.2)",
+          "danger": "#ef4444",
+          "border": "rgba(255, 255, 255, 0.15)",
+          "shadow": "0 8px 32px rgba(0, 0, 0, 0.6)",
+          "border-radius": "16px",
+          "font-family": "var(--font-sans), sans-serif",
+        });
       } catch (e) {
         // already initialized
       }
