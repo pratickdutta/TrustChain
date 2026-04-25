@@ -255,11 +255,11 @@ As part of our real-world MVP validation, TrustChain was tested by 5+ active tes
 
 ### 👤 Verified Testnet Users
 The following wallets connected to the application and tested the core functionality on the Stellar Testnet:
-1. `[PENDING: Wallet Address 1]`
-2. `[PENDING: Wallet Address 2]`
-3. `[PENDING: Wallet Address 3]`
-4. `[PENDING: Wallet Address 4]`
-5. `[PENDING: Wallet Address 5]`
+1. `GC4AJYD7TPXJETE2VEXFRE3ZHIUE6PUX3MYCDBXJH4QNSXZGMDRMCVTI`
+2. `GCQRND3J66CHUBQBTSYDPSQUD6NPSEZ32PLJTAZGESNJAFEF6NJII2R3`
+3. `GAMX7AYLKU7XOJ6NBCWTSY3W5OSSOBS332M55UG2J5TH5NPCAY545QCM`
+4. `GAKH2QXR6TUERN6JHRXGT6AW625X4PESSFWPON5CRQ6A2UFPRDMAAZ2F`
+5. `GBBXQ4Y2XSEBBFXYAE76RCW6HQX54BGTO5H7SDMGN3XN77YA7AZ34HY3`
 
 ### 🚀 Future Evolution & Iteration 1
 Based on the collected feedback, users highlighted that `[PENDING: summary of feedback]`. In our next phase, we plan to evolve the project by `[PENDING: improvement plan]`.
