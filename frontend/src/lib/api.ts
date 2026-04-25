@@ -154,5 +154,14 @@ export const stellarAPI = {
       body: JSON.stringify({ pubKey }),
     }),
   network: () => apiFetch<any>('/stellar/network'),
+
+  // Advanced Feature: Fee Bump Sponsorship (Gasless Transactions)
+  // Wraps a user-signed XDR envelope in a FeeBumpTransaction so the protocol
+  // treasury pays the Stellar network fee, giving users a gasless experience.
+  sponsorTx: (signedXdr: string) =>
+    apiFetch<{ success: boolean; hash: string; explorerLink: string; message: string }>(
+      '/stellar/sponsor-tx',
+      { method: 'POST', body: JSON.stringify({ signedXdr }) }
+    ),
 };
 

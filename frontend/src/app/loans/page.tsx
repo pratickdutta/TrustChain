@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import useWalletStore from '@/store/walletStore';
-import { loansAPI, lenderAPI, poolsAPI, scoreAPI } from '@/lib/api';
+import { loansAPI, lenderAPI, poolsAPI, scoreAPI, stellarAPI } from '@/lib/api';
 import { 
   Building2, GraduationCap, Stethoscope, Tractor, Wrench, Package, 
   Lock, Link2, PlusCircle, Activity, Coins, ShieldCheck, ChevronRight,
   Zap, Users, Wallet2, CheckCircle2, Clock, Gem, AlertTriangle,
-  Flame, TrendingDown
+  Flame, TrendingDown, Sparkles
 } from 'lucide-react';
 
 const LOAN_TIERS = [
@@ -46,6 +46,7 @@ export default function LoansPage() {
   const [stats, setStats] = useState<any>(null);
   const [tab, setTab] = useState<'request' | 'history'>('request');
   const [txStep, setTxStep] = useState(0);
+  const [gaslessMode, setGaslessMode] = useState(false);
 
   useEffect(() => {
     const savedToken = localStorage.getItem('tc_token');
@@ -321,11 +322,49 @@ export default function LoansPage() {
                 </div>
               ) : (
                 <>
-                  {eligibleTier && (
-                    <div style={{ marginBottom: 20, padding: '14px 18px', borderRadius: 'var(--radius-md)', background: 'rgba(0,217,166,0.08)', border: '1px solid rgba(0,217,166,0.25)', fontSize: '0.85rem', color: 'var(--c-secondary)', display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <ShieldCheck size={16} /> Authorized for <strong>{eligibleTier.tier} Tier</strong> drawdown (Max ${eligibleTier.maxAmount})
+                  <div style={{ marginBottom: 20, padding: '14px 18px', borderRadius: 'var(--radius-md)', background: 'rgba(0,217,166,0.08)', border: '1px solid rgba(0,217,166,0.25)', fontSize: '0.85rem', color: 'var(--c-secondary)', display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <ShieldCheck size={16} /> Authorized for <strong>{eligibleTier.tier} Tier</strong> drawdown (Max ${eligibleTier.maxAmount})
+                  </div>
+
+                  {/* ── GASLESS / FEE SPONSORSHIP TOGGLE ── */}
+                  <div style={{
+                    marginBottom: 24, padding: '14px 18px', borderRadius: 'var(--radius-md)',
+                    background: gaslessMode ? 'rgba(163,140,237,0.1)' : 'var(--c-surface)',
+                    border: `1px solid ${gaslessMode ? 'rgba(163,140,237,0.5)' : 'var(--c-border)'}`,
+                    transition: 'all 0.3s',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div style={{ padding: 6, background: gaslessMode ? 'rgba(163,140,237,0.2)' : 'var(--c-surface-2)', borderRadius: 8 }}>
+                          <Sparkles size={16} color={gaslessMode ? 'var(--c-primary)' : 'var(--c-text-3)'} />
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--c-text)' }}>Gasless Transaction (Sponsored)</div>
+                          <div style={{ fontSize: '0.72rem', color: 'var(--c-text-3)', marginTop: 2 }}>TrustChain protocol pays your Stellar network fee — you pay zero gas.</div>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setGaslessMode(!gaslessMode)}
+                        style={{
+                          width: 44, height: 24, borderRadius: 12, border: 'none', cursor: 'pointer',
+                          background: gaslessMode ? 'var(--c-primary)' : 'var(--c-surface-2)',
+                          position: 'relative', transition: 'all 0.3s', flexShrink: 0,
+                        }}
+                      >
+                        <span style={{
+                          position: 'absolute', top: 2, width: 20, height: 20, borderRadius: '50%',
+                          background: 'white', transition: 'all 0.3s',
+                          left: gaslessMode ? 22 : 2,
+                          boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
+                        }} />
+                      </button>
                     </div>
-                  )}
+                    {gaslessMode && (
+                      <div style={{ marginTop: 10, padding: '8px 12px', borderRadius: 8, background: 'rgba(163,140,237,0.08)', fontSize: '0.75rem', color: 'var(--c-primary)' }}>
+                        ✅ Fee Bump active: Your transaction will be wrapped in a Stellar FeeBumpTransaction. The protocol treasury covers the network fee on your behalf.
+                      </div>
+                    )}
+                  </div>
 
                   {/* ── FUNDING SOURCE SELECTOR (always visible) ── */}
                   <div style={{ marginBottom: 24 }}>
