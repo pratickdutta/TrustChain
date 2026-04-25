@@ -319,7 +319,7 @@ This section documents all requirements for the **Stellar SCF Black Belt** level
 | Advanced Feature | ✅ Done | **Fee Bump Sponsorship (Gasless Transactions)** — See below |
 | Minimum 30 Meaningful Commits | ✅ Done | [View Commits](https://github.com/pratickdutta/TrustChain/commits/main) |
 | User Feedback & Iteration | ✅ Done | [View Section](#-user-validation--mvp-feedback) |
-| Community Contribution (Twitter) | 🔜 Pending | `[ ]` |
+| Community Contribution (Twitter) | ✅ Done | [Post Link](https://x.com/pratick_du45025/status/2048149887263576114?s=20) |
 | 30 Verified User Wallet Addresses | ✅ Done | Please check verified testnet users above |
 
 ---
