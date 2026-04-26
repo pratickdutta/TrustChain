@@ -60,8 +60,7 @@ export default function Navbar() {
       try {
         const mobile = isMobile();
         const modules: any[] = [
-          // Only include Freighter on desktop — on mobile it causes the "Install" redirect loop
-          ...(mobile ? [] : [new FreighterModule()]),
+          new FreighterModule(),
           new AlbedoModule(),
           new LobstrModule(),
           new xBullModule(),
