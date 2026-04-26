@@ -187,7 +187,7 @@ export default function Navbar() {
               <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.05rem', color: theme === 'light' ? '#3B226E' : '#fff', letterSpacing: '-0.01em' }}>
                 TrustChain
               </div>
-              <div style={{ fontSize: '0.6rem', color: theme === 'light' ? 'rgba(59,34,110,0.6)' : 'rgba(255,255,255,0.6)', fontWeight: 600, letterSpacing: '0.08em', marginTop: -2 }}>
+              <div className="mobile-logo-text" style={{ fontSize: '0.6rem', color: theme === 'light' ? 'rgba(59,34,110,0.6)' : 'rgba(255,255,255,0.6)', fontWeight: 600, letterSpacing: '0.08em', marginTop: -2 }}>
                 MULTI-CHAIN NETWORK
               </div>
             </div>
@@ -223,7 +223,7 @@ export default function Navbar() {
           </div>
 
           {/* Right side controls */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <button onClick={toggleTheme} style={{
               background: 'transparent', border: 'none', color: theme === 'light' ? '#3B226E' : 'var(--c-text-2)',
               cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center'
@@ -232,10 +232,10 @@ export default function Navbar() {
             </button>
 
             {isConnected ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                {/* Score pill */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                {/* Score pill - Hide on mobile to save space */}
                 {score && (
-                  <div style={{
+                  <div className="hide-on-mobile" style={{
                     display: 'flex', alignItems: 'center', gap: 8,
                     padding: '6px 14px',
                     background: `rgba(${tierColor === 'var(--c-primary)' ? '167,139,250' : tierColor === 'var(--c-accent)' ? '245,158,11' : '108,99,255'},0.12)`,
@@ -260,7 +260,7 @@ export default function Navbar() {
 
                 {/* Wallet block */}
                 <div style={{ position: 'relative' }} className="wallet-dropdown-trigger">
-                  <button style={{
+                  <button className="mobile-shrink" style={{
                     display: 'flex', alignItems: 'center', gap: 8,
                     padding: '7px 16px 7px 10px',
                     background: theme === 'light' ? 'rgba(59, 34, 110, 0.04)' : 'var(--c-surface)',
@@ -277,7 +277,7 @@ export default function Navbar() {
                   onClick={disconnect}
                   title="Disconnect"
                   >
-                    <div style={{
+                    <div className="hide-on-xs" style={{
                       width: 22, height: 22, borderRadius: '50%',
                       background: `linear-gradient(135deg, ${tierColor}, var(--c-secondary))`,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -355,6 +355,12 @@ export default function Navbar() {
         @media (max-width: 768px) {
           .desktop-nav { display: none !important; }
           .mobile-menu-btn { display: flex !important; }
+          .hide-on-mobile { display: none !important; }
+          .mobile-shrink { padding: 4px 8px !important; font-size: 0.75rem !important; }
+          .mobile-logo-text { display: none !important; }
+        }
+        @media (max-width: 480px) {
+          .hide-on-xs { display: none !important; }
         }
       `}</style>
     </>
