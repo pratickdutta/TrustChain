@@ -33,24 +33,37 @@ export default function DashboardPage() {
 
   async function load(pk?: string) {
     setLoading(true);
+    const pubKeyToUse = pk || pubKey || localStorage.getItem('tc_pubkey') || '';
+    
     try {
-      const pubKeyToUse = pk || pubKey || localStorage.getItem('tc_pubkey') || '';
-      const [userData, userScore, stellar, userLoans] = await Promise.all([
+      // 1. Fetch fast internal API data first
+      const [userData, userScore, userLoans] = await Promise.all([
         usersAPI.me(),
         scoreAPI.me(),
-        stellarAPI.account(pubKeyToUse),
         loansAPI.list(),
       ]);
+      
       setUser(userData);
       setScore(userScore);
-      setStellarAccount(stellar);
       setLoans(userLoans);
+      
+      // Stop the global loading screen immediately so the user sees the dashboard
+      setLoading(false);
+
+      // 2. Fetch the slower Stellar blockchain data in the background
+      try {
+        const stellar = await stellarAPI.account(pubKeyToUse);
+        setStellarAccount(stellar);
+      } catch (err) {
+        console.error('Failed to load Stellar account data', err);
+        // We can set a fallback or leave it null. The UI handles null gracefully.
+      }
+
     } catch (err: any) {
       if (err.message?.includes('token') || err.message?.includes('401')) {
         // We're silently letting it fail. `isConnected` remains whatever.
         disconnect();
       }
-    } finally {
       setLoading(false);
     }
   }
