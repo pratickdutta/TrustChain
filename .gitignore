@@ -39,3 +39,5 @@ next-env.d.ts
 # Stellar keypairs (never commit these!)
 *.secret
 keypair.json
+PRESENTATION.md
+

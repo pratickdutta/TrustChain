@@ -8,13 +8,13 @@ import {
 } from 'lucide-react';
 
 async function fetchMetrics() {
-  const res = await fetch('/api/metrics');
+  const res = await fetch('/api/metrics', { cache: 'no-store' });
   if (!res.ok) throw new Error('Failed to fetch metrics');
   return res.json();
 }
 
 async function fetchHealth() {
-  const res = await fetch('/api/health');
+  const res = await fetch('/api/health', { cache: 'no-store' });
   return res.json();
 }
 
@@ -192,7 +192,7 @@ export default function MetricsDashboard() {
                           background: check.status === 'healthy' ? '#00C878' : '#ff4757',
                         }} />
                         <span style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--c-text)', textTransform: 'capitalize' }}>
-                          {name === 'mongodb' ? 'MongoDB Database' : 'Stellar Horizon API'}
+                          {name === 'mongodb' ? 'MongoDB Database' : name === 'stellarHorizon' ? 'Stellar Horizon API' : name}
                         </span>
                       </div>
                       <div style={{ fontSize: '0.75rem', color: 'var(--c-text-3)' }}>
@@ -207,8 +207,12 @@ export default function MetricsDashboard() {
                       <span style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--c-text)' }}>API Server</span>
                     </div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--c-text-3)' }}>Environment: {health.environment}</div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--c-text-3)' }}>Version: {health.version}</div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--c-text-3)' }}>Uptime: {health.uptimeSeconds}s</div>
+                    {health.system?.memory && (
+                      <div style={{ fontSize: '0.75rem', color: 'var(--c-text-3)' }}>
+                        Memory: {health.system.memory.heapUsedMB}MB / {health.system.memory.heapTotalMB}MB
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

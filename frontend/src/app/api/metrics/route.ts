@@ -115,7 +115,7 @@ export async function GET(req: NextRequest) {
       })),
       // System Info
       system: {
-        uptimeSeconds: Math.floor((Date.now() - start) / 1000),
+        uptimeSeconds: Math.floor(process.uptime()),
         indexingApproach: 'MongoDB write-time indexing with Stellar Horizon as source-of-truth for tx hashes and balances.',
         dataFreshness: now.toISOString(),
       },
