@@ -218,8 +218,8 @@ h1, h2, h3, h4, h5 { font-family: var(--font-heading); font-weight: 700; line-he
 ═══════════════════════════════════════════════════════ */
 .glass-card {
   background: var(--c-surface);
-  backdrop-filter: blur(32px) saturate(180%);
-  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
   border: 1px solid var(--c-border);
   border-radius: var(--radius-xl);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255,255,255,0.1);

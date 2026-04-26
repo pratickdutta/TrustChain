@@ -8,7 +8,8 @@ export default function FloatingLogos() {
         style={{
           position: 'absolute', top: '15%', left: '10%',
           width: 80, height: 80, color: 'var(--c-text)',
-          animation: 'float 12s ease-in-out infinite'
+          animation: 'float 12s ease-in-out infinite',
+          willChange: 'transform'
         }}
         viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"
       >
@@ -20,7 +21,8 @@ export default function FloatingLogos() {
         style={{
           position: 'absolute', top: '25%', right: '15%',
           width: 100, height: 100, color: '#F7931A',
-          animation: 'float 14s ease-in-out infinite reverse'
+          animation: 'float 14s ease-in-out infinite reverse',
+          willChange: 'transform'
         }}
         viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"
       >
@@ -35,7 +37,8 @@ export default function FloatingLogos() {
         style={{
           position: 'absolute', bottom: '20%', left: '18%',
           width: 90, height: 90, color: '#627EEA',
-          animation: 'float 15s ease-in-out infinite 2s'
+          animation: 'float 15s ease-in-out infinite 2s',
+          willChange: 'transform'
         }}
         viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2"
       >
@@ -48,7 +51,8 @@ export default function FloatingLogos() {
         style={{
           position: 'absolute', bottom: '25%', right: '10%',
           width: 110, height: 110, color: 'var(--c-primary)',
-          animation: 'float 18s ease-in-out infinite alternate 1s'
+          animation: 'float 18s ease-in-out infinite alternate 1s',
+          willChange: 'transform'
         }}
         viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1"
       >
@@ -64,7 +68,8 @@ export default function FloatingLogos() {
         style={{
           position: 'absolute', top: '55%', left: '5%',
           width: 70, height: 70, color: 'var(--c-secondary)',
-          animation: 'float 13s ease-in-out infinite 3s'
+          animation: 'float 13s ease-in-out infinite 3s',
+          willChange: 'transform'
         }}
         viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2"
       >
@@ -77,7 +82,8 @@ export default function FloatingLogos() {
         style={{
           position: 'absolute', top: '8%', left: '45%',
           width: 65, height: 65, color: 'var(--c-accent)',
-          animation: 'float 20s ease-in-out infinite reverse 1.5s'
+          animation: 'float 20s ease-in-out infinite reverse 1.5s',
+          willChange: 'transform'
         }}
         viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.1"
       >
@@ -89,7 +95,8 @@ export default function FloatingLogos() {
         style={{
           position: 'absolute', bottom: '8%', right: '35%',
           width: 75, height: 75, color: 'var(--c-primary)',
-          animation: 'float 17s ease-in-out infinite 4s'
+          animation: 'float 17s ease-in-out infinite 4s',
+          willChange: 'transform'
         }}
         viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1"
       >
@@ -104,7 +111,8 @@ export default function FloatingLogos() {
         style={{
           position: 'absolute', top: '40%', right: '4%',
           width: 85, height: 85, color: '#C8E023',
-          animation: 'float 16s ease-in-out infinite alternate 2.5s'
+          animation: 'float 16s ease-in-out infinite alternate 2.5s',
+          willChange: 'transform'
         }}
         viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.1"
       >
