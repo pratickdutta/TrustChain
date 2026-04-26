@@ -81,6 +81,8 @@ Repayment history feeds back into Behavior Score
 | Gold | 750 | $1,000 | 90 days |
 | Platinum | 900 | $5,000 | 180 days |
 
+> **Note**: For the duration of this hackathon/beta testing phase, the minimum borrowing threshold has been temporarily lowered to **150** so that all new users can easily try out the borrowing mechanics. In the future, it will be reverted back to the standard 450 (Bronze tier) requirement.
+
 ---
 
 ## Architecture
@@ -297,6 +299,8 @@ Built by **Pratick Dutta** — a student developer passionate about decentralize
 - 💻 [github.com/pratickdutta](https://github.com/pratickdutta)
 
 > *"I built TrustChain to explore how systemic financial exclusion can be solved through cryptographic networks — proving that strong community bonds can serve as the ultimate financial collateral."*
+
+**Hackathon Note**: To ensure judges and community members can easily test the borrowing features without grinding for peer attestations, the minimum borrowing credit score has been temporarily lowered from **450** to **150**. After the trial period, it will revert to the standard 450 requirement.
 
 ---
 

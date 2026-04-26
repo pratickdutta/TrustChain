@@ -34,12 +34,18 @@ export async function POST(req: NextRequest) {
   const score = await Score.findOne({ userId: auth.pubKey });
   if (!score) return NextResponse.json({ error: 'Credit score not computed yet' }, { status: 400 });
 
-  const tier = LOAN_TIERS[score.tier];
+  let tier = LOAN_TIERS[score.tier];
+  
+  // TEMPORARY FOR HACKATHON: Allow anyone >= 150 to borrow as if they were Bronze
+  if (score.totalScore >= 150 && !tier?.canBorrow) {
+    tier = LOAN_TIERS['bronze'];
+  }
+
   if (!tier?.canBorrow) {
     return NextResponse.json({
-      error: `Credit score too low. Need at least 450 (Bronze tier). Current: ${score.totalScore}`,
+      error: `Credit score too low. Need at least 150. Current: ${score.totalScore}`,
       currentScore: score.totalScore,
-      requiredScore: 450,
+      requiredScore: 150,
     }, { status: 400 });
   }
 

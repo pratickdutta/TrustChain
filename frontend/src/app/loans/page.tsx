@@ -212,10 +212,11 @@ export default function LoansPage() {
           </div>
         )}
 
-        {/* Tier Cards */}
+            {/* Tier Cards */}
         <div className="animate-scale-in" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 32 }}>
           {LOAN_TIERS.map(t => {
-            const eligible = userScore >= t.minScore;
+            const minAllowed = t.tier === 'Bronze' ? 150 : t.minScore;
+            const eligible = userScore >= minAllowed;
             return (
               <div key={t.tier} className="glass-card" style={{
                 padding: 20,
@@ -231,7 +232,7 @@ export default function LoansPage() {
                   Max Drawdown: <strong style={{ color: 'var(--c-text)' }}>${t.maxAmount}</strong><br />
                   Term Length: <strong style={{ color: 'var(--c-text)' }}>{t.duration}</strong><br />
                   Protocol Fee: {t.fee} TRUST<br />
-                  Threshold: {t.minScore}
+                  Threshold: {minAllowed}
                 </div>
               </div>
             );
@@ -292,7 +293,7 @@ export default function LoansPage() {
                       Your current TBA score is <strong style={{ color: '#F97316' }}>{userScore}</strong>.
                     </p>
                     <p style={{ color: 'var(--c-text-2)', fontSize: '0.9rem', lineHeight: 1.7, marginBottom: 24 }}>
-                      You need at least <strong style={{ color: 'var(--c-secondary)' }}>450</strong> (Bronze tier) to request a loan.
+                      You need at least <strong style={{ color: 'var(--c-secondary)' }}>150</strong> to request a loan.
                       Join Trust Circles and get peer attestations to boost your score!
                     </p>
                     <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
