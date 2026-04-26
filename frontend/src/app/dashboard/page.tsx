@@ -478,12 +478,18 @@ export default function DashboardPage() {
                       </td>
                       <td>{new Date(loan.dueDate).toLocaleDateString()}</td>
                       <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <div className="progress-bar" style={{ width: 60, height: 4 }}>
-                            <div className="progress-fill" style={{ width: `${(loan.repaidAmount / loan.amount) * 100}%` }} />
-                          </div>
-                          <span style={{ fontSize: '0.75rem', color: 'var(--c-text-2)' }}>${loan.repaidAmount}</span>
-                        </div>
+                        {(() => {
+                          const totalOwed = loan.amount + (loan.amount * (loan.feePercent || 0) / 100);
+                          const progress = Math.min(100, (loan.repaidAmount / totalOwed) * 100);
+                          return (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <div className="progress-bar" style={{ width: 60, height: 4 }}>
+                                <div className="progress-fill" style={{ width: `${progress}%` }} />
+                              </div>
+                              <span style={{ fontSize: '0.75rem', color: 'var(--c-text-2)' }}>${loan.repaidAmount} / ${totalOwed.toFixed(2)}</span>
+                            </div>
+                          );
+                        })()}
                       </td>
                     </tr>
                   ))}

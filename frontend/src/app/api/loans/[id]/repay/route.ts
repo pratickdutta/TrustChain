@@ -43,7 +43,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       { $inc: { trustTokens: isOnTime ? 50 : 20 } }
     );
     
-    message = `🎉 Loan fully repaid! +${isOnTime ? 50 : 20} TRUST tokens earned. (Platform Fee of $${platformFee.toFixed(2)} collected)`;
+    message = `✅ Loan contract settled. +${isOnTime ? 50 : 20} TRUST tokens earned. (Protocol fee of $${platformFee.toFixed(2)} collected)`;
   } else {
     loan.status = 'REPAYING';
     message = `Partial repayment recorded. Remaining: $${(totalOwed - loan.repaidAmount).toFixed(2)}`;

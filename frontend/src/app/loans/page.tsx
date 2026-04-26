@@ -649,24 +649,38 @@ export default function LoansPage() {
                   </span>
                 </div>
                 <div style={{ margin: '24px 0' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: '0.82rem', color: 'var(--c-text-2)', fontWeight: 500 }}>
-                    <span>Recovery Progress</span>
-                    <span>${loan.repaidAmount} / ${loan.amount} ({Math.round((loan.repaidAmount / loan.amount) * 100)}%)</span>
-                  </div>
-                  <div className="progress-bar" style={{ height: 6, background: 'var(--c-surface-2)' }}>
-                    <div className="progress-fill" style={{ width: `${(loan.repaidAmount / loan.amount) * 100}%`, background: loan.status === 'REPAID' ? 'var(--c-secondary)' : 'var(--c-primary)' }} />
-                  </div>
+                  {(() => {
+                    const totalOwed = loan.amount + (loan.amount * (loan.feePercent || 0) / 100);
+                    const progress = Math.min(100, Math.round((loan.repaidAmount / totalOwed) * 100));
+                    return (
+                      <>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: '0.82rem', color: 'var(--c-text-2)', fontWeight: 500 }}>
+                          <span>Recovery Progress</span>
+                          <span>${loan.repaidAmount} / ${totalOwed.toFixed(2)} ({progress}%)</span>
+                        </div>
+                        <div className="progress-bar" style={{ height: 6, background: 'var(--c-surface-2)' }}>
+                          <div className="progress-fill" style={{ width: `${progress}%`, background: loan.status === 'REPAID' ? 'var(--c-secondary)' : 'var(--c-primary)' }} />
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
                 {['APPROVED', 'DISBURSED', 'REPAYING'].includes(loan.status) && (
                   repayingId === loan._id ? (
                     <div style={{ display: 'flex', gap: 12, background: 'var(--c-surface-2)', padding: 16, borderRadius: 'var(--radius-md)', border: '1px solid var(--c-border)' }}>
-                      <input
-                        type="number" className="input"
-                        placeholder={`Maximum: $${loan.amount - loan.repaidAmount}`}
-                        value={repayAmount} onChange={e => setRepayAmount(e.target.value)}
-                        style={{ flex: 1, backgroundColor: 'var(--c-surface)' }}
-                        max={loan.amount - loan.repaidAmount}
-                      />
+                      {(() => {
+                        const totalOwed = loan.amount + (loan.amount * (loan.feePercent || 0) / 100);
+                        const remaining = Math.max(0, totalOwed - loan.repaidAmount);
+                        return (
+                          <input
+                            type="number" className="input"
+                            placeholder={`Maximum: $${remaining.toFixed(2)}`}
+                            value={repayAmount} onChange={e => setRepayAmount(e.target.value)}
+                            style={{ flex: 1, backgroundColor: 'var(--c-surface)' }}
+                            max={remaining}
+                          />
+                        );
+                      })()}
                       <button onClick={() => repayLoan(loan._id)} className="btn btn-primary" style={{ padding: '0 24px' }}>Execute</button>
                       <button onClick={() => { setRepayingId(null); setRepayAmount(''); }} className="btn btn-ghost">Abort</button>
                     </div>
