@@ -270,6 +270,10 @@ The following wallets connected to the application and tested the core functiona
 3. `GAMX7AYLKU7XOJ6NBCWTSY3W5OSSOBS332M55UG2J5TH5NPCAY545QCM`
 4. `GAKH2QXR6TUERN6JHRXGT6AW625X4PESSFWPON5CRQ6A2UFPRDMAAZ2F`
 5. `GBBXQ4Y2XSEBBFXYAE76RCW6HQX54BGTO5H7SDMGN3XN77YA7AZ34HY3`
+6. `GA5RKOAUAVEA5POB4HKI2HCIZ3K67SZYLUW5SOACOAKCNDSM4XLC5BPR`
+7. `GBMQJ3G5LDWODZKUUQWGGT6NIKMM7KL5NLHVIG53WLNLWB27Z4AKH3F4`
+8. `GCLIHJPEVJ3KN5ABKTLLR5NFG5UXCCTHOANDZAEE6OO57ZFXUFCZEWQF`
+9. `GAAESJ3CEVSJJ5PJBI35654N525YNR4P2SNYXGAOC4PBFYSW4FKDT4TF`
 
 ### 🚀 Future Evolution & Iteration 1
 Based on the collected feedback, users highlighted that the loan booking flow and transaction confirmations could be clearer for users new to crypto, explicitly requesting visual transaction progress indicators, clear interest rate displays, and potentially a real-time chat system. In our next phase, we plan to evolve the project by exploring an in-app real-time communication layer between lenders and borrowers.
