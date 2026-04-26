@@ -11,8 +11,8 @@ export async function GET(req: NextRequest) {
   const user = await User.findOne({ stellarPublicKey: auth.pubKey });
   if (!user?.isLender) return NextResponse.json({ error: 'Not registered as a lender' }, { status: 403 });
 
-  const pendingLoans = await Loan.find({ lenderKey: auth.pubKey, status: 'PENDING_LENDER' });
-  const enriched = await Promise.all(pendingLoans.map(async l => {
+  const loans = await Loan.find({ lenderKey: auth.pubKey }).sort({ createdAt: -1 });
+  const enriched = await Promise.all(loans.map(async l => {
     const borrower = await User.findOne({ stellarPublicKey: l.borrowerId });
     const score = await Score.findOne({ userId: l.borrowerId });
     return {

@@ -252,40 +252,82 @@ export default function LenderPage() {
                 <p>No pending applications. Borrowers who select you as their lender will appear here.</p>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                {inbox.map(loan => (
-                  <div key={loan._id} className="glass-card" style={{ padding: 24 }}>
-                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
-                      <div>
-                        <div style={{ fontWeight: 700, fontSize: '1.15rem', marginBottom: 4 }}>${loan.amount} <span style={{ color: 'var(--c-text-3)', fontSize: '0.8rem', fontWeight: 500 }}>XLM</span></div>
-                        <div style={{ fontSize: '0.8rem', color: 'var(--c-text-2)', marginBottom: 6, textTransform: 'capitalize' }}>{loan.purpose?.replace(/_/g, ' ')}</div>
-                        <div style={{ fontSize: '0.78rem', color: 'var(--c-text-3)' }}>
-                          From: <strong style={{ color: 'var(--c-text)' }}>{loan.borrowerName}</strong>
-                          {' · '}Score: <strong style={{ color: 'var(--c-primary)' }}>{loan.borrowerScore}</strong>
-                          {' · '}Tier: <span className="badge" style={{ fontSize: '0.64rem', padding: '2px 8px', background: 'rgba(130,107,218,0.15)', color: 'var(--c-primary)', border: '1px solid rgba(130,107,218,0.3)' }}>{loan.borrowerTier?.toUpperCase()}</span>
-                        </div>
-                      </div>
-                      <div style={{ display: 'flex', gap: 8 }}>
-                        <button
-                          onClick={() => decide(loan._id, 'REJECT')}
-                          disabled={deciding === loan._id}
-                          style={{ padding: '8px 16px', borderRadius: 'var(--radius-full)', background: 'rgba(255,80,80,0.1)', border: '1px solid rgba(255,80,80,0.3)', color: '#FF5050', cursor: 'pointer', fontWeight: 600, fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <XCircle size={14} /> Reject
-                        </button>
-                        <button
-                          onClick={() => decide(loan._id, 'APPROVE')}
-                          disabled={deciding === loan._id}
-                          className="btn btn-primary"
-                          style={{ padding: '8px 16px', fontSize: '0.82rem' }}>
-                          <CheckCircle2 size={14} /> Approve
-                        </button>
-                      </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+                {/* PENDING APPLICATIONS */}
+                <div>
+                  <h3 style={{ fontSize: '1.1rem', marginBottom: 16, color: 'var(--c-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Inbox size={18} color="var(--c-primary)" /> Pending Applications ({inbox.filter(l => l.status === 'PENDING_LENDER').length})
+                  </h3>
+                  {inbox.filter(l => l.status === 'PENDING_LENDER').length === 0 ? (
+                    <div className="glass-card" style={{ padding: 32, textAlign: 'center', color: 'var(--c-text-3)', fontSize: '0.9rem' }}>
+                      No pending applications right now.
                     </div>
-                    <div style={{ marginTop: 14, padding: '10px 14px', background: 'var(--c-surface-2)', borderRadius: 'var(--radius-sm)', fontSize: '0.75rem', color: 'var(--c-text-3)' }}>
-                      Due in {loan.durationDays} days · <Clock size={10} style={{ display: 'inline' }} /> Applied: {new Date(loan.createdAt).toLocaleDateString()}
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                      {inbox.filter(l => l.status === 'PENDING_LENDER').map(loan => (
+                        <div key={loan._id} className="glass-card" style={{ padding: 24 }}>
+                          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+                            <div>
+                              <div style={{ fontWeight: 700, fontSize: '1.15rem', marginBottom: 4 }}>${loan.amount} <span style={{ color: 'var(--c-text-3)', fontSize: '0.8rem', fontWeight: 500 }}>XLM</span></div>
+                              <div style={{ fontSize: '0.8rem', color: 'var(--c-text-2)', marginBottom: 6, textTransform: 'capitalize' }}>{loan.purpose?.replace(/_/g, ' ')}</div>
+                              <div style={{ fontSize: '0.78rem', color: 'var(--c-text-3)' }}>
+                                From: <strong style={{ color: 'var(--c-text)' }}>{loan.borrowerName}</strong>
+                                {' · '}Score: <strong style={{ color: 'var(--c-primary)' }}>{loan.borrowerScore}</strong>
+                                {' · '}Tier: <span className="badge" style={{ fontSize: '0.64rem', padding: '2px 8px', background: 'rgba(130,107,218,0.15)', color: 'var(--c-primary)', border: '1px solid rgba(130,107,218,0.3)' }}>{loan.borrowerTier?.toUpperCase()}</span>
+                              </div>
+                            </div>
+                            <div style={{ display: 'flex', gap: 8 }}>
+                              <button
+                                onClick={() => decide(loan._id, 'REJECT')}
+                                disabled={deciding === loan._id}
+                                style={{ padding: '8px 16px', borderRadius: 'var(--radius-full)', background: 'rgba(255,80,80,0.1)', border: '1px solid rgba(255,80,80,0.3)', color: '#FF5050', cursor: 'pointer', fontWeight: 600, fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+                                <XCircle size={14} /> Reject
+                              </button>
+                              <button
+                                onClick={() => decide(loan._id, 'APPROVE')}
+                                disabled={deciding === loan._id}
+                                className="btn btn-primary"
+                                style={{ padding: '8px 16px', fontSize: '0.82rem' }}>
+                                <CheckCircle2 size={14} /> Approve
+                              </button>
+                            </div>
+                          </div>
+                          <div style={{ marginTop: 14, padding: '10px 14px', background: 'var(--c-surface-2)', borderRadius: 'var(--radius-sm)', fontSize: '0.75rem', color: 'var(--c-text-3)' }}>
+                            Due in {loan.durationDays} days · <Clock size={10} style={{ display: 'inline' }} /> Applied: {new Date(loan.createdAt).toLocaleDateString()}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* REVIEW HISTORY */}
+                {inbox.filter(l => l.status !== 'PENDING_LENDER').length > 0 && (
+                  <div>
+                    <h3 style={{ fontSize: '1.1rem', marginBottom: 16, color: 'var(--c-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <Clock size={18} color="var(--c-text-3)" /> Review History ({inbox.filter(l => l.status !== 'PENDING_LENDER').length})
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                      {inbox.filter(l => l.status !== 'PENDING_LENDER').map(loan => (
+                        <div key={loan._id} className="glass-card" style={{ padding: '16px 24px', opacity: 0.7 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+                            <div>
+                              <div style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--c-text)' }}>${loan.amount} XLM - <span style={{ textTransform: 'capitalize' }}>{loan.purpose?.replace(/_/g, ' ')}</span></div>
+                              <div style={{ fontSize: '0.8rem', color: 'var(--c-text-3)', marginTop: 4 }}>
+                                Borrower: {loan.borrowerName} · Applied: {new Date(loan.createdAt).toLocaleDateString()}
+                              </div>
+                            </div>
+                            <div>
+                              <span className={`badge ${loan.status === 'REJECTED' ? 'badge-danger' : 'badge-success'}`}>
+                                {loan.status === 'REJECTED' ? 'Rejected' : 'Approved'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                ))}
+                )}
               </div>
             )}
           </div>
