@@ -28,6 +28,7 @@ export default function CirclesPage() {
   const [settingsForm, setSettingsForm] = useState({ circleRules: '', borrowApprovalEnabled: false, isPublic: true, socialLink: '' });
   const [savingSettings, setSavingSettings] = useState(false);
   const [userPoolDeposit, setUserPoolDeposit] = useState(0);
+  const [userPoolInterest, setUserPoolInterest] = useState(0);
   const [depositAmount, setDepositAmount] = useState('');
   const [withdrawing, setWithdrawing] = useState(false);
   const [depositing, setDepositing] = useState(false);
@@ -92,6 +93,7 @@ export default function CirclesPage() {
       if (c.isPool) {
         const d = await poolsAPI.getUserDeposit(id);
         setUserPoolDeposit(d.total);
+        setUserPoolInterest(d.accruedInterest || 0);
       }
     } catch (e) {}
     setLoadingCircleDetail(false);
@@ -594,6 +596,11 @@ export default function CirclesPage() {
                       <div>
                         <div style={{ fontSize: '0.65rem', color: 'var(--c-text-3)', fontWeight: 700 }}>YOUR CONTRIBUTION</div>
                         <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--c-text)' }}>{userPoolDeposit.toFixed(2)} XLM</div>
+                        {userPoolInterest > 0 && (
+                          <div style={{ fontSize: '0.72rem', color: 'var(--c-secondary)', fontWeight: 600, marginTop: 2 }}>
+                            + {userPoolInterest.toFixed(4)} XLM Interest
+                          </div>
+                        )}
                       </div>
                       <div style={{ display: 'flex', gap: 6 }}>
                         <input 
