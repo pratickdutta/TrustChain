@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import useWalletStore from '@/store/walletStore';
 import { lenderAPI } from '@/lib/api';
-import { Wallet, Shield, Users, TrendingUp, CheckCircle2, XCircle, Clock, ChevronRight, Lock, Inbox, BarChart3, Settings2, CircleCheck } from 'lucide-react';
+import { Wallet, Shield, Users, TrendingUp, CheckCircle2, XCircle, Clock, ChevronRight, Lock, Inbox, BarChart3, Settings2, CircleCheck, Coins } from 'lucide-react';
 
 type Tab = 'settings' | 'inbox' | 'portfolio';
 
@@ -304,6 +304,7 @@ export default function LenderPage() {
                 {[
                   { label: 'Total Capital Deployed', value: `$${portfolio.totalLent}`, icon: TrendingUp, color: 'var(--c-primary)' },
                   { label: 'Capital Returned', value: `$${portfolio.totalReturned}`, icon: CheckCircle2, color: '#00C878' },
+                  { label: 'Interest Earned', value: `$${portfolio.totalInterestEarned || '0.00'}`, icon: Coins, color: 'var(--c-secondary)' },
                   { label: 'Active Loans', value: portfolio.activeLoans, icon: Clock, color: 'var(--c-accent)' },
                   { label: 'Repayment Rate', value: `${portfolio.repaymentRate}%`, icon: BarChart3, color: portfolio.repaymentRate >= 80 ? '#00C878' : '#FF5050' },
                   { label: 'Defaulted', value: portfolio.defaultedLoans, icon: XCircle, color: '#FF5050' },

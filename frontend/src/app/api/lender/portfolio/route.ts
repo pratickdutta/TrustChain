@@ -19,7 +19,8 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({
     totalLent: decided.reduce((s, l) => s + l.amount, 0).toFixed(2),
-    totalReturned: repaid.reduce((s, l) => s + l.amount, 0).toFixed(2),
+    totalReturned: repaid.reduce((s, l) => s + ((l.repaidAmount || l.amount) - (l.platformFeeCollected || 0)), 0).toFixed(2),
+    totalInterestEarned: repaid.reduce((s, l) => s + ((l.repaidAmount || l.amount) - l.amount - (l.platformFeeCollected || 0)), 0).toFixed(2),
     activeLoans: active.length,
     repaidLoans: repaid.length,
     defaultedLoans: defaulted.length,
