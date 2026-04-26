@@ -10,6 +10,7 @@ import { FreighterModule, FREIGHTER_ID } from '@creit.tech/stellar-wallets-kit/m
 import { AlbedoModule } from '@creit.tech/stellar-wallets-kit/modules/albedo';
 import { LobstrModule } from '@creit.tech/stellar-wallets-kit/modules/lobstr';
 import { xBullModule } from '@creit.tech/stellar-wallets-kit/modules/xbull';
+import { WalletConnectModule } from '@creit.tech/stellar-wallets-kit/modules/wallet-connect';
 
 const NAV_LINKS = [
   { href: '/dashboard',   label: 'Dashboard',   icon: Activity },
@@ -53,15 +54,31 @@ export default function Navbar() {
       
       // Initialize Wallet Kit globally on mount
       try {
+        const modules: any[] = [
+          new FreighterModule(),
+          new AlbedoModule(),
+          new LobstrModule(),
+          new xBullModule(),
+        ];
+
+        // Add WalletConnect for proper mobile wallet deep-linking
+        const wcProjectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID;
+        if (wcProjectId) {
+          modules.push(new WalletConnectModule({
+            projectId: wcProjectId,
+            metadata: {
+              name: 'TrustChain',
+              description: 'Decentralized Credit Network on Stellar',
+              url: window.location.origin,
+              icons: ['https://trustchain.app/favicon.ico'],
+            }
+          }));
+        }
+
         StellarWalletsKit.init({
           network: Networks.TESTNET,
           selectedWalletId: FREIGHTER_ID,
-          modules: [
-            new FreighterModule(),
-            new AlbedoModule(),
-            new LobstrModule(),
-            new xBullModule(),
-          ],
+          modules,
         });
         StellarWalletsKit.setTheme({
           "background": "rgba(18, 10, 34, 0.75)",

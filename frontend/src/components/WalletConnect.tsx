@@ -7,6 +7,7 @@ import { FreighterModule, FREIGHTER_ID } from '@creit.tech/stellar-wallets-kit/m
 import { AlbedoModule } from '@creit.tech/stellar-wallets-kit/modules/albedo';
 import { LobstrModule } from '@creit.tech/stellar-wallets-kit/modules/lobstr';
 import { xBullModule } from '@creit.tech/stellar-wallets-kit/modules/xbull';
+import { WalletConnectModule } from '@creit.tech/stellar-wallets-kit/modules/wallet-connect';
 
 export default function WalletConnect({ compact = false }: { compact?: boolean }) {
   const { setWallet, setScore, setConnecting, isConnecting } = useWalletStore();
@@ -17,15 +18,31 @@ export default function WalletConnect({ compact = false }: { compact?: boolean }
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
+        const modules: any[] = [
+          new FreighterModule(),
+          new AlbedoModule(),
+          new LobstrModule(),
+          new xBullModule(),
+        ];
+
+        // Add WalletConnect if project ID is available
+        const wcProjectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID;
+        if (wcProjectId) {
+          modules.push(new WalletConnectModule({
+            projectId: wcProjectId,
+            metadata: {
+              name: 'TrustChain',
+              description: 'Decentralized Credit Network on Stellar',
+              url: window.location.origin,
+              icons: ['https://trustchain.app/favicon.ico'],
+            }
+          }));
+        }
+
         StellarWalletsKit.init({
           network: Networks.TESTNET,
           selectedWalletId: FREIGHTER_ID,
-          modules: [
-            new FreighterModule(),
-            new AlbedoModule(),
-            new LobstrModule(),
-            new xBullModule(),
-          ],
+          modules,
         });
         StellarWalletsKit.setTheme({
           "background": "rgba(18, 10, 34, 0.75)",
@@ -140,8 +157,8 @@ export default function WalletConnect({ compact = false }: { compact?: boolean }
               background: 'rgba(108,99,255,0.06)', border: '1px solid rgba(108,99,255,0.2)',
               marginBottom: 20, fontSize: '0.8rem', color: 'var(--color-text-secondary)', lineHeight: 1.6,
             }}>
-              <strong style={{ color: 'var(--color-primary-light)' }}>Multi-Wallet Support</strong> is here. 
-              Connect securely using Freighter, Albedo, Lobstr, xBull, and more.
+              <strong style={{ color: 'var(--color-primary-light)' }}>📱 Mobile User?</strong><br />
+              If you're on mobile, please use the <strong>Freighter App's browser</strong> or select <strong>Albedo</strong> for the smoothest experience.
             </div>
             <button onClick={connectWalletsKit} disabled={isConnecting} className="btn btn-primary" style={{ width: '100%' }}>
               {isConnecting ? (
