@@ -633,7 +633,7 @@ export default function LoansPage() {
                 <div style={{ color: 'var(--c-text-2)' }}>No operational contracts detected.</div>
               </div>
             ) : loans.map(loan => (
-              <div key={loan.id} className="glass-card" style={{ padding: 28, borderColor: loan.status === 'REPAYING' || loan.status === 'APPROVED' ? 'var(--c-primary)' : 'var(--c-border)' }}>
+              <div key={loan._id} className="glass-card" style={{ padding: 28, borderColor: loan.status === 'REPAYING' || loan.status === 'APPROVED' ? 'var(--c-primary)' : 'var(--c-border)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
@@ -658,7 +658,7 @@ export default function LoansPage() {
                   </div>
                 </div>
                 {['APPROVED', 'DISBURSED', 'REPAYING'].includes(loan.status) && (
-                  repayingId === loan.id ? (
+                  repayingId === loan._id ? (
                     <div style={{ display: 'flex', gap: 12, background: 'var(--c-surface-2)', padding: 16, borderRadius: 'var(--radius-md)', border: '1px solid var(--c-border)' }}>
                       <input
                         type="number" className="input"
@@ -667,12 +667,12 @@ export default function LoansPage() {
                         style={{ flex: 1, backgroundColor: 'var(--c-surface)' }}
                         max={loan.amount - loan.repaidAmount}
                       />
-                      <button onClick={() => repayLoan(loan.id)} className="btn btn-primary" style={{ padding: '0 24px' }}>Execute</button>
+                      <button onClick={() => repayLoan(loan._id)} className="btn btn-primary" style={{ padding: '0 24px' }}>Execute</button>
                       <button onClick={() => { setRepayingId(null); setRepayAmount(''); }} className="btn btn-ghost">Abort</button>
                     </div>
                   ) : (
                     <div style={{ paddingTop: 16, borderTop: '1px solid var(--c-border)' }}>
-                      <button onClick={() => setRepayingId(loan.id)} className="btn btn-secondary" style={{ padding: '10px 20px' }}>
+                      <button onClick={() => setRepayingId(loan._id)} className="btn btn-secondary" style={{ padding: '10px 20px' }}>
                         <Coins size={16} /> Submit Payment
                       </button>
                     </div>

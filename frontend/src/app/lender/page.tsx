@@ -254,7 +254,7 @@ export default function LenderPage() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 {inbox.map(loan => (
-                  <div key={loan.id} className="glass-card" style={{ padding: 24 }}>
+                  <div key={loan._id} className="glass-card" style={{ padding: 24 }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
                       <div>
                         <div style={{ fontWeight: 700, fontSize: '1.15rem', marginBottom: 4 }}>${loan.amount} <span style={{ color: 'var(--c-text-3)', fontSize: '0.8rem', fontWeight: 500 }}>XLM</span></div>
@@ -267,14 +267,14 @@ export default function LenderPage() {
                       </div>
                       <div style={{ display: 'flex', gap: 8 }}>
                         <button
-                          onClick={() => decide(loan.id, 'REJECT')}
-                          disabled={deciding === loan.id}
+                          onClick={() => decide(loan._id, 'REJECT')}
+                          disabled={deciding === loan._id}
                           style={{ padding: '8px 16px', borderRadius: 'var(--radius-full)', background: 'rgba(255,80,80,0.1)', border: '1px solid rgba(255,80,80,0.3)', color: '#FF5050', cursor: 'pointer', fontWeight: 600, fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: 6 }}>
                           <XCircle size={14} /> Reject
                         </button>
                         <button
-                          onClick={() => decide(loan.id, 'APPROVE')}
-                          disabled={deciding === loan.id}
+                          onClick={() => decide(loan._id, 'APPROVE')}
+                          disabled={deciding === loan._id}
                           className="btn btn-primary"
                           style={{ padding: '8px 16px', fontSize: '0.82rem' }}>
                           <CheckCircle2 size={14} /> Approve

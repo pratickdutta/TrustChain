@@ -468,7 +468,7 @@ export default function DashboardPage() {
                 </thead>
                 <tbody>
                   {loans.slice(0, 5).map(loan => (
-                    <tr key={loan.id}>
+                    <tr key={loan._id}>
                       <td style={{ fontWeight: 700, color: 'var(--c-text)' }}>${loan.amount}</td>
                       <td style={{ textTransform: 'capitalize' }}>{loan.purpose.replace(/_/g, ' ')}</td>
                       <td>
