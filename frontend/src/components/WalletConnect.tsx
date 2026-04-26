@@ -7,7 +7,11 @@ import { FreighterModule, FREIGHTER_ID } from '@creit.tech/stellar-wallets-kit/m
 import { AlbedoModule } from '@creit.tech/stellar-wallets-kit/modules/albedo';
 import { LobstrModule } from '@creit.tech/stellar-wallets-kit/modules/lobstr';
 import { xBullModule } from '@creit.tech/stellar-wallets-kit/modules/xbull';
-import { WalletConnectModule } from '@creit.tech/stellar-wallets-kit/modules/wallet-connect';
+import { WalletConnectModule, WalletConnectTargetChain } from '@creit.tech/stellar-wallets-kit/modules/wallet-connect';
+
+const isMobile = () =>
+  typeof navigator !== 'undefined' &&
+  /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
 
 export default function WalletConnect({ compact = false }: { compact?: boolean }) {
   const { setWallet, setScore, setConnecting, isConnecting } = useWalletStore();
@@ -18,14 +22,16 @@ export default function WalletConnect({ compact = false }: { compact?: boolean }
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
+        const mobile = isMobile();
         const modules: any[] = [
-          new FreighterModule(),
+          // Only include Freighter on desktop — on mobile it causes the "Install" redirect loop
+          ...(mobile ? [] : [new FreighterModule()]),
           new AlbedoModule(),
           new LobstrModule(),
           new xBullModule(),
         ];
 
-        // Add WalletConnect if project ID is available
+        // Add WalletConnect if project ID is available (great for mobile deep-linking)
         const wcProjectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID;
         if (wcProjectId) {
           modules.push(new WalletConnectModule({
@@ -35,13 +41,14 @@ export default function WalletConnect({ compact = false }: { compact?: boolean }
               description: 'Decentralized Credit Network on Stellar',
               url: window.location.origin,
               icons: ['https://trustchain.app/favicon.ico'],
-            }
+            },
+            allowedChains: [WalletConnectTargetChain.TESTNET],
           }));
         }
 
         StellarWalletsKit.init({
           network: Networks.TESTNET,
-          selectedWalletId: FREIGHTER_ID,
+          selectedWalletId: mobile ? undefined : FREIGHTER_ID,
           modules,
         });
         StellarWalletsKit.setTheme({

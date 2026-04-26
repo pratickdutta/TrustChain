@@ -10,7 +10,11 @@ import { FreighterModule, FREIGHTER_ID } from '@creit.tech/stellar-wallets-kit/m
 import { AlbedoModule } from '@creit.tech/stellar-wallets-kit/modules/albedo';
 import { LobstrModule } from '@creit.tech/stellar-wallets-kit/modules/lobstr';
 import { xBullModule } from '@creit.tech/stellar-wallets-kit/modules/xbull';
-import { WalletConnectModule } from '@creit.tech/stellar-wallets-kit/modules/wallet-connect';
+import { WalletConnectModule, WalletConnectTargetChain } from '@creit.tech/stellar-wallets-kit/modules/wallet-connect';
+
+const isMobile = () =>
+  typeof navigator !== 'undefined' &&
+  /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
 
 const NAV_LINKS = [
   { href: '/dashboard',   label: 'Dashboard',   icon: Activity },
@@ -54,8 +58,10 @@ export default function Navbar() {
       
       // Initialize Wallet Kit globally on mount
       try {
+        const mobile = isMobile();
         const modules: any[] = [
-          new FreighterModule(),
+          // Only include Freighter on desktop — on mobile it causes the "Install" redirect loop
+          ...(mobile ? [] : [new FreighterModule()]),
           new AlbedoModule(),
           new LobstrModule(),
           new xBullModule(),
@@ -71,13 +77,14 @@ export default function Navbar() {
               description: 'Decentralized Credit Network on Stellar',
               url: window.location.origin,
               icons: ['https://trustchain.app/favicon.ico'],
-            }
+            },
+            allowedChains: [WalletConnectTargetChain.TESTNET],
           }));
         }
 
         StellarWalletsKit.init({
           network: Networks.TESTNET,
-          selectedWalletId: FREIGHTER_ID,
+          selectedWalletId: mobile ? undefined : FREIGHTER_ID,
           modules,
         });
         StellarWalletsKit.setTheme({
