@@ -128,13 +128,15 @@ We utilize a modern, decoupled architecture powered natively by Next.js 16 App R
 
 ### Smart Contracts (Soroban)
 
-TrustChain relies on three core Rust smart contracts deployed to the Stellar Testnet:
+TrustChain relies on three core Rust smart contracts deployed to the **Stellar Testnet**. All contracts are publicly verifiable on the Stellar Expert explorer:
 
-| Contract | Purpose | Testnet Address |
-|----------|---------|-----------------|
-| **Loan** | Core loan lifecycle, XLM disbursement, and fee collection. | `CCGAK2YJ2WPGE74QTYPXHX5NONQWZMTF6NY2JWHLGDZZC3MYPDBUVWMV` |
-| **Score** | On-chain credit score registry for B2B API access. | `CB6P6UZEYJ77DGSLRIGJY4YK4HFMYGQNZAIJQWXYTVZ2A4STSXMIJP2W` |
-| **Circle** | On-chain social circle and membership graph anchoring. | `CB4ED6IJTJSSG7WJVL7ZK43EU4NVYL5WT2COT2METRE4FZODSCRM7HE7` |
+| Contract | Purpose | Deployed Address |
+|----------|---------|------------------|
+| **Loan** | Core loan lifecycle, XLM disbursement, and fee collection. | [`CCGAK2YJ2WPGE74QTYPXHX5NONQWZMTF6NY2JWHLGDZZC3MYPDBUVWMV`](https://stellar.expert/explorer/testnet/contract/CCGAK2YJ2WPGE74QTYPXHX5NONQWZMTF6NY2JWHLGDZZC3MYPDBUVWMV) |
+| **Score** | On-chain credit score registry for B2B API access. | [`CB6P6UZEYJ77DGSLRIGJY4YK4HFMYGQNZAIJQWXYTVZ2A4STSXMIJP2W`](https://stellar.expert/explorer/testnet/contract/CB6P6UZEYJ77DGSLRIGJY4YK4HFMYGQNZAIJQWXYTVZ2A4STSXMIJP2W) |
+| **Circle** | On-chain social circle and membership graph anchoring. | [`CB4ED6IJTJSSG7WJVL7ZK43EU4NVYL5WT2COT2METRE4FZODSCRM7HE7`](https://stellar.expert/explorer/testnet/contract/CB4ED6IJTJSSG7WJVL7ZK43EU4NVYL5WT2COT2METRE4FZODSCRM7HE7) |
+
+> 🔗 **Explorer**: All contracts can be inspected live at [stellar.expert/explorer/testnet](https://stellar.expert/explorer/testnet)
 
 ---
 
