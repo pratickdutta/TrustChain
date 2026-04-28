@@ -280,6 +280,7 @@ The following wallets connected to the application and tested the core functiona
 | 7 | `GBMQJ3G5LDWODZKUUQWGGT6NIKMM7KL5NLHVIG53WLNLWB27Z4AKH3F4` | [View on Stellar Expert →](https://stellar.expert/explorer/testnet/account/GBMQJ3G5LDWODZKUUQWGGT6NIKMM7KL5NLHVIG53WLNLWB27Z4AKH3F4) |
 | 8 | `GCLIHJPEVJ3KN5ABKTLLR5NFG5UXCCTHOANDZAEE6OO57ZFXUFCZEWQF` | [View on Stellar Expert →](https://stellar.expert/explorer/testnet/account/GCLIHJPEVJ3KN5ABKTLLR5NFG5UXCCTHOANDZAEE6OO57ZFXUFCZEWQF) |
 | 9 | `GAAESJ3CEVSJJ5PJBI35654N525YNR4P2SNYXGAOC4PBFYSW4FKDT4TF` | [View on Stellar Expert →](https://stellar.expert/explorer/testnet/account/GAAESJ3CEVSJJ5PJBI35654N525YNR4P2SNYXGAOC4PBFYSW4FKDT4TF) |
+| 10 | `GDTUW76346V3YWOM7KZESLEU46HCNT6VU6DZ53D7U4L5UMSHWG6FSCYC` | [View on Stellar Expert →](https://stellar.expert/explorer/testnet/account/GDTUW76346V3YWOM7KZESLEU46HCNT6VU6DZ53D7U4L5UMSHWG6FSCYC) |
 
 > 🔗 All transaction histories are publicly verifiable on [stellar.expert/explorer/testnet](https://stellar.expert/explorer/testnet). Each wallet's page shows full on-chain activity including XLM transfers, contract invocations, and account balances.
 
