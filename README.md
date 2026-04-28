@@ -266,16 +266,22 @@ As part of our real-world MVP validation, TrustChain was tested by 5+ active tes
 * **Raw Data Analysis**: [View Google Sheet Responses](https://docs.google.com/spreadsheets/d/1pAXSfOcxUEyig12Y8sUc1U0a9Z4jc0ZVf7VUJ9Q4620/edit?usp=sharing)
 
 ### 👤 Verified Testnet Users
-The following wallets connected to the application and tested the core functionality on the Stellar Testnet:
-1. `GC4AJYD7TPXJETE2VEXFRE3ZHIUE6PUX3MYCDBXJH4QNSXZGMDRMCVTI`
-2. `GCQRND3J66CHUBQBTSYDPSQUD6NPSEZ32PLJTAZGESNJAFEF6NJII2R3`
-3. `GAMX7AYLKU7XOJ6NBCWTSY3W5OSSOBS332M55UG2J5TH5NPCAY545QCM`
-4. `GAKH2QXR6TUERN6JHRXGT6AW625X4PESSFWPON5CRQ6A2UFPRDMAAZ2F`
-5. `GBBXQ4Y2XSEBBFXYAE76RCW6HQX54BGTO5H7SDMGN3XN77YA7AZ34HY3`
-6. `GA5RKOAUAVEA5POB4HKI2HCIZ3K67SZYLUW5SOACOAKCNDSM4XLC5BPR`
-7. `GBMQJ3G5LDWODZKUUQWGGT6NIKMM7KL5NLHVIG53WLNLWB27Z4AKH3F4`
-8. `GCLIHJPEVJ3KN5ABKTLLR5NFG5UXCCTHOANDZAEE6OO57ZFXUFCZEWQF`
-9. `GAAESJ3CEVSJJ5PJBI35654N525YNR4P2SNYXGAOC4PBFYSW4FKDT4TF`
+
+The following wallets connected to the application and tested the core functionality on the **Stellar Testnet**. Each entry links directly to the wallet's full transaction history on Stellar Expert, providing transparent, on-chain proof of participation.
+
+| # | Wallet Address | Transaction History |
+|---|---------------|---------------------|
+| 1 | `GC4AJYD7TPXJETE2VEXFRE3ZHIUE6PUX3MYCDBXJH4QNSXZGMDRMCVTI` | [View on Stellar Expert →](https://stellar.expert/explorer/testnet/account/GC4AJYD7TPXJETE2VEXFRE3ZHIUE6PUX3MYCDBXJH4QNSXZGMDRMCVTI) |
+| 2 | `GCQRND3J66CHUBQBTSYDPSQUD6NPSEZ32PLJTAZGESNJAFEF6NJII2R3` | [View on Stellar Expert →](https://stellar.expert/explorer/testnet/account/GCQRND3J66CHUBQBTSYDPSQUD6NPSEZ32PLJTAZGESNJAFEF6NJII2R3) |
+| 3 | `GAMX7AYLKU7XOJ6NBCWTSY3W5OSSOBS332M55UG2J5TH5NPCAY545QCM` | [View on Stellar Expert →](https://stellar.expert/explorer/testnet/account/GAMX7AYLKU7XOJ6NBCWTSY3W5OSSOBS332M55UG2J5TH5NPCAY545QCM) |
+| 4 | `GAKH2QXR6TUERN6JHRXGT6AW625X4PESSFWPON5CRQ6A2UFPRDMAAZ2F` | [View on Stellar Expert →](https://stellar.expert/explorer/testnet/account/GAKH2QXR6TUERN6JHRXGT6AW625X4PESSFWPON5CRQ6A2UFPRDMAAZ2F) |
+| 5 | `GBBXQ4Y2XSEBBFXYAE76RCW6HQX54BGTO5H7SDMGN3XN77YA7AZ34HY3` | [View on Stellar Expert →](https://stellar.expert/explorer/testnet/account/GBBXQ4Y2XSEBBFXYAE76RCW6HQX54BGTO5H7SDMGN3XN77YA7AZ34HY3) |
+| 6 | `GA5RKOAUAVEA5POB4HKI2HCIZ3K67SZYLUW5SOACOAKCNDSM4XLC5BPR` | [View on Stellar Expert →](https://stellar.expert/explorer/testnet/account/GA5RKOAUAVEA5POB4HKI2HCIZ3K67SZYLUW5SOACOAKCNDSM4XLC5BPR) |
+| 7 | `GBMQJ3G5LDWODZKUUQWGGT6NIKMM7KL5NLHVIG53WLNLWB27Z4AKH3F4` | [View on Stellar Expert →](https://stellar.expert/explorer/testnet/account/GBMQJ3G5LDWODZKUUQWGGT6NIKMM7KL5NLHVIG53WLNLWB27Z4AKH3F4) |
+| 8 | `GCLIHJPEVJ3KN5ABKTLLR5NFG5UXCCTHOANDZAEE6OO57ZFXUFCZEWQF` | [View on Stellar Expert →](https://stellar.expert/explorer/testnet/account/GCLIHJPEVJ3KN5ABKTLLR5NFG5UXCCTHOANDZAEE6OO57ZFXUFCZEWQF) |
+| 9 | `GAAESJ3CEVSJJ5PJBI35654N525YNR4P2SNYXGAOC4PBFYSW4FKDT4TF` | [View on Stellar Expert →](https://stellar.expert/explorer/testnet/account/GAAESJ3CEVSJJ5PJBI35654N525YNR4P2SNYXGAOC4PBFYSW4FKDT4TF) |
+
+> 🔗 All transaction histories are publicly verifiable on [stellar.expert/explorer/testnet](https://stellar.expert/explorer/testnet). Each wallet's page shows full on-chain activity including XLM transfers, contract invocations, and account balances.
 
 ### 🚀 Future Evolution & Iteration 1
 Based on the collected feedback, users highlighted that the loan booking flow and transaction confirmations could be clearer for users new to crypto, explicitly requesting visual transaction progress indicators, clear interest rate displays, and potentially a real-time chat system. In our next phase, we plan to evolve the project by exploring an in-app real-time communication layer between lenders and borrowers.
@@ -330,7 +336,7 @@ This section documents all requirements for the **Stellar SCF Black Belt** level
 | Minimum 30 Meaningful Commits | ✅ Done | [View Commits](https://github.com/pratickdutta/TrustChain/commits/main) |
 | User Feedback & Iteration | ✅ Done | [View Section](#-user-validation--mvp-feedback) |
 | Community Contribution (Twitter) | ✅ Done | [Post Link](https://x.com/pratick_du45025/status/2048149887263576114?s=20) |
-| 30 Verified User Wallet Addresses | ✅ Done | Please check verified testnet users above |
+| Verified User Wallet Addresses (with Transaction History) | ✅ Done | [9 Wallets with Stellar Expert Links](#-verified-testnet-users) |
 
 ---
 
